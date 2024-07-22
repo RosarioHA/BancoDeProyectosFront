@@ -199,9 +199,10 @@ const ProyectosInnovadores = () => {
                     imgGeneral={(selectedProject || filteredProjects[0]).innovative_gallery_images}
                     context="proyectosInnovadores"
                   />
-                  {/* AQUI ESTA EL MENSAJE DISCLAIMET NUEVO, REVISAR  */}
-                  <div className="">
-                    <p className="text-sans-p-danger">Éstas imágenes son de carácter referencial y no corresponden necesariamente a proyectos que se hayan realizado.</p>
+                  <div className="d-flex flex-column align-items-center">
+                    <p className="text-sans-p-danger-small px-4 col-10">
+                      <em>Éstas imágenes son de carácter referencial y no corresponden necesariamente a proyectos que se hayan realizado.</em>
+                    </p>
                   </div>
                 </div>
                 <p className="text-sans-p ">{(selectedProject || filteredProjects[0]).description}</p>

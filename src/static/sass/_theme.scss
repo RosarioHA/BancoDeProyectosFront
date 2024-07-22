@@ -123,6 +123,9 @@ $border-claveunica-color: #000000;
 .text-sans-p-danger-bold{
     @include font-sans(16px, 700, $alert-danger); 
 }
+.text-sans-p-danger-small{
+    @include font-sans(14px, 300, $alert-danger); 
+}
 .text-sans-p-bold-darkred{
     @include font-sans(16px, 700, $dark-red);
     line-height: 35px;
