@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { Route, Routes} from 'react-router-dom';
 import { ApiProvider } from './context/ProjectContext';
 
 //import PrivateRoute from './components/Commons/privateRoute';
@@ -21,18 +21,24 @@ const CrearProyecto_paso1 = React.lazy(() => import('./views/Dashboard/gestion_p
 const CrearInnovador_paso1 = React.lazy(() => import('./views/Dashboard/gestion_proyectos/creacionDeProyectos/crearInnovador_p1'));
 const AdministrarProyectos = React.lazy(() => import('./views/Dashboard/gestion_proyectos/administracionDeProyectos/administracionProyectos'));
 const AdministrarProyectosInnovadores = React.lazy(() => import('./views/Dashboard/gestion_proyectos/administracionDeProyectos/administracionProyectosInnovadores'));
-const Success = React.lazy(() => import ('./views/Dashboard/gestion_proyectos/creacionDeProyectos/success'));
-const EvaluarInnovadores = React.lazy(() => import ('./views/Dashboard/gestion_proyectos/evaluacionDeProyectos/evaluarInnovadores'))
+const Success = React.lazy(() => import('./views/Dashboard/gestion_proyectos/creacionDeProyectos/success'));
+const EvaluarInnovadores = React.lazy(() => import('./views/Dashboard/gestion_proyectos/evaluacionDeProyectos/evaluarInnovadores'))
 const EvaluarProyecto = React.lazy(() => import('./views/Dashboard/gestion_proyectos/evaluacionDeProyectos/evaluarProyecto'));
-const SuccessViews = React.lazy(() => import ('./views/Dashboard/gestion_proyectos/creacionDeProyectos/success'));
+const SuccessViews = React.lazy(() => import('./views/Dashboard/gestion_proyectos/creacionDeProyectos/success'));
 
-function App() {  
-  
+function App()
+{
+
   return (
     <ApiProvider>
-      <Suspense fallback={<div>Cargando página...</div>}>
+      <Suspense fallback={
+        <div className="d-flex align-items-center flex-column my-5">
+        <div className="text-center text-sans-h5-blue">Cargando pagina</div>
+        <span className="placeholder col-4 bg-primary">
+        </span>
+      </div>}>
         <Routes>
-            <Route path="/" element={<MainLayout />}>
+          <Route path="/" element={<MainLayout />}>
             <Route index element={<Landing />} />
             <Route path="bancodeproyectos" element={<BancoProyectos />} />
             <Route path="bancodeideas" element={<BancoIdeas />} />
@@ -53,10 +59,10 @@ function App() {
             <Route path="crearinnovador_paso1" element={<CrearInnovador_paso1 />} />
             <Route path="administrarproyectos" element={<AdministrarProyectos />} />
             <Route path="administrarproyectosinnovadores" element={<AdministrarProyectosInnovadores />} />
-            <Route path="success" element={<Success/>} />
+            <Route path="success" element={<Success />} />
             <Route path="evaluarinnovadores" element={<EvaluarInnovadores />} />
             <Route path="evaluarproyecto" element={<EvaluarProyecto />} />
-            <Route path="envio_exitoso" element={<SuccessViews/>} />
+            <Route path="envio_exitoso" element={<SuccessViews />} />
           </Route>
         </Routes>
       </Suspense>
