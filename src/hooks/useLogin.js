@@ -26,14 +26,9 @@ export const useLogin = () => {
             // console.log("Se guarda el code Verifier: ", codeVerifier);
 
             // Construir la URL de redirección manualmente con los parámetros necesarios
-            // const redirectUri = import.meta.env.VITE_KEYCLOAK_REDIRECT_URI;
-            // const clientId = import.meta.env.VITE_KEYCLOAK_RESOURCE;
-            // const keycloakAuthUrl = import.meta.env.VITE_KEYCLOAK_AUTH_URL;
-
-            const redirectUri = 'http://localhost:5173/callback/';
-            const clientId = 'bancoproyectos';
-            const keycloakAuthUrl = 'https://oid.subdere.gob.cl/realms/app-qa/protocol/openid-connect/auth';
-
+            const redirectUri = import.meta.env.VITE_KEYCLOAK_REDIRECT_URI;
+            const clientId = import.meta.env.VITE_KEYCLOAK_RESOURCE;
+            const keycloakAuthUrl = import.meta.env.VITE_KEYCLOAK_AUTH_URL;
 
             const state = encodeURIComponent(encryptedCodeVerifier); // Codificar el hash para la URL
             // console.log("Se encripta el code Verifier: ", encryptedCodeVerifier);
@@ -59,11 +54,13 @@ export const useLogin = () => {
         setLoading(true);
         try {
             // console.log("handleAuthentication recibe el code y state")
+            // console.log("code :", code);
             const codeVerifier = decryptCodeVerifier(state);
             // console.log("codeVerifier :", codeVerifier);
    
             // Intercambiar el código por un token utilizando el codeVerifier
-            const response = await apiBancoProyecto.post('/callback/', {
+            const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+            const response = await apiBancoProyecto.post(`${apiUrl}/callback/`, {
                 code,
                 codeVerifier  // Enviar el codeVerifier recibido de Keycloak
             });
