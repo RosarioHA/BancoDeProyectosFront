@@ -14,7 +14,7 @@ if(process.env.BUILD_ENV === 'production') {
 export default defineConfig({
   server: {
     host: '0.0.0.0',
-    port: 8082, // Configurar el puerto aquí
+    port: 5173, // Configurar el puerto aquí
   },
   plugins: [ react() ],
   build: {

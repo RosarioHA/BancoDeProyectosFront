@@ -30,7 +30,6 @@ export const useLogin = () => {
             const clientId = import.meta.env.VITE_KEYCLOAK_RESOURCE;
             const keycloakAuthUrl = import.meta.env.VITE_KEYCLOAK_AUTH_URL;
 
-
             const state = encodeURIComponent(encryptedCodeVerifier); // Codificar el hash para la URL
             // console.log("Se encripta el code Verifier: ", encryptedCodeVerifier);
 
@@ -55,11 +54,13 @@ export const useLogin = () => {
         setLoading(true);
         try {
             // console.log("handleAuthentication recibe el code y state")
+            // console.log("code :", code);
             const codeVerifier = decryptCodeVerifier(state);
             // console.log("codeVerifier :", codeVerifier);
    
             // Intercambiar el código por un token utilizando el codeVerifier
-            const response = await apiBancoProyecto.post('/callback/', {
+            const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+            const response = await apiBancoProyecto.post(`${apiUrl}/callback/`, {
                 code,
                 codeVerifier  // Enviar el codeVerifier recibido de Keycloak
             });

@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }) => {
     const refreshToken = localStorage.getItem('refreshToken'); // Asegúrate de obtener el refreshToken
 
     try {
-      const response = await axios.post('/api/logout/', {
+      const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+      const response = await axios.post(`${apiUrl}/logout/`, {
         refresh_token: refreshToken  // Incluye el refresh token aquí
       });
       console.log('Logout successful', response);
