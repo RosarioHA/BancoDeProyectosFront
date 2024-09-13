@@ -6,7 +6,8 @@ import Carrusel from '../../../components/Commons/carrusel';
 import DropdownComponent from '../../../components/Commons/Dropdown';
 import SelectorLateral from '../../../components/Commons/selectorLateral';
 
-const ProyectosInnovadores = () => {
+const ProyectosInnovadores = () =>
+{
   // Hooks de estado
   const { programs } = useFilterOptions();
   const [ selectedProject, setSelectedProject ] = useState(null);
@@ -29,20 +30,26 @@ const ProyectosInnovadores = () => {
   } = useApiGoodPractices();
 
   // Funcion para filtrar proyectos segun programa seleccionado
-  const filterProjectsByPrograms = (data, selectedProgramsSiglas) => {
-    if (selectedProgramsSiglas.length === 0) {
+  const filterProjectsByPrograms = (data, selectedProgramsSiglas) =>
+  {
+    if (selectedProgramsSiglas.length === 0)
+    {
       return data;
-    } else {
+    } else
+    {
       return data.filter((item) =>
         item.program && selectedProgramsSiglas.includes(item.program.sigla)
       );
     }
   };
 
-  const filterPracticesByPrograms = (data, selectedProgramSiglas) => {
-    if (selectedProgramSiglas.length === 0) {
+  const filterPracticesByPrograms = (data, selectedProgramSiglas) =>
+  {
+    if (selectedProgramSiglas.length === 0)
+    {
       return data;
-    } else {
+    } else
+    {
       return data.filter((practice) =>
         practice.program.some(program =>
           selectedProgramSiglas.includes(program.sigla)
@@ -52,12 +59,15 @@ const ProyectosInnovadores = () => {
   };
 
   // Funcion para cambiar el programa seleccionado
-  const toggleProgram = (sigla) => {
-    if (selectedProgram.includes(sigla)) {
+  const toggleProgram = (sigla) =>
+  {
+    if (selectedProgram.includes(sigla))
+    {
       setSelectedProgram([]);
       setSelectedPracticesPrograms([]);
       setSelectedPractice(null);
-    } else {
+    } else
+    {
       setSelectedProgram([ sigla ]);
       setSelectedPracticesPrograms([ sigla ]);
       setSelectedPractice(null);
@@ -66,46 +76,67 @@ const ProyectosInnovadores = () => {
   };
 
   // Funcion para seleccionar una practica
-  const onSelect = (practice) => {
+  const onSelect = (practice) =>
+  {
     setSelectedPractice(practice);
     // Guarda la buena practica seleccionada en el almacenamiento local
     localStorage.setItem('selectedPractice', JSON.stringify(practice));
   };
 
-  const filteredProjects = useMemo(() => {
+  const filteredProjects = useMemo(() =>
+  {
     return filterProjectsByPrograms(dataInnovativeProjects, selectedProgram);
   }, [ selectedProgram, dataInnovativeProjects ]);
 
 
-  const filteredPractices = useMemo(() => {
+  const filteredPractices = useMemo(() =>
+  {
     return filterPracticesByPrograms(dataGoodPractices, selectedProgram);
   }, [ dataGoodPractices, selectedProgram ]);
 
   // Actualiza proyecto seleccionado al cambiar la lista de proyectos
-  useEffect(() => {
-    if (filteredProjects.length > 0 && selectedProject === null) {
+  useEffect(() =>
+  {
+    if (filteredProjects.length > 0 && selectedProject === null)
+    {
       setSelectedProject(filteredProjects[ 0 ]);
     }
   }, [ filteredProjects, selectedProject ]);
 
   // Actualiza la practica seleccionada al cambiar la lista de practicas
-  useEffect(() => {
-    if (filteredPractices.length > 0 && selectedPractice === null) {
+  useEffect(() =>
+  {
+    if (filteredPractices.length > 0 && selectedPractice === null)
+    {
       setSelectedPractice(filteredPractices[ 0 ]);
     }
   }, [ filteredPractices, selectedPractice ]);
 
   // Manejo de errores y carga de datos
-  if (loadingInnovativeProjects) {
-    return <div>Cargando datos...</div>;
+  if (loadingInnovativeProjects)
+  {
+    return <>
+      <div className="d-flex align-items-center flex-column my-5">
+        <div className="text-center text-sans-p-blue">Cargando Datos</div>
+        <span className="placeholder col-4 bg-primary"></span>
+      </div>
+    </>
   }
-  if (errorInnovativeProjects) {
+  if (errorInnovativeProjects)
+  {
     return <div>Error: {errorInnovativeProjects}</div>;
   }
-  if (loadingGoodPractices) {
-    return <div>Cargando datos de buenas prácticas...</div>;
+  if (loadingGoodPractices)
+  {
+    return <>
+      <div className="d-flex align-items-center flex-column my-5 ">
+        <div className="text-center text-sans-p-blue">Cargando datos de buenas prácticas</div>
+        <span className="placeholder col-4 bg-primary"></span>
+      </div>
+    </>
   }
-  if (errorGoodPractices) {
+  if (errorGoodPractices)
+  {
     return <div>Error en los datos de buenas prácticas: {errorGoodPractices}</div>;
   }
 
@@ -118,7 +149,7 @@ const ProyectosInnovadores = () => {
         </ol>
       </nav>
       <h1 className="text-sans-h1">Proyectos Innovadores</h1>
-      <p className="text-sans-p my-md-4"> En la sección de proyectos innovadores podrás encontrar una variedad de alternativas de proyectos de carácter innovador, 
+      <p className="text-sans-p my-md-4"> En la sección de proyectos innovadores podrás encontrar una variedad de alternativas de proyectos de carácter innovador,
         que te ayuda a diversificar la oferta de infraestructura, entregándole un nuevo aire a tu comuna.
       </p>
       <h2 className="text-sans-h2 mt-5">Listado de proyectos innovadores</h2>
@@ -185,18 +216,18 @@ const ProyectosInnovadores = () => {
 
       {/* Datos del proyecto */}
       <div>
-        {(selectedProject || (filteredProjects.length > 0 && filteredProjects[0])) ? (
+        {(selectedProject || (filteredProjects.length > 0 && filteredProjects[ 0 ])) ? (
           <div>
             <h4 className="text-sans-h3 text-center text-md-start mt-5">
-              {(selectedProject || filteredProjects[0]).title}
+              {(selectedProject || filteredProjects[ 0 ]).title}
             </h4>
 
             <div className="row">
               <div className="desc-container">
                 <div className="carrusel-container col-12 col-lg-7">
                   <Carrusel
-                    imgPortada={(selectedProject || filteredProjects[0]).portada}
-                    imgGeneral={(selectedProject || filteredProjects[0]).innovative_gallery_images}
+                    imgPortada={(selectedProject || filteredProjects[ 0 ]).portada}
+                    imgGeneral={(selectedProject || filteredProjects[ 0 ]).innovative_gallery_images}
                     context="proyectosInnovadores"
                   />
                   <div className="d-flex flex-column align-items-center">
@@ -205,12 +236,12 @@ const ProyectosInnovadores = () => {
                     </p>
                   </div>
                 </div>
-                <p className="text-sans-p ">{(selectedProject || filteredProjects[0]).description}</p>
+                <p className="text-sans-p ">{(selectedProject || filteredProjects[ 0 ]).description}</p>
               </div>
 
               <div className="col">
                 <div className="d-flex flex-column">
-                  {(selectedProject || filteredProjects[0]).web_sources.map((source, index) => (
+                  {(selectedProject || filteredProjects[ 0 ]).web_sources.map((source, index) => (
                     <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer">
                       Visitar fuente {index + 1}
                     </a>

@@ -28,7 +28,12 @@ const Proyecto = () => {
   });
 
   if (loadingProject) {
-    return <div>CARGANDO DATOS...</div>
+    return  <>
+    <div className="d-flex align-items-center flex-column my-5 ">
+      <div className="text-center text-sans-p-blue">Cargando Proyecto</div>
+      <span className="placeholder col-4 bg-primary"></span>
+    </div>
+  </>
   }
   if (errorProject) {
     return <div>Error de conexión: {errorProject}</div>
@@ -65,8 +70,8 @@ const Proyecto = () => {
         <p className="m-0 d-none d-lg-block me-3 opacity-50">|</p>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb m-0">
-            <li className="breadcrumb-item "><a className="breadcrumbs" href="/" >Inicio</a></li>
-            <li className="breadcrumb-item"><a className="breadcrumbs" href="/bancodeproyectos" >Banco de Proyectos</a></li>
+            <li className="breadcrumb-item "><Link className="breadcrumbs" to="/" >Inicio</Link></li>
+            <li className="breadcrumb-item"><Link className="breadcrumbs" to="/bancodeproyectos" >Banco de Proyectos</Link></li>
             <li className="breadcrumb-item active d-none d-lg-block" aria-current="page">{dataProject.name}</li>
           </ol>
         </nav>

@@ -13,7 +13,7 @@ import useGalleryInnovative from '../../../../hooks/useGalleryInovative';
 const CrearProyectoInnovadorP1 = () =>
 {
   const { userData } = useAuth();
-  const isEditorOrSuperuser = [ 'Superusuario', 'Editor General' ].includes(userData.tipo_de_usuario);
+  // const isEditorOrSuperuser = [ 'Superusuario', 'Editor General' ].includes(userData.tipo_de_usuario);
   const [ projectId, setProjectId ] = useState(null);
   const { getInnovativeProjectById, updateInnovativeProject, deleteInnovativeProject, updateInnovativeProjectCover,
     addWebSource, updateWebSource } = useApiInnovativeProjects();
@@ -204,9 +204,6 @@ const CrearProyectoInnovadorP1 = () =>
     }
   };
 
-  console.log("inputTitle:", inputTitle);
-  console.log("inputDescr:", inputDescr);
-  console.log("coverImages:", coverImages);
 
 
 
@@ -223,7 +220,7 @@ const CrearProyectoInnovadorP1 = () =>
         <div className="dropdown-program-select">
           <p className="text-sans-p">Este proyecto corresponde al programa:</p>
 
-          {isEditorOrSuperuser ? (
+          {/* {isEditorOrSuperuser ? ( */}
             <>
               <div className="dropdown-selected" onClick={() => setDropdownOpen(!dropdownOpen)}>
                 {updatedProgram ? (
@@ -253,9 +250,9 @@ const CrearProyectoInnovadorP1 = () =>
               {dropdownOpen && (
                 <ul className="dropdown-list">
                   {loadingPrograms ? (
-                    <li>Cargando programas...</li>
+                    <li className="text-sans-h5-blue">Cargando programas...</li>
                   ) : errorPrograms ? (
-                    <li>Error al cargar programas</li>
+                    <li className="text-sans-h5-blue">Error al cargar programas</li>
                   ) : (
                     dataPrograms.map((program) => (
                       <li key={program.id}>
@@ -273,7 +270,7 @@ const CrearProyectoInnovadorP1 = () =>
                 </ul>
               )}
             </>
-          ) : (
+          {/* ) : ( */}
             <div className="dropdown-selected">
               {updatedProgram ? (
                 <div>
@@ -294,7 +291,7 @@ const CrearProyectoInnovadorP1 = () =>
                 userData.program.name
               )}
             </div>
-          )}
+          {/* )} */}
         </div>
       </div>
 
