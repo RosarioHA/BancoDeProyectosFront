@@ -62,13 +62,13 @@ export default Main;
 //============================================ END KEYCLOAK CONFIGURATION ============================================
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  //<React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <Main />
         <App />
       </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>,
+  //</React.StrictMode>,
 );
 
