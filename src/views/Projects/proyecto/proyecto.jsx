@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import useApiProjectsDetail from "../../../hooks/useApiProjectsDetail";
 import Carrusel from "../../../components/Commons/carrusel";
-import ProyectosRelacionados from "../../../components/Proyecto/proyectosRelacionados";
+import {ProyectosRelacionados} from "../../../components/Proyecto/proyectosRelacionados";
 import { useAuth } from "../../../context/AuthContext";
 import { Link } from 'react-router-dom';
 import { useLogin } from '../../../hooks/useLogin';
