@@ -24,17 +24,16 @@ const SelectorLateral = ({ data, onSelect, titlePropertyName }) => {
       <div className="d-flex flex-column d-none d-lg-block">
         {data.map((item) => (
           <button
-            key={item.id}
-            //className="btn-selector-lateral d-flex justify-content-between"
-            className={`btn-selector-lateral d-flex justify-content-between ${selectedOption === item ? "selected-button" : ""}`}
-            onClick={() => {
-              setSelectedOption(item);
-              onSelect(item);
-            }}
-          >
-            <p className="text-decoration-underline mb-0 py-1">{item[titlePropertyName]}</p>
-            <i className="material-symbols-rounded ms-2">keyboard_arrow_right</i>
-          </button>
+          key={item.id}
+          className={`btn-selector-lateral d-flex justify-content-between ${selectedOption === item ? "btn-selector-lateral-active" : ""}`}
+          onClick={() => {
+            setSelectedOption(item);
+            onSelect(item);
+          }}
+        >
+          <p className="text-decoration-underline mb-0 py-1">{item[titlePropertyName]}</p>
+          <i className="material-symbols-rounded ms-2">keyboard_arrow_right</i>
+        </button>
         ))}
       </div>
 
