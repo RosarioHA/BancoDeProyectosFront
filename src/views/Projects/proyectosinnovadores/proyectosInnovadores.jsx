@@ -221,38 +221,40 @@ const ProyectosInnovadores = () =>
       </div>
 
       <div className="container mt-5 pt-5">
-        <hr className="my-5" />
         {/* BUENAS PRACTICAS */}
-        <h2 className="text-sans-h2">Buenas prácticas para el diseño</h2>
-        <p className="text-sans-p mt-3">Con estas prácticas buscamos promover criterios sustentables a considerar en el diseño actual de los proyectos.</p>
-        <div className="row">
-          <div className="col-lg-4">
-            {selectedPractice ? (
-              <SelectorLateral
-                data={filteredPractices}
-                onSelect={onSelect}
-                titlePropertyName="title"
-              />) : ("")}
-          </div>
-          <div className="col-lg-8">
-            {selectedPractice ? (
-              <>
-                <h2 className="text-sans-h3">{selectedPractice.title}</h2>
-                <p className="text-sans-p" >{selectedPractice.description}</p>
-                <div className="my-4">
-                  <Carrusel
-                    imgPortada={selectedPractice.portada}
-                    imgGeneral={selectedPractice.good_practices_gallery_images}
-                    context="buenasPracticas"
-                  />
-                </div>
-              </>
-            ) : (
-              <p className="text-sans-h4 mt-3">Aún no hay buenas prácticas disponibles</p>
-            )}
-          </div>
-        </div>
+        {selectedPractice ? (
+          <>
+          <hr className="my-5" />
+            <h2 className="text-sans-h2">Buenas prácticas para el diseño</h2>
+            <p className="text-sans-p mt-3">Con estas prácticas buscamos promover criterios sustentables a considerar en el diseño actual de los proyectos.</p>
+            <div className="row">
+              <div className="col-lg-4">
+                {selectedPractice ? (
+                  <SelectorLateral
+                    data={filteredPractices}
+                    onSelect={onSelect}
+                    titlePropertyName="title"
+                  />) : ("")}
+              </div>
+              <div className="col-lg-8">
 
+                <>
+                  <h2 className="text-sans-h3">{selectedPractice.title}</h2>
+                  <p className="text-sans-p" >{selectedPractice.description}</p>
+                  <div className="my-4">
+                    <Carrusel
+                      imgPortada={selectedPractice.portada}
+                      imgGeneral={selectedPractice.good_practices_gallery_images}
+                      context="buenasPracticas"
+                    />
+                  </div>
+                </>
+              </div>
+            </div>
+          </>
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );
