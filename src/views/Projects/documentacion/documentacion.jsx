@@ -60,7 +60,12 @@ const Documentacion = () => {
 
   // Manejo de errores y carga de datos
   if (loadingDocuments) {
-    return <div>Cargando datos...</div>;
+    return  <>
+    <div className="d-flex align-items-center flex-column my-5">
+      <div className="text-center text-sans-p-blue">Cargando Datos</div>
+      <span className="placeholder col-4 bg-primary"></span>
+    </div>
+  </>
   }
   if (errorDocuments) {
     return <div>Error: {errorDocuments}</div>;

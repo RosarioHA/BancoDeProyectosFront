@@ -7,31 +7,31 @@ export const Sidebar = () =>
 {
 
   const [ openDropdownSidebar, setOpenDropdownSidebar ] = useState(false);
-  const state = useApiAdminNotificacions();
+  // const state = useApiAdminNotificacions();
 
-  const { data: dataInnovativeProjectNotificacions, 
-          loading: loadingInnovativeProjectNotificacions, 
-          error: errorInnovativeProjectNotificacions } = state.innovative_projects_notifications;
+  // // const { data: dataInnovativeProjectNotificacions, 
+  // //         loading: loadingInnovativeProjectNotificacions, 
+  // //         error: errorInnovativeProjectNotificacions } = state.innovative_projects_notifications;
     
-  const { data: dataUnreadCount,
-          loading: loadingUnreadCount,
-          error: errorUnreadCount } = state.unread_count;
+  // // const { data: dataUnreadCount,
+  // //         loading: loadingUnreadCount,
+  // //         error: errorUnreadCount } = state.unread_count;
 
-  const { data: dataNotifications,
-          loading: loadingNotifications,
-          error: errorNotifications } = state.notifications;
+  // // const { data: dataNotifications,
+  // //         loading: loadingNotifications,
+  // //         error: errorNotifications } = state.notifications;
 
   const [showModal, setShowModal] = useState(false);
 
   const handleNotificationsClick = () => {
-    // Llamar a markAsRead para marcar las notificaciones como leídas
-    state.markAsRead();
-    // Abrir el modal de notificaciones
+    // // Llamar a markAsRead para marcar las notificaciones como leídas
+    // state.markAsRead();
+    // // Abrir el modal de notificaciones
     setShowModal(true); 
   };
 
   
-  const [count, setCount] = useState(0); // Solo para pruebas
+  // const [count, setCount] = useState(0); // Solo para pruebas
 
   const handleDropdownClick = () =>
   {
@@ -60,17 +60,19 @@ export const Sidebar = () =>
           </NavLink>
         </li>
         <li className="my-1">
-          <NavLink to="#" className="mx-4 btn-link" onClick={handleNotificationsClick}>
+          <NavLink to="#" className="mx-4 btn-link"
+          // onClick={handleNotificationsClick}
+          >
             <i className="material-symbols-outlined mx-3">
               mail
             </i><u>Notificaciones</u>
-            { 
+            {/* { 
               dataUnreadCount && dataUnreadCount.unread_count === 0 ?
               <i className="material-symbols-outlined mx-3"></i> :
               loadingUnreadCount ? <span>Cargando...</span> : 
               errorUnreadCount ? <span>Error</span> :
               <i className="badge badge-notification mx-3"> {dataUnreadCount && dataUnreadCount.unread_count} </i> 
-            }
+            } */}
           </NavLink>
         </li>
         <hr className="w-85 mx-4" />
@@ -84,23 +86,23 @@ export const Sidebar = () =>
         </li>
         <li className="my-1">
           <NavLink to="#" className="mx-4 btn-link"  type="button">
-            { 
+            {/* { 
               count === 0 ?
               <i className="material-symbols-outlined mx-3">library_books</i> :
               <i className="badge badge-notification mx-3"> {count} </i> 
-            }
+            } */}
             <u>Banco de Proyectos</u>
           </NavLink>
         </li>
         <li className="my-1">
           <NavLink to="administrarproyectosinnovadores" className="mx-4 btn-link" type="button">
-            { 
+            {/* { 
               dataInnovativeProjectNotificacions && dataInnovativeProjectNotificacions.total_count === 0 ?
               <i className="material-symbols-outlined mx-3">filter_none</i> :
               loadingInnovativeProjectNotificacions ? <span>Cargando...</span> : 
               errorInnovativeProjectNotificacions ? <span>Error</span> :
               <i className="badge badge-notification mx-3"> {dataInnovativeProjectNotificacions && dataInnovativeProjectNotificacions.total_count} </i> 
-            }
+            } */}
             <u>Proyectos Innovadores</u>
           </NavLink>
         </li>
@@ -116,11 +118,11 @@ export const Sidebar = () =>
 
         <li className="my-1">
           <NavLink to="#" className="mx-4 btn-link" type="button">
-            { 
+            {/* { 
               count === 0 ?
               <i className="material-symbols-outlined mx-3">supervised_user_circle</i> :
               <i className="badge badge-notification mx-3"> {count} </i> 
-            }
+            } */}
             <u>Administrar Usuarios</u>
           </NavLink>
         </li>
@@ -178,12 +180,12 @@ export const Sidebar = () =>
           </ul>
         </div>
       </div>
-
+{/* 
     <NotificationModal 
       show={showModal} 
       dataNotifications={dataNotifications} 
       onClose={() => setShowModal(false)} 
-    /> 
+    />  */}
     </div >
   )
 }

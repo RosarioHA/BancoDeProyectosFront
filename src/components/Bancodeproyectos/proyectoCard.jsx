@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
-const ProyectoCard = ({ project = {} }) => {
+const ProyectoCard = ({ project = {} }) =>
+{
   const {
     name,
     description = "",
@@ -16,8 +17,10 @@ const ProyectoCard = ({ project = {} }) => {
   const { comuna: comunaName, region } = comuna;
   const isPrioritizedTagPresent = prioritizedTag && prioritizedTag.length > 0;
 
-  const truncateText = (text, maxWords) => {
-    if (!text) {
+  const truncateText = (text, maxWords) =>
+  {
+    if (!text)
+    {
       return "";
     }
 
@@ -62,11 +65,9 @@ const ProyectoCard = ({ project = {} }) => {
           <p className="tag p-1">{year.number}</p>
         </div>
         <div className="d-flex justify-content-end p-3">
-          <button className="font-level-4 btn-principal-s text-decoration-underline px-3">
-            <Link to={`/project/${slug}/`} className="font-level-4 btn-principal-s text-decoration-underline px-3">
-              Ver más &gt;
-            </Link>
-          </button>
+          <Link to={`/project/${slug}/`} className="font-level-4 btn-principal-s text-decoration-underline px-3">
+            Ver más &gt;
+          </Link>
         </div>
       </div>
     </div>

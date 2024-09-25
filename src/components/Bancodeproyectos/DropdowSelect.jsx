@@ -64,7 +64,7 @@ const Dropdown = ({
           <div key={region.id} >
             <span className='fw-semibold list-group-item'>{region.region}</span>
             {region.comunas.map(comuna => (
-              <li className="list-group-item" key={comuna.id}>
+              <li className="list-group-item w-20" key={comuna.id}>
                 <input className="form-check-input" id={`comuna-${comuna.id}`} type='checkbox' value={comuna.id}
                   onChange={(e) => onItemChange(e, comuna)}
                   checked={selectedItems.includes(comuna.id.toString())} />
@@ -74,7 +74,7 @@ const Dropdown = ({
             ))}
           </div>
         )) : items.map(item => (
-          <li className="list-group-item " key={item.id}>
+          <li className="list-group-item d-flex" key={item.id}>
             <input className="form-check-input" id={`item-${item.id}`} type='checkbox' value={item.id}
               onChange={(e) => onItemChange(e, item)}
               checked={selectedItems.includes(item.id.toString())} />

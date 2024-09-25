@@ -11,12 +11,14 @@ const BtnInicioSesion = ({ btnPrincipalSize, btnSecundarioSize }) => {
   const { loginWithKeycloak } = useLogin(); // Asegúrate de que este método esté definido en tu hook.
   const userAdmin = userData?.tipo_de_usuario?.includes("Editor");
 
+  console.log(userData)
+
   return (
     <div className="lg-col d-flex justify-content-lg-end align-items-center">
       {isLoggedIn ? (
         <div className="container d-flex flex-column flex-lg-row justify-content-center">
-          <span className="d-none d-lg-block text-sans-p align-self-center mt-lg-3 me-3">Hola, {userData.full_name || userData.rut}</span>
-
+          <span className="d-none d-lg-block text-sans-p align-self-center mt-lg-3 me-3">
+            Hola, {userData.full_name || userData.rut}</span>
           {userAdmin && (
           <button className={`mx-lg-3 mt-lg-4 me-md-4 ${btnSecundarioSize}`}> 
             <Link to="/dashboard">ir a Admin</Link>
@@ -70,7 +72,8 @@ const Navbar = () => {
               <div id="lineBlue" />
               <div id="lineRed" />
             </div>
-            <p className="logo-subdere mt-3 ms-2 ms-sm-1 ps-0">Subsecretaría de Desarrollo Regional y Administrativo</p>  
+            <p className="logo-subdere mt-3 ms-2 ms-sm-1 ps-0">
+              Subsecretaría de Desarrollo Regional y Administrativo</p>  
           </Link>
         </div>
 

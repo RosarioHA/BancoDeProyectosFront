@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../../context/AuthContext';
+// import { useAuth } from '../../../../context/AuthContext';
 import { UseApiPrograms } from '../../../../hooks/usePrograms';
 import useApiInnovativeProjects from '../../../../hooks/useApiInnovativeProjects';
 
@@ -8,8 +8,8 @@ const CrearProyectos = () =>
 {
 
   //permisos de usuarios
-  const { userData } = useAuth();
-  const isEditorOrSuperuser = [ 'Superusuario', 'Editor General' ].includes(userData.tipo_de_usuario);
+  // const { userData } = useAuth();
+  // const isEditorOrSuperuser = [ 'Superusuario', 'Editor General' ].includes(userData.tipo_de_usuario);
   // Hooks de estado
   const [ selectedOption, setSelectedOption ] = useState(null);
   const [ showOptionErrorMessage, setShowOptionErrorMessage ] = useState(false);
@@ -235,7 +235,7 @@ const CrearProyectos = () =>
 
           <div>
             <p className="text-sans-p">Este proyecto corresponde al programa:</p>
-            {isEditorOrSuperuser && (
+            {/* {isEditorOrSuperuser && ( */}
               <div>
                 <select
                   className="custom-selector p-3"
@@ -250,7 +250,7 @@ const CrearProyectos = () =>
                   ))}
                 </select>
               </div>
-            )}
+            {/* )} */}
           </div>
         </div>
 
