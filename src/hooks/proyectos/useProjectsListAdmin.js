@@ -1,27 +1,27 @@
-import { useState, useEffect, useCallback } from 'react';
-import { apiBancoProyecto } from '../../services/bancoproyecto.api';
+import { useState, useEffect, useCallback } from "react";
+import { apiBancoProyecto } from "../../services/bancoproyecto.api";
 
-export const useUsers = () =>
+export const useProjectsListAdmin = () =>
 {
-  const [ users, setUsers ] = useState([]);
+  const [ projectsAdmin, setProjectsAdmin ] = useState([]);
   const [ loading, setLoading ] = useState(true);
-  const [ error, setError ] = useState(null);
   const [ metadata, setMetadata ] = useState({ count: 0, next: null, previous: null });
+  const [ error, setError ] = useState(null);
   const [ pagination, setPagination ] = useState(1);
 
-  const fetchUsers = useCallback(async () =>
+  const fetchProjectsAdmin = useCallback(async () =>
   {
     setLoading(true);
-    setError(null); // Reseteamos el error al intentar una nueva carga
+    setError(null);
     try
     {
-      const response = await apiBancoProyecto.get(`/users/list_admin/?page=${pagination}`);
+      const response = await apiBancoProyecto.get(`projects/v1/list_admin/?page=${pagination}`);  // Enviar la petición con el token
       const { data } = response;
 
       // Actualizamos los usuarios y la metadata solo si hay resultados
       if (data.results)
       {
-        setUsers(data.results);
+        setProjectsAdmin(data.results);
         setMetadata({
           count: data.count,
           next: data.next,
@@ -40,10 +40,10 @@ export const useUsers = () =>
 
   useEffect(() =>
   {
-    fetchUsers();
-  }, [ fetchUsers ]);
+    fetchProjectsAdmin();
+  }, [ fetchProjectsAdmin ]);
 
-  // Función para actualizar la página actual
+
   const updatePage = (newPage) =>
   {
     if (newPage !== pagination)
@@ -63,14 +63,14 @@ export const useUsers = () =>
   };
 
   return {
-    users,
-    loading,
-    error,
+    projectsAdmin,
     pagination,
     setPagination,
     updatePage,
     updateUrl,
-    metadata,
-    fetchUsers
+    loading,
+    error,
+    metadata, 
+    fetchProjectsAdmin
   };
 };
