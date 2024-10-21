@@ -1341,10 +1341,12 @@ input[type=radio]:checked {
 }
 
 .grey-table-line {
+  width: auto;
   background-color: #EEE;
 }
 
 .white-table-line {
+  width: auto;
   background-color: transparent;
 }
 
@@ -2357,45 +2359,6 @@ input.ghost-input-edit, h3.text-sans-h1 {
   width: 750px;
 }
 
-.incompleto {
-  font-family: "Roboto";
-  color: #373737;
-  font-size: 14px;
-  font-weight: 700;
-  background-color: #CFE1F3;
-  height: -moz-fit-content;
-  height: fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  border-radius: 4px;
-}
-
-.pendiente {
-  font-family: "Roboto";
-  color: #FFF;
-  font-size: 14px;
-  font-weight: 700;
-  background-color: #F56B0F;
-  height: -moz-fit-content;
-  height: fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  border-radius: 4px;
-}
-
-.rechazado {
-  font-family: "Roboto";
-  color: #FFF;
-  font-size: 14px;
-  font-weight: 700;
-  background-color: #871a1a;
-  height: -moz-fit-content;
-  height: fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  border-radius: 4px;
-}
-
 .privado {
   font-family: "Roboto";
   color: #FFF;
@@ -2415,6 +2378,19 @@ input.ghost-input-edit, h3.text-sans-h1 {
   font-size: 14px;
   font-weight: 700;
   background-color: #0F69C4;
+  height: -moz-fit-content;
+  height: fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  border-radius: 4px;
+}
+
+.program {
+  font-family: "Roboto";
+  color: #0F69C4;
+  font-size: 14px;
+  font-weight: 700;
+  background-color: #CFE1F3;
   height: -moz-fit-content;
   height: fit-content;
   width: -moz-fit-content;

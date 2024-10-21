@@ -5,7 +5,7 @@ const DashboardLayout = () =>
 {
   return (
     <>
-      <div className="container-fluid">
+      <div className="container">
         <div className="row">
           <div className="col-2">
             <Sidebar />

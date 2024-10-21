@@ -2,61 +2,48 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../../../hooks/usuarios/useUsers";
 import { useAuth } from '../../../context/AuthContext';
-import Buscador from '../../../components/Commons/barraDeBusqueda'; 
+import { InputSearch } from '../../../components/Commons/input_search';
 
-const GestionUsuarios = () => {
-  const { users, pagination, setPagination, fetchUsers, metadata } = useUsers(); 
+
+const GestionUsuarios = () =>
+{
+  const { users, pagination, setPagination, fetchUsers, metadata, setSearchTerm, searchTerm } = useUsers();
   const { userData } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [allUsers, setAllUsers] = useState([]); // Estado para almacenar todos los usuarios
-  const [searchResults, setSearchResults] = useState([]);
-  const [searching, setSearching] = useState(false);
+  const [ setSearching ] = useState(false);
   const navigate = useNavigate();
   const usersPerPage = 10;
+  const totalPages = Math.ceil(metadata.count / usersPerPage);
 
   console.log(userData)
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     fetchUsers();
-  }, [fetchUsers, pagination]);
+  }, [ fetchUsers, pagination ]);
 
-  useEffect(() => {
-    // Almacenar todos los usuarios cuando se recuperan
-    setAllUsers(users);
-  }, [users]);
+  // Cambiar `users` a `allUsers`
 
-  useEffect(() => {
-    const normalizedTerm = searchTerm.trim().toLowerCase();
-    const filteredUsers = allUsers.filter((user) => {
-      const userNameLower = user.full_name.toLowerCase();
-      return (
-        userNameLower.includes(normalizedTerm) ||
-        user.id.toString().includes(normalizedTerm)
-      );
-    });
-
-    // Actualiza searchResults con todos los usuarios filtrados
-    setSearchResults(filteredUsers);
-  }, [allUsers, searchTerm]); // Cambiar `users` a `allUsers`
-
-  const handleDetailsUser = (user) => {
+  const handleDetailsUser = (user) =>
+  {
     navigate(`/dashboard/editar_usuario/${user.id}`, { state: { user } });
   };
 
-  const handleSearch = (term) => {
+  const handleSearch = (term) =>
+  {
     const normalizedTerm = term.trim().toLowerCase();
     setSearchTerm(normalizedTerm);
     setSearching(!!normalizedTerm);
   };
 
-  const totalPages = Math.ceil(metadata.count / usersPerPage);
-
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = (pageNumber) =>
+  {
     setPagination(pageNumber);
   };
 
-  const renderPaginationButtons = () => {
-    if (!pagination) {
+  const renderPaginationButtons = () =>
+  {
+    if (!pagination)
+    {
       return null;
     }
 
@@ -96,14 +83,14 @@ const GestionUsuarios = () => {
       <div className="d-flex flex-row px-4 mb-5 justify-content-between">
         <div className="w-50 pl-2 text-sans-24 align-self-center">Todos los usuarios</div>
         <div>
-          <Buscador
-            searchTerm={searchTerm}
+          <InputSearch
+            value={searchTerm}
             onSearch={handleSearch}
-            isSearching={searching}
-            setIsSearching={setSearching}
-            placeholder="Escribe un nombre de usuario"
+            setHasSearched={setSearching}
+            onChange={setSearchTerm}
+            placeholder="Busca palabras clave"
           />
-        </div> 
+        </div>
       </div>
       <div>
         <div className="row py-2 border-top">
@@ -123,24 +110,14 @@ const GestionUsuarios = () => {
           <div className="col mt-3">
             <p className="text-sans-b-gray">Acción</p>
           </div>
-          {searchTerm === '' ? (
-            users.map((user, index) => (
-              <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-                <div className="col-1 p-3">{(pagination - 1) * usersPerPage + index + 1}</div>
-                <div className="col p-3">{user.full_name}</div>
-                <div className="col p-3">{user.email}</div>
-                <div className="col p-3 mx-2 "><span className="badge-status-finish mx-1">{user.perfil}</span></div>
-                <div className="col p-3"><button className="btn-secundario-s px-3 py-1" onClick={() => handleDetailsUser(user)}><u>Ver usuario</u></button></div>
-              </div>
-            ))
-          ) : searchResults.length > 0 ? (
-            searchResults.map((user, index) => (
+          {users?.length > 0 ? (
+            users?.map((user, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
                 <div className="col-1 p-3">{index + 1}</div>
                 <div className="col p-3">{user.full_name}</div>
                 <div className="col p-3">{user.email}</div>
-                <div className="col p-3">{user.perfil}</div>
-                <div className="col p-3"><button className="action-btn px-3 py-1"  onClick={() => handleDetailsUser(user)}>Ver usuario</button></div>
+                <div className="col p-3"> <p className="program mx-auto px-2 py-1">{user.perfil}</p></div>
+                <div className="col p-3"><button className="btn-secundario-s px-3 py-1" onClick={() => handleDetailsUser(user)}><u>Ver usuario</u></button></div>
               </div>
             ))
           ) : (

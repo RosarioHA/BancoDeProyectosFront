@@ -62,7 +62,6 @@ export const useProjectList = () => {
     }, 500); 
   }, [listProjects]);
 
-  console.log(projects,listProjects)
 
   return { projects,  metadata, loading, error, listProjects: debouncedListProjects }; 
 };

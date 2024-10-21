@@ -28,7 +28,8 @@ const GestionUsuarios = React.lazy(() => import('./views/Dashboard/admin/Gestion
 const EdicionUsuario = React.lazy(() => import('./views/Dashboard/admin/EdicionUsuario'));
 const EdicionProfile = React.lazy(() => import('./views/Dashboard/admin/EdicionProfile'));
 const SuccessEdicion = React.lazy(() => import('./views/Dashboard/success/Edicion'));
-
+const EditarProyecto = React.lazy(() => import('./views/Dashboard/gestion_proyectos/edicionProjects/editarProyecto'));
+const EditarInnovadores = React.lazy(()=> import('./views/Dashboard/gestion_proyectos/edicionProjects/editarInnovadores'))
 const createProtectedRoute = (path, Component, allowedProfiles) => (
   <Route
     path={path}
@@ -88,6 +89,8 @@ function App()
             <Route path="envio_exitoso" element={<SuccessViews />} />
             {createProtectedRoute("gestion_usuarios", GestionUsuarios, [ 'Editor' ])}
             <Route path="edicion_exitosa" element={<SuccessEdicion />} />
+            <Route path="editar_proyecto/:slug" element={<EditarProyecto />} />
+            <Route path="edicion_innovadores/:id" element={<EditarInnovadores />} />
           </Route>
         </Routes>
       </Suspense>

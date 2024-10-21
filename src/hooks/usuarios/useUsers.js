@@ -8,6 +8,7 @@ export const useUsers = () =>
   const [ error, setError ] = useState(null);
   const [ metadata, setMetadata ] = useState({ count: 0, next: null, previous: null });
   const [ pagination, setPagination ] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');  
 
   const fetchUsers = useCallback(async () =>
   {
@@ -15,7 +16,7 @@ export const useUsers = () =>
     setError(null); // Reseteamos el error al intentar una nueva carga
     try
     {
-      const response = await apiBancoProyecto.get(`/users/list_admin/?page=${pagination}`);
+      const response = await apiBancoProyecto.get(`/users/list_admin/?page=${pagination}&search=${searchTerm}`);
       const { data } = response;
 
       // Actualizamos los usuarios y la metadata solo si hay resultados
@@ -36,7 +37,7 @@ export const useUsers = () =>
     {
       setLoading(false);
     }
-  }, [ pagination ]);
+  }, [ pagination , searchTerm]);
 
   useEffect(() =>
   {
@@ -71,6 +72,8 @@ export const useUsers = () =>
     updatePage,
     updateUrl,
     metadata,
-    fetchUsers
+    fetchUsers,
+    setSearchTerm, 
+    searchTerm 
   };
 };
