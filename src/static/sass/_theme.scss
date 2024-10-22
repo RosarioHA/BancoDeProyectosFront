@@ -299,6 +299,10 @@ $border-claveunica-color: #000000;
     background-color: $blue-color;
     color: $white-color;
 }
+.btn-secundario-s.active {
+    background-color: $blue-color; // o cualquier otro color que desees
+    color: $white-color;
+}
 .btn-secundario-s:focus{
     background-color: $blue-color;
     color: $white-color;

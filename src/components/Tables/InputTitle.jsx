@@ -23,6 +23,8 @@ export const EditableTitle = ({ initialTitle, onSave }) =>
     setInputValue(title);
   };
 
+  console.log(handleFocus)
+
   const handleBlur = () => {
     setIsEditing(false);
   };
@@ -60,7 +62,7 @@ export const EditableTitle = ({ initialTitle, onSave }) =>
   }, [isEditing]);
 
   return (
-    <div className="mb-4 me-3">
+    <div className="mb-4 me-5 col-12">
       <div className="title-edit-container d-flex flex-row justify-content-between pb-0 ">
         <div className="title-input-container-edit">
           {isEditing ? (

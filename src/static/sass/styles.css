@@ -409,6 +409,11 @@
   color: #FFF;
 }
 
+.btn-secundario-s.active {
+  background-color: #0F69C4;
+  color: #FFF;
+}
+
 .btn-secundario-s:focus {
   background-color: #0F69C4;
   color: #FFF;

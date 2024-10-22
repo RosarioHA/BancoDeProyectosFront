@@ -8,9 +8,10 @@ import { InputSearch } from '../../../../components/Commons/input_search';
 const AdministrarProyectos = () =>
 {
   const { projectsAdmin, metadata, pagination, setPagination, setSearchTerm, searchTerm } = useProjectsListAdmin();
+  const navigate = useNavigate();
   const [ setSearching ] = useState(false);
   const { userData } = useAuth();
-  const navigate = useNavigate();
+  const [isPublicSorted, setIsPublicSorted] = useState(false);
 
   const projectsPerPage = 10;
   const totalPages = Math.ceil(metadata.count / projectsPerPage);
@@ -33,9 +34,23 @@ const AdministrarProyectos = () =>
 
   const handleDetailsProject = (project) =>
   {
+    console.log(project.slug)
     navigate(`/dashboard/editar_proyecto/${project.slug}/`, { state: { project } });
   };
 
+    // Función para manejar el ordenamiento
+    const handleSortByPublic = () => {
+      setIsPublicSorted(!isPublicSorted);
+    };
+  
+    // Ordenar proyectos según 'public'
+    const sortedProjectsAdmin = [...projectsAdmin].sort((a, b) => {
+      if (isPublicSorted) {
+        return (a.public === b.public) ? 0 : a.public ? -1 : 1; // Ascendente
+      } else {
+        return (a.public === b.public) ? 0 : a.public ? 1 : -1; // Descendente
+      }
+    });
   const renderPaginationButtons = () =>
   {
     if (!pagination)
@@ -46,7 +61,7 @@ const AdministrarProyectos = () =>
     return (
       <div className="d-flex flex-column flex-md-row my-5">
         <p className="text-sans-h5 mx-5 text-center">
-          {`${(pagination - 1) * projectsPerPage + 1}- ${Math.min(pagination * projectsPerPage, metadata.count)} de ${metadata.count} usuarios`}
+          {`${(pagination - 1) * projectsPerPage + 1}- ${Math.min(pagination * projectsPerPage, metadata.count)} de ${metadata.count} proyectos`}
         </p>
         <nav className="pagination-container mx-auto mx-md-0">
           <ul className="pagination ms-md-5">
@@ -90,7 +105,7 @@ const AdministrarProyectos = () =>
           </div>
         </div>
       </div>
-      <table className="d-flex row col-12 ms-5 border-top justify-content-evenly">
+      <div className="d-flex row col-12 ms-5 border-top justify-content-evenly">
         <div className="col-1 mt-3 mx-auto">#
         </div>
         <div className="col-2 mt-3 ">
@@ -100,7 +115,7 @@ const AdministrarProyectos = () =>
           <p className="text-sans-b-gray ">Tipo de Proyecto</p>
         </div>
         <div className="col-1 mt-2 mx-auto">
-          <button className="sort-estado-btn d-flex align-items-top">
+        <button className="sort-estado-btn d-flex align-items-top" onClick={handleSortByPublic}>
             <p className="text-sans-b-gray mt-1">Estado</p>
             <i className="material-symbols-rounded ms-2 pt-1">filter_alt</i>
           </button>
@@ -117,24 +132,23 @@ const AdministrarProyectos = () =>
 
 
         {/* Mostrar proyectos segun si se aplico una busqueda o no */}
-        {projectsAdmin?.length > 0 ? (
-          // Si no se aplico ninguna, muestra dataInnovativeProjects completa
-          projectsAdmin?.map((project, index) => (
+        {sortedProjectsAdmin?.length > 0 ? (
+          sortedProjectsAdmin?.map((project, index) => (
             <div key={index} className={`row d-flex justify-content-evenly ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
               <div className="d-flex col-3 mt-3 px-0 ">
-                <span className="ms-1 me-3" >{(pagination - 1) * projectsPerPage + index + 1}</span>
+                <span className="ms-1 me-3">{(pagination - 1) * projectsPerPage + index + 1}</span>
                 <span className="d-flex justify-content-start">{project?.name}</span>
               </div>
               <div className="col-2 mx-1 py-3">{project?.type?.name}</div>
               <div className="col-1 px-1 py-3">
-                <p className={` mx-auto px-1 py-1 ${project.public ? "publicado" : "privado"}`}>
+                <p className={`mx-auto px-1 py-1 ${project.public ? "publicado" : "privado"}`}>
                   {project.public ? "Publicado" : "Privado"}
                 </p>
               </div>
               <div className="col-1 px-1 py-3">
                 <p className="program mx-auto px-1 py-1">{project.program?.sigla || "No seleccionado"}</p>
               </div>
-              <div className="col-2 me-5 py-3 ">
+              <div className="col-2 me-5 py-3">
                 {project.author_email}
               </div>
               <div className="col-1 py-3">
@@ -146,7 +160,6 @@ const AdministrarProyectos = () =>
             </div>
           ))
         ) : (
-          // Si se aplico una busqueda pero no hay proyectos filtrados, muestra un mensaje
           <div>No se encontraron proyectos coincidentes.</div>
         )}
         {metadata.count > projectsPerPage && (
@@ -154,7 +167,7 @@ const AdministrarProyectos = () =>
             {renderPaginationButtons()}
           </div>
         )}
-      </table>
+      </div>
     </>
   );
 };
