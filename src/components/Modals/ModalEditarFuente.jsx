@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ModalBase } from './ModalBase';
-import useApiInnovativeProjects from '../../hooks/useApiInnovativeProjects';
+import useApiInnovativeProjects from '../../hooks/innovativeProject/useApiInnovativeProjects';
 
 const ModalEditarFuente = ({ projectId, webSourceId, updateWebSource }) => {
   const [editedSource, setEditedSource] = useState(webSourceId ? webSourceId.url : ''); 

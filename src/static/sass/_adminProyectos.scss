@@ -5,42 +5,30 @@
     font-size: 14px;
     font-weight: 700;
 }
-.incompleto{
-    @include status-font ($grey-a-color);
-    background-color: $blue-sky;
-    height: fit-content;
-    width: fit-content;
-    border-radius: 4px;
-}
-.pendiente{
-    @include status-font ($white-color);
-    background-color: $alert-danger;
-    height: fit-content;
-    width: fit-content;
-    border-radius: 4px;
-}
-.rechazado{
-    @include status-font ($white-color);
-    background-color: $dark-red;
-    height: fit-content;
-    width: fit-content;
-    border-radius: 4px;
-}
-.privado{
-    @include status-font ($white-color);
+
+.privado {
+    @include status-font($white-color);
     background-color: $grey-c-color;
     height: fit-content;
     width: fit-content;
     border-radius: 4px;
 }
-.publicado{
-    @include status-font ($white-color);
+
+.publicado {
+    @include status-font($white-color);
     background-color: $blue-color;
     height: fit-content;
     width: fit-content;
     border-radius: 4px;
 }
 
+.program {
+    @include status-font($blue-color);
+    background-color: $blue-sky;
+    height: fit-content;
+    width: fit-content;
+    border-radius: 4px;
+}
 // Botones tabla
 .action-btn{
     @include status-font ($grey-a-color);

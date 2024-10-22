@@ -4,7 +4,7 @@ import ModalAgregarFuente from "../../../../components/Modals/ModalAgregarFuente
 import ModalEditarFuente from "../../../../components/Modals/ModalEditarFuente";
 import UploadImg from "../../../../components/Commons/UploadImg";
 import UploadImgsm from "../../../../components/Commons/UploadImgsm";
-import useApiInnovativeProjects from "../../../../hooks/useApiInnovativeProjects";
+import useApiInnovativeProjects from "../../../../hooks/innovativeProject/useApiInnovativeProjects";
 import { UseApiPrograms } from "../../../../hooks/usePrograms";
 import { useAuth } from '../../../../context/AuthContext';
 import useGalleryInnovative from '../../../../hooks/useGalleryInovative';
@@ -42,7 +42,7 @@ const CrearProyectoInnovadorP1 = () =>
   const [ descCharsExceeded, setDescCharsExceeded ] = useState(false);
 
   const [ coverImages, setCoverImages ] = useState([]);
-
+  console.log(coverImages)
 
 
   const handleSaveClick = async (input, setEditing, setShowError, updateFunction, field) =>
@@ -221,57 +221,8 @@ const CrearProyectoInnovadorP1 = () =>
           <p className="text-sans-p">Este proyecto corresponde al programa:</p>
 
           {/* {isEditorOrSuperuser ? ( */}
-            <>
-              <div className="dropdown-selected" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                {updatedProgram ? (
-                  <div>
-                    {dataPrograms.map((program) =>
-                    {
-                      if (program.id === updatedProgram)
-                      {
-                        return (
-                          <div key={program.id}>
-                            {program.name} ({program.sigla})
-                          </div>
-                        );
-                      }
-                      return null;
-                    })}
-                  </div>
-                ) : (
-                  "Seleccione un programa"
-                )}
-                {dropdownOpen ? (
-                  <i className="material-symbols-outlined pr-0">expand_less</i>
-                ) : (
-                  <i className="material-symbols-outlined pr-0">expand_more</i>
-                )}
-              </div>
-              {dropdownOpen && (
-                <ul className="dropdown-list">
-                  {loadingPrograms ? (
-                    <li className="text-sans-h5-blue">Cargando programas...</li>
-                  ) : errorPrograms ? (
-                    <li className="text-sans-h5-blue">Error al cargar programas</li>
-                  ) : (
-                    dataPrograms.map((program) => (
-                      <li key={program.id}>
-                        <button
-                          type="button"
-                          onClick={() => handleProgramSelection(program)}
-                          className={`${program.id === selectedProgram ? 'active-program' : ''} ${program.id === selectedProgramOption ? 'selected-option' : ''} ${program.id !== selectedProgram && program.id !== selectedProgramOption ? 'not-selected-program' : ''}`}
-                        >
-                          {program.name} ({program.sigla})
-                        </button>
-
-                      </li>
-                    ))
-                  )}
-                </ul>
-              )}
-            </>
-          {/* ) : ( */}
-            <div className="dropdown-selected">
+          <>
+            <div className="dropdown-selected" onClick={() => setDropdownOpen(!dropdownOpen)}>
               {updatedProgram ? (
                 <div>
                   {dataPrograms.map((program) =>
@@ -279,18 +230,68 @@ const CrearProyectoInnovadorP1 = () =>
                     if (program.id === updatedProgram)
                     {
                       return (
-                        <button className={`dropdown-program ${selectedProgram ? 'selected-program ' : ''} ${program.id !== selectedProgram && program.id !== selectedProgramOption ? 'not-selected-program' : ''}`}>
+                        <div key={program.id}>
                           {program.name} ({program.sigla})
-                        </button>
+                        </div>
                       );
                     }
                     return null;
                   })}
                 </div>
               ) : (
-                userData.program.name
+                "Seleccione un programa"
+              )}
+              {dropdownOpen ? (
+                <i className="material-symbols-outlined pr-0">expand_less</i>
+              ) : (
+                <i className="material-symbols-outlined pr-0">expand_more</i>
               )}
             </div>
+            {dropdownOpen && (
+              <ul className="dropdown-list">
+                {loadingPrograms ? (
+                  <li className="text-sans-h5-blue">Cargando programas...</li>
+                ) : errorPrograms ? (
+                  <li className="text-sans-h5-blue">Error al cargar programas</li>
+                ) : (
+                  dataPrograms.map((program) => (
+                    <li key={program.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleProgramSelection(program)}
+                        className={`${program.id === selectedProgram ? 'active-program' : ''} ${program.id === selectedProgramOption ? 'selected-option' : ''} ${program.id !== selectedProgram && program.id !== selectedProgramOption ? 'not-selected-program' : ''}`}
+                      >
+                        {program.name} ({program.sigla})
+                      </button>
+
+                    </li>
+                  ))
+                )}
+              </ul>
+            )}
+          </>
+          {/* ) : ( */}
+          <div className="dropdown-selected">
+            {updatedProgram ? (
+              <div>
+                {dataPrograms.map((program) =>
+                {
+                  if (program.id === updatedProgram)
+                  {
+                    return (
+                      // eslint-disable-next-line react/jsx-key
+                      <button className={`dropdown-program ${selectedProgram ? 'selected-program ' : ''} ${program.id !== selectedProgram && program.id !== selectedProgramOption ? 'not-selected-program' : ''}`}>
+                        {program.name} ({program.sigla})
+                      </button>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            ) : (
+              userData.program
+            )}
+          </div>
           {/* )} */}
         </div>
       </div>

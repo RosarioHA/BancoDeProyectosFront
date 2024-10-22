@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ModalBase } from "./ModalBase";
-import useApiInnovativeProjects from "../../hooks/useApiInnovativeProjects";
+import useApiInnovativeProjects from "../../hooks/innovativeProject/useApiInnovativeProjects";
 
 const ModalAgregarFuente = ({ projectId }) => {
   const [newWebSource, setNewWebSource] = useState("");
