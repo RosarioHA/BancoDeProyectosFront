@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import { useAuth } from '../../../../context/AuthContext';
 import { UseApiPrograms } from '../../../../hooks/usePrograms';
-import useApiInnovativeProjects from '../../../../hooks/useApiInnovativeProjects';
+import useApiInnovativeProjects from '../../../../hooks/innovativeProject/useApiInnovativeProjects';
 
 const CrearProyectos = () =>
 {

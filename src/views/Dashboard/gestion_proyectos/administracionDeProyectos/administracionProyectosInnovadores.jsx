@@ -43,7 +43,7 @@ const AdministrarProyectosInnovadores = () =>
     return (
       <div className="d-flex flex-column flex-md-row my-5">
         <p className="text-sans-h5 mx-5 text-center">
-          {`${(pagination - 1) * projectsPerPage + 1}- ${Math.min(pagination * projectsPerPage, metadata.count)} de ${metadata.count} usuarios`}
+          {`${(pagination - 1) * projectsPerPage + 1}- ${Math.min(pagination * projectsPerPage, metadata.count)} de ${metadata.count} `}
         </p>
         <nav className="pagination-container mx-auto mx-md-0">
           <ul className="pagination ms-md-5">
@@ -88,7 +88,7 @@ const AdministrarProyectosInnovadores = () =>
           </div>
         </div>
       </div>
-      <table className="d-flex row col-12 ms-5 border-top justify-content-evenly">
+      <div className="d-flex row col-12 ms-5 border-top justify-content-evenly">
         <div className="col-1 mt-3">#</div>
         <div className="col-2 mt-3">
           <p className="text-sans-b-gray ms-3">Proyecto</p>
@@ -142,7 +142,7 @@ const AdministrarProyectosInnovadores = () =>
             {renderPaginationButtons()}
           </div>
         )}
-      </table>
+      </div>
     </>
   );
 };
