@@ -48,11 +48,11 @@ const GestionUsuarios = () =>
     }
 
     return (
-      <div className="d-flex flex-column flex-md-row my-5">
+      <div className="d-flex flex-column flex-md-row my-5 ">
         <p className="text-sans-h5 mx-5 text-center">
           {`${(pagination - 1) * usersPerPage + 1}- ${Math.min(pagination * usersPerPage, metadata.count)} de ${metadata.count} usuarios`}
         </p>
-        <nav className="pagination-container mx-auto mx-md-0">
+        <nav className="pagination-container mx-2 mx-md-0 col-sm-10">
           <ul className="pagination ms-md-5">
             <li className={`page-item ${pagination === 1 ? 'disabled' : ''}`}>
               <button className="custom-pagination-btn mx-3" onClick={() => handlePageChange(pagination - 1)} disabled={pagination === 1}>
@@ -124,12 +124,12 @@ const GestionUsuarios = () =>
             <div>No se encontraron usuario.</div>
           )}
         </div>
+      </div>
         {metadata.count > usersPerPage && (
-          <div className="pagination-container d-flex justify-content-center">
+          <div className="d-flex justify-content-center  ms-2">
             {renderPaginationButtons()}
           </div>
         )}
-      </div>
     </div>
   );
 }
