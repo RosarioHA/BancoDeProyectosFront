@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import useApiInnovativeProjects from '../../../hooks/useApiInnovativeProjects';
+import useApiInnovativeProjects from '../../../hooks/innovativeProject/useApiInnovativeProjects';
 import useFilterOptions from '../../../hooks/useFilterProjects';
 import useApiGoodPractices from '../../../hooks/useApiGoodPractices';
 import Carrusel from '../../../components/Commons/carrusel';

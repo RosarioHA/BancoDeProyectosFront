@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { apiBancoProyecto } from '../services/bancoproyecto.api';
 
 export const AuthContext = createContext();
 
@@ -27,7 +28,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     const token = localStorage.getItem('userToken');
-    const refreshToken = localStorage.getItem('refreshToken'); // Asegúrate de obtener el refreshToken
+    const refreshToken = localStorage.getItem('refreshToken'); 
+    console.log(token)// Asegúrate de obtener el refreshToken
 
     try {
       const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
@@ -71,6 +73,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   return useContext(AuthContext);
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiBancoProyecto } from '../services/bancoproyecto.api.js';
+import { apiBancoProyecto } from '../../services/bancoproyecto.api.js';
 
 
 const useApiInnovativeProjects = () =>
@@ -19,22 +19,6 @@ const useApiInnovativeProjects = () =>
     } catch (error) {
       setErrorInnovativeProjects(
         error.response ? error.response.data : error.message
-      );
-    } finally {
-      setLoadingInnovativeProjects(false);
-    }
-  };
-
-
-  const InnovativeAdminProjectsList = async () => {
-    setLoadingInnovativeProjects(true);
-    try {
-      const response = await apiBancoProyecto.get('innovative_projects/v1/list_admin/');
-      setDataInnovativeProjects(response.data);
-      setErrorInnovativeProjects(null);
-    } catch (error) {
-      setErrorInnovativeProjects(
-        error.response && error.response.data ? error.response.data : error.message
       );
     } finally {
       setLoadingInnovativeProjects(false);
@@ -278,7 +262,6 @@ const useApiInnovativeProjects = () =>
     createInnovativeProject,
     getInnovativeProjectById,
     updateInnovativeProject,
-    InnovativeAdminProjectsList,
     deleteInnovativeProject,
     createInnovativeGalleryImage,
     deleteInnovativeGalleryImage,
