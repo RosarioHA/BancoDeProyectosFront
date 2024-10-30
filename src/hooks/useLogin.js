@@ -47,11 +47,16 @@ export const useLogin = () => {
 
             if (response.data && response.data.access_token) {
                 const { access_token, refresh_token, expires_in } = response.data;
+
+                console.log("Refresh Token recibido en handleauthentication:", refresh_token);
+
                 localStorage.setItem('userToken', access_token);
                 localStorage.setItem('userData', JSON.stringify(response.data.user));
                 localStorage.setItem('refreshToken', refresh_token);
                 localStorage.setItem('tokenExpiry', Date.now() + expires_in * 1000);
                 localStorage.setItem('authMethod', 'keycloak');
+
+                console.log("Refresh Token almacenado en handleauthentication:", localStorage.getItem('refreshToken'));
 
                 setData(response.data);
                 globalLogin(access_token, refresh_token, response.data.user);
@@ -66,45 +71,9 @@ export const useLogin = () => {
         }
     };
 
-    const isTokenExpired = () => {
-        const expiry = localStorage.getItem('tokenExpiry');
-        return !expiry || Date.now() > parseInt(expiry);
-    };
-
-    const refreshAccessToken = async () => {
-        setLoading(true);
-        try {
-            if (isTokenExpired()) {
-                const refreshToken = localStorage.getItem('refreshToken');
-                if (!refreshToken) {
-                    setError("Login required.");
-                    return;
-                }
-
-                const response = await apiBancoProyecto.post('/refresh-token/', { refresh_token: refreshToken });
-                if (response.data && response.data.access_token) {
-                    const { access_token, refresh_token, expires_in } = response.data;    
-                    localStorage.setItem('userToken', access_token);
-                    localStorage.setItem('tokenExpiry', Date.now() + expires_in * 1000);
-                    if (refresh_token) {
-                        localStorage.setItem('refreshToken', refresh_token);
-                    }
-                    globalLogin(access_token, refresh_token, userData);
-                } else {
-                    throw new Error('Failed to refresh access token.');
-                }
-            }
-        } catch (error) {
-            console.error('Error refreshing access token:', error);
-            setError(`Error refreshing access token: ${error.response?.data?.detail || error.message || 'Unknown error'}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const esFlujoKeycloak = () => {
+      const esFlujoKeycloak = () => {
         return localStorage.getItem('isKeycloak') === 'true';
     };
 
-    return { data, loading, error, loginWithKeycloak, handleAuthentication, refreshAccessToken, esFlujoKeycloak };
+    return { data, loading, error, loginWithKeycloak, handleAuthentication, esFlujoKeycloak };
 };

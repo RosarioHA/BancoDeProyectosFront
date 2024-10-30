@@ -1,11 +1,40 @@
 // import Notification from "../../../components/Commons/Notification";
-import { useAuth } from "../../../context/AuthContext";
+
 // import useApiAdminNotificacions from "../../../hooks/useApiAdminNotificacions";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedRequest } from "../../../hooks/useAuthenticatedRequest"; 
 
-const HomeDashboard = () =>
-{
+const HomeDashboard = () => {
+  const { isLoggedIn, userData } = useAuth();  // Accedemos al estado de autenticación
+  const { makeAuthenticatedRequest } = useAuthenticatedRequest();  // Accedemos al hook para solicitudes autenticadas
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const { isLoggedIn, userData, } = useAuth();
+  const fetchAdminUsers = async () => {
+    if (!isLoggedIn) {
+      console.log("Usuario no autenticado. No se puede cargar la lista de administradores.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await makeAuthenticatedRequest('/users/list_admin/');
+      setUsers(response.data);
+    } catch (error) {
+      setError("Error al cargar la lista de usuarios");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAdminUsers();  // Ejecutar la función solo si el usuario está autenticado
+  }, [isLoggedIn]);
+
+
   // const state = useApiAdminNotificacions();
 
   // const { data: dataInnovativeProjectNotificacions, 
