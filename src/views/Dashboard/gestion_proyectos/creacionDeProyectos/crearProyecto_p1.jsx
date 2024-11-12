@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadImg from "../../../../components/Commons/UploadImg";
 import UploadImgsm from "../../../../components/Commons/UploadImgsm";
-import ModalDetalles from "../../../../components/Modals/ModalDetalles";
+import {ModalDetalles} from "../../../../components/Modals/ModalDetalles";
 import DocumentsAditionals from "../../../../components/Commons/DocumentsAditionals";
 import { DocumentsProjects } from "../../../../components/Tables/DocumentsProjects";
 import { EditableTitle } from "../../../../components/Tables/InputTitle";

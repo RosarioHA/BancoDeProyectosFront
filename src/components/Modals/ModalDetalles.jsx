@@ -1,31 +1,110 @@
-import { useRef, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApiRegionComuna } from '../../hooks/useApiRegionComuna';
 import { useApiTypeProject } from '../../hooks/useTypeProject';
 import { UseApiPrograms } from '../../hooks/usePrograms';
+import { useApiTagProject } from '../../hooks/useTag'
+import { useApiYears } from '../../hooks/useYears';
 import ModalBase from './ModalBase';
-import YearPicker from '../Commons/YearPicker';
+import { YearPicker } from '../Commons/YearPicker';
 
-
-const ModalDetalles = ({ setDetalles }) =>
+export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
 {
   const { data, loading, error } = useApiRegionComuna();
   const { dataType, typeLoading, typeError } = useApiTypeProject();
   const { dataPrograms, loadingPrograms, errorPrograms } = UseApiPrograms();
-  const [ selectedRegion, setSelectedRegion ] = useState(null);
+  const { dataTag } = useApiTagProject();
+  const { dataYears, addYear } = useApiYears();
+  // Estados para los inputs, inicializados con los valores preseleccionados si existen
+  const [ selectedPrograma, setSelectedPrograma ] = useState(initialDetails.programa || '');
+  const [ selectedTipoProyecto, setSelectedTipoProyecto ] = useState(initialDetails.tipoProyecto || '');
+  const [ selectedTag, setSelectedTag ] = useState(initialDetails.tag || '');
+  const [ selectedRegion, setSelectedRegion ] = useState(initialDetails.region || '');
   const [ selectedRegionID, setSelectedRegionID ] = useState(null);
-  const [ selectedComuna, setSelectedComuna ] = useState(null);
-  const [ selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
-
-  const programaNameRef = useRef(null);
-  const tipoProyectoRef = useRef(null);
-  const regionRef = useRef(null);
-  const comunaRef = useRef(null);
-  const idSubereRef = useRef(null);
-
-  const handleYearChange = (year) =>
+  const [ selectedComuna, setSelectedComuna ] = useState(initialDetails.comuna || ''); // Muestra el string de la comuna
+  const [ selectedYear, setSelectedYear ] = useState(initialDetails.year || '');
+  const [ idSubdere, setIdSubdere ] = useState(initialDetails.idSubdere || '');
+  // Reutilizable: Función para buscar un valor por nombre y establecer su ID en el estado correspondiente
+  const findAndSetByName = useCallback((name, dataList, setter, key = 'name') =>
   {
-    setSelectedYear(year);
-  };
+    if (name && dataList)
+    {
+      const item = dataList.find(dataItem => dataItem[ key ] === name);
+      if (item)
+      {
+        setter(item.id);
+      }
+    }
+  }, []);
+  useEffect(() =>
+  {
+    if (initialDetails.tag)
+    {
+      setSelectedTag(initialDetails.tag);
+    }
+  }, [ initialDetails.tag ]);
+
+
+  // Efecto para seleccionar la región y la comuna correspondiente
+  useEffect(() =>
+  {
+    if (data && initialDetails.region)
+    {
+      const region = data.find(r => r.region === initialDetails.region);
+      if (region)
+      {
+        setSelectedRegionID(region.id);
+        if (initialDetails.comuna)
+        {
+          const comuna = region.comunas?.find(c => c.comuna === initialDetails.comuna);
+          if (comuna) setSelectedComuna(comuna.comuna);
+        }
+      }
+    }
+  }, [ data, initialDetails.region, initialDetails.comuna ]);
+
+  // Efectos reutilizando `findAndSetByName`
+  useEffect(() =>
+  {
+    findAndSetByName(initialDetails.programa, dataPrograms, setSelectedPrograma);
+  }, [ dataPrograms, initialDetails.programa, findAndSetByName ]);
+
+  useEffect(() =>
+  {
+    findAndSetByName(initialDetails.tipoProyecto, dataType, setSelectedTipoProyecto);
+  }, [ dataType, initialDetails.tipoProyecto, findAndSetByName ]);
+
+  useEffect(() =>
+  {
+    findAndSetByName(initialDetails.tags, dataTag, setSelectedTag);
+  }, [ dataTag, initialDetails.tags, findAndSetByName ]);
+
+
+  useEffect(() =>
+  {
+    if (initialDetails.tag && dataTag)
+    {
+      const tagItem = dataTag.find(tag => tag.prioritized_tag === initialDetails.tag);
+      if (tagItem)
+      {
+        setSelectedTag(tagItem.id);
+      }
+    }
+  }, [ dataTag, initialDetails.tag ]);
+
+
+
+  useEffect(() =>
+  {
+    if (initialDetails.year && dataYears)
+    {
+      const initialYearData = dataYears.find(y => y.number === initialDetails.year.toString());
+      if (initialYearData)
+      {
+        setSelectedYear(initialYearData.id);
+      }
+    }
+  }, [ dataYears, initialDetails.year ]);
+  // Handlers de cambio
 
   const handleRegionChange = (e) =>
   {
@@ -34,40 +113,81 @@ const ModalDetalles = ({ setDetalles }) =>
     setSelectedRegionID(e.target.value);
   };
 
+
   const handleComunaChange = (e) =>
   {
-    setSelectedComuna(e.target[ e.target.selectedIndex ].text);
+    setSelectedComuna(e.target.value);
+  };
+
+
+  // Función para manejar el cambio de año
+  const handleYearChange = async (year) =>
+  {
+    if (!year)
+    {
+      setSelectedYear(initialDetails.year);
+      return;
+    }
+
+    const yearData = dataYears.find(y => y.number === year.toString());
+    if (yearData)
+    {
+      setSelectedYear(yearData.id);
+    } else
+    {
+      try
+      {
+        const newYear = await addYear(year);
+        if (newYear && newYear.id)
+        {
+          setSelectedYear(newYear.id);
+        }
+      } catch (error)
+      {
+        console.error("Error creando el año:", error);
+      }
+    }
   };
 
   const handleGuardar = () =>
   {
-    const programa = programaNameRef.current;
-    const tipoProyectoID = tipoProyectoRef.current ? tipoProyectoRef.current.value : "";
-    const tipoProyectoName = dataType.find(type => type.id === parseInt(tipoProyectoID))?.name;
-    const idSubdere = idSubereRef.current ? idSubereRef.current.value : "";
-    setDetalles({
-      programa,
-      tipoProyecto: tipoProyectoName,
+    const tipoProyectoid = dataType.find(type => type.id === parseInt(selectedTipoProyecto))?.id;
+    const comunaID = data.find(region => region.id === parseInt(selectedRegionID))
+      ?.comunas.find(comuna => comuna.comuna === selectedComuna)?.id;
+    const newDetails = {
+      program: selectedPrograma,
+      type: tipoProyectoid,
       region: selectedRegion,
-      comuna: selectedComuna,
-      year: `${selectedYear}`,
-      idSubdere,
-    });
+      comuna: comunaID,
+      year: selectedYear,
+      id_subdere: idSubdere,
+      prioritized_tag: selectedTag,
+    };
 
+    // Llamar a la función de callback para pasar los nuevos detalles al componente padre
+    onGuardar(newDetails);
   };
+
+
   return (
     <>
-      <ModalBase title="Detalles del Proyecto" btnName="Editar" btnIcon="edit" modalID="modalDetalles">
-        <div className="modal-detalle d-flex align-items-center" >
+      <ModalBase
+        classStyle="btn-secundario-s"
+        titleStyle="text-sans-h4"
+        title="Detalles del Proyecto"
+        btnName="Editar"
+        btnIcon="edit"
+        modalID="modalDetalles">
+        <div className="modal-detalle d-flex align-items-center">
 
           <form className="col">
+            {/* Programa */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">Elige el programa (Obligatorio)</label>
+              <label className="text-sans-p px-3">Elige el programa</label>
               <select
                 className="custom-select px-3"
-                id=""
-                ref={programaNameRef}
-                onChange={(e) => programaNameRef.current = e.target.options[ e.target.selectedIndex ].text}
+                value={selectedPrograma || ''}
+                onChange={(e) => setSelectedPrograma(e.target.value)}
               >
                 <option value="">Elige una opción</option>
                 {!loadingPrograms && !errorPrograms && dataPrograms?.map(program => (
@@ -76,22 +196,42 @@ const ModalDetalles = ({ setDetalles }) =>
               </select>
             </div>
 
-            <div className="col-12  d-flex flex-column my-4 ">
-              <label className="text-sans-p px-3">Elige el tipo de proyecto (Obligatorio)</label>
-              <select className="custom-select px-3" id="" ref={tipoProyectoRef}>
+            {/* Tipo de Proyecto */}
+            <div className="col-12 d-flex flex-column my-4">
+              <label className="text-sans-p px-3">Elige el tipo de proyecto</label>
+              <select
+                className="custom-select px-3"
+                value={selectedTipoProyecto}
+                onChange={(e) => setSelectedTipoProyecto(e.target.value)}
+              >
                 <option value="">Elige una opción</option>
                 {!typeLoading && !typeError && dataType?.map(type => (
                   <option key={type.id} value={type.id}>{type.name}</option>
                 ))}
               </select>
             </div>
-
+            {/* Tag Prioridad */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">¿En qué región está el proyecto? (Obligatorio)</label>
+              <label className="text-sans-p px-3">Elige un Tag de priorización</label>
               <select
                 className="custom-select px-3"
+                value={selectedTag || ''}
+                onChange={(e) => setSelectedTag(e.target.value)} // Update state with selected tag ID
+              >
+                <option value="">Elige una opción</option>
+                {dataTag?.map(tag => (
+                  <option key={tag.id} value={tag.id}>{tag.prioritized_tag}</option>
+                ))}
+              </select>
+            </div>
+            {/* Región */}
+            <div className="col-12 d-flex flex-column my-4">
+              <label className="text-sans-p px-3">¿En qué región está el proyecto?</label>
+              <select
+                className="custom-select px-3"
+                value={selectedRegionID || ''}
                 onChange={handleRegionChange}
-                ref={regionRef}>
+              >
                 <option value="">Elige una opción</option>
                 {!loading && !error && data?.map(region => (
                   <option key={region.id} value={region.id}>{region.region}</option>
@@ -99,34 +239,44 @@ const ModalDetalles = ({ setDetalles }) =>
               </select>
             </div>
 
+            {/* Comuna */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">¿En qué comuna? (Obligatorio)</label>
+              <label className="text-sans-p px-3">¿En qué comuna?</label>
               <select
                 className="custom-select px-3"
+                value={selectedComuna || ''}
                 onChange={handleComunaChange}
-                ref={comunaRef}>
+              >
                 <option value="">Elige una opción</option>
-                {!loading && !error && selectedRegionID && data.find(region => region.id === parseInt(selectedRegionID))?.comunas.map(comuna => (
-                  <option key={comuna.id} value={comuna.id}>{comuna.comuna}</option>
-                ))}
+                {!loading && !error && selectedRegionID &&
+                  data.find(region => region.id === parseInt(selectedRegionID))?.comunas.map(comuna => (
+                    <option key={comuna.id} value={comuna.comuna}>{comuna.comuna}</option>
+                  ))}
               </select>
             </div>
-
-
+            {/* Año */}
             <div className="col-12 d-flex flex-column my-4">
-              <YearPicker onYearChange={handleYearChange} />
+              <YearPicker
+                onYearChange={handleYearChange}
+                selectedYear={initialDetails.year}
+              />
             </div>
+
+            {/* ID SUBDERE */}
             <div className="d-flex flex-column input-container my-4">
-              <label className="text-sans-p input-label ms-3 ms-sm-0" htmlFor="organization">ID SUBDERE (Obligatorio)</label>
+              <label className="text-sans-p input-label ms-3 ms-sm-0" htmlFor="idSubdere">ID SUBDERE </label>
               <input
                 className="input-s px-3"
                 type="text"
+                value={idSubdere}
+                onChange={(e) => setIdSubdere(e.target.value)}
                 placeholder="Ingresa el ID SUBDERE del Proyecto"
-                ref={idSubereRef}
               />
             </div>
           </form>
-          <div className=" col-12 d-flex border-top justify-content-between">
+
+
+          <div className="col-10 d-flex justify-content-between">
             <button className="btn-borderless d-flex justify-content-between my-5" data-bs-dismiss="modal" aria-label="Close">
               <i className="material-symbols-rounded ms-2 fs-2 mt-1">keyboard_arrow_left</i>
               <p className="text-sans-p-blue text-decoration-underline mb-0 py-1 px-2">Volver a la solicitud</p>
@@ -136,15 +286,12 @@ const ModalDetalles = ({ setDetalles }) =>
               onClick={handleGuardar}
               data-bs-dismiss="modal"
             >
-              <p className="text-sans-p-white text-decoration-underline">Guardar</p>
+              <p className="text-decoration-underline">Guardar</p>
               <i className="material-symbols-rounded ms-2 pt-1">save</i>
             </button>
           </div>
         </div>
       </ModalBase>
     </>
-
-  )
-}
-
-export default ModalDetalles
+  );
+};

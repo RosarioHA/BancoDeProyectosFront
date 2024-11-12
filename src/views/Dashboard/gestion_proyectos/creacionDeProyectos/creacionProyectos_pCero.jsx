@@ -80,7 +80,7 @@ const CrearProyectos = () =>
 
     if (selectedOption === 'bancoProyectos')
     {
-      navigate('/dashboard/crearproyecto_paso1');
+      navigate('/dashboard/crear_proyecto_paso1');
       return;
     }
 

@@ -1,144 +1,127 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
-export default function UploadImg({ projectId , getPortada , updatePortada })
-{
-
-  const [ imageURL, setImageURL ] = useState(null);
-  const [ showModal, setShowModal ] = useState(false);
-  const [ uploadProgress, setUploadProgress ] = useState(0);
+export default function UploadImg({ img, onSave,  tag }) {
+  const [showModal, setShowModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const modalRef = useRef(null);
-  const baseApiUrl = import.meta.env.VITE_REACT_APP_API_URL;
 
-  const handleImageChange = async (e) =>
-  {
-    const file = e.target.files[ 0 ];
-    if (file)
-    {
-      const result = await updatePortada(projectId, file, (progress) =>
-      {
-        setUploadProgress(progress);
-      });
-      if (result.success)
-      {
-        setImageURL(result.data.portada);
-        setUploadProgress(0);
-      } else
-      {
-        console.error(result.error);
-      }
-    }
-  };
-
-  const handleDelete = async () =>
-  {
-    const response = await updatePortada(projectId, null);
-    if (response.success)
-    {
-      setImageURL(null);
-    } else
-    {
-      console.error("Error al eliminar la imagen:", response.error);
-    }
-  };
-
-  const getFullImageUrl = (relativePath) =>
-  {
-    if (relativePath.startsWith('http'))
-    {
-      return relativePath;
-    }
-    return `${baseApiUrl}/${relativePath}`;
-  };
-
-
-  const onDragOver = (e) =>
-  {
-    e.preventDefault();
-  };
-
-
-
-
-  const openModal = () => 
-  {
+  const openModal = (editMode = false) => {
+    setIsEditMode(editMode);
     setShowModal(true);
   };
 
-  const closeModal = () =>
-  {
+  const closeModal = () => {
     setShowModal(false);
+    setSelectedFile(null);
+    setPreview(null);
+    setIsEditMode(false);
   };
 
-  const handleOutsideClick = (e) =>
-  {
-    if (e.target === modalRef.current)
-    {
+  const handleOutsideClick = (e) => {
+    if (e.target === modalRef.current) {
       closeModal();
     }
   };
 
-  useEffect(() =>
-  {
-    const fetchProjectImage = async () =>
-    {
-      const projectData = await getPortada(projectId);
-      if (projectData && projectData.portada)
-      {
-        setImageURL(projectData.portada);
-      }
-    };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
 
-    fetchProjectImage();
-  }, [ projectId, getPortada ]);
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append(tag, selectedFile);
+
+    try {
+      await onSave(formData);
+      setSelectedFile(null);
+      setPreview(null);
+      closeModal();
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    const formData = new FormData();
+    formData.append(tag, ''); // Sending an empty field to remove the image
+    await onSave(formData);
+  };
   return (
-    <div
-      className="img-section my-3"
-      onDrop={handleImageChange}
-      onDragOver={onDragOver}
-    >
-      {!imageURL ? (
-        <label htmlFor="formFile">
-          <div className="d-flex  flex-column align-items-center">
-            <i className="material-symbols-rounded">add_a_photo</i>
-            <p className="form-label">Agregar foto</p>
-          </div>
-          <input
-            className="text-sans-p"
-            style={{ display: 'none' }}
-            type="file"
-            id="formFile"
-            onChange={handleImageChange}
-          />
-          {uploadProgress > 0 && (
-            <div className="progress" role="progressbar" aria-valuenow={uploadProgress} aria-valuemin="0" aria-valuemax="100">
-              <div className="progress-bar progress-bar-striped progress-bar-animated" style={{ width: `${uploadProgress}%` }}></div>
+    <div className="img-section my-3">
+      {img ? (
+        <div
+          className="image-container"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <img className="upload-image" src={img} alt={tag} />
+          
+          {/* Show overlay when hovering */}
+          {isHovered && (
+            <div className="overlay">
+              <button
+                className="btn-borderless-white d-flex align-content-center mx-3 px-3"
+                onClick={() => openModal(false)}
+              >
+                <i className="material-symbols-outlined mx-1">visibility</i>Ver
+              </button>
+              <button
+                className="btn-borderless-white d-flex align-content-center mx-3 px-3"
+                onClick={() => openModal(true)}
+              >
+                <i className="material-symbols-outlined mx-1">edit</i>Editar
+              </button>
+              <button
+                className="btn-borderless-white d-flex align-content-center mx-3 px-3"
+                onClick={handleDelete}
+              >
+                <i className="material-symbols-outlined mx-1">delete</i>Eliminar
+              </button>
             </div>
           )}
-        </label>
+        </div>
       ) : (
-        <div className="image-container">
-          <img className="upload-image" src={getFullImageUrl(imageURL)} alt="Portada" />
-          <div className="overlay">
-            <button className="btn-borderless-white  d-flex align-content-center mx-3 px-3" onClick={openModal}>
-              <i className="material-symbols-outlined mx-1">visibility</i>Ver
-            </button>
-            <button className="btn-borderless-white d-flex align-content-center mx-3 px-3" onClick={handleDelete}>
-              <i className="material-symbols-outlined mx-1">delete</i>Borrar
-            </button>
-          </div>
+        <div>
+          <button
+            className="btn-borderless-white d-flex  align-content-center mx-3 px-3"
+            onClick={() => openModal(true)}
+          >
+            <i className="material-symbols-outlined mx-1 text-sans-h4">add</i><span className="text-sans-h4">Agregar Imagen</span>
+          </button>
         </div>
       )}
 
       {showModal && (
         <div ref={modalRef} className="modal-uploadImg" onClick={handleOutsideClick}>
           <div className="modalImg-content">
-            <button type="button" onClick={closeModal} className="btn-close btn-close-img" data-bs-dismiss="modal" aria-label="Close"></button>
-            <img src={getFullImageUrl(imageURL)} alt="Modal view" className="img-modal" />
+            <button type="button" onClick={closeModal} className="btn-close btn-close-img" aria-label="Close"></button>
+            {preview ? (
+              <img src={preview} alt="Preview" className="img-modal" />
+            ) : (
+              img && <img src={img} alt="Modal view" className="img-modal" />
+            )}
+
+            {isEditMode && (
+              <div className="modal-actions my-auto">
+                <input type="file" onChange={handleFileChange} accept="image/*" className="file-input my-3 mx-5" />
+                <button className="btn-principal-s my-2 mx-3 d-flex align-content-center" onClick={handleUpload}>
+                  <i className="material-symbols-outlined mx-2">save</i><u>Guardar Imagen</u>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
     </div>
   );
 }
-

@@ -1,128 +1,87 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
-function UploadImgsm({ projectId, useGalleryHook })
-{
-  const { gallery, setGallery, refreshGallery, addImageToGallery, deleteImageInGallery, loading, uploadPercentage } = useGalleryHook(projectId);
-  const [ showModal, setShowModal ] = useState(false);
-  const [ currentImg, setCurrentImg ] = useState('');
+function UploadImgsm({ imgs = [], add, delete: deleteImage }) {
+  const [showModal, setShowModal] = useState(false);
+  const [currentImg, setCurrentImg] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(''); // Estado para el mensaje de alerta
   const modalRef = useRef(null);
-  const baseApiUrl = import.meta.env.VITE_REACT_APP_API_URL;
 
-
-  useEffect(() =>
-  {
-    setGallery(gallery);
-  }, [ gallery, setGallery ]);
-
-  const openModal = (imageUrl) =>
-  {
+  const openModal = (imageUrl) => {
     setCurrentImg(imageUrl);
     setShowModal(true);
   };
 
-  const closeModal = () =>
-  {
+  const closeModal = () => {
     setCurrentImg(null);
     setShowModal(false);
   };
 
-  const handleOutsideClick = (e) =>
-  {
-    if (e.target === modalRef.current)
-    {
+  const handleOutsideClick = (e) => {
+    if (e.target === modalRef.current) {
       closeModal();
     }
   };
 
-  const handleImageChange = async (files) =>
-  {
-    if (gallery.length + files.length > 10)
-    {
-      alert('Has alcanzado el límite de 10 imágenes.');
+  const handleImageChange = async (files) => {
+    if (imgs.length + files.length > 10) {
+      setAlertMessage('Has alcanzado el límite de 10 imágenes.'); 
       return;
     }
 
-    for (let file of files)
-    {
-      const formData = new FormData();
-      formData.append('image', file);
+    setLoading(true);
+    for (let file of files) {
+      try {
+        await add(file);
+      } catch (error) {
+        setAlertMessage('Error al cargar la imagen: ' + error.message); 
+      }
+    }
+    setLoading(false);
+  };
 
-      try
-      {
-        const result = await addImageToGallery(formData);
-        console.log("Respuesta del servidor:", result);
-
-        if (!result && !result.url)
-        {
-          await refreshGallery();
-        }
-      } catch (error)
-      {
-        alert('Error al cargar la imagen: ' + error.message);
+  const handleDelete = async (imageId) => {
+    if (imageId) {
+      try {
+        await deleteImage(imageId);
+      } catch (error) {
+        setAlertMessage('Error al eliminar la imagen: ' + error.message); 
       }
     }
   };
-
-  const handleDelete = async (imageId) =>
-  {
-    console.log("Eliminando imagen con ID:", imageId);
-    if (imageId)
-    {
-      try
-      {
-        const result = await deleteImageInGallery(imageId);
-        if (result)
-        {
-          alert('Imagen eliminada con éxito.');
-        } else
-        {
-          alert('Error al eliminar la imagen. Por favor, inténtalo de nuevo.');
-        }
-      } catch (error)
-      {
-        alert('Error al eliminar la imagen: ' + error.message);
-      }
-    }
-  };
-
-
 
   return (
     <div className="my-5">
       <h3 className="text-sans-h3">Imágenes para la galería</h3>
       <p className="text-sans-h5">(Máximo 10 imágenes)</p>
 
-      <div className="grid-container">
-        {gallery.map((image, index) => (
+      <div className="grid-container mx-5">
+        {imgs?.map((image, index) => (
           <div key={index} className="image-container-fixed my-2">
-            <>
-              <img
-                className="upload-image-fixed"
-                src={`${baseApiUrl}/${image.image}`}
-                alt={image.image}
-              />
-              <div className="overlay-sm">
-                <button
-                  className="btn-borderless-white d-flex align-content-center mx-3 my-3 px-3"
-                  onClick={() => openModal(`${baseApiUrl}/${image.image}`)}
-                >
-                  <i className="material-symbols-outlined mx-1">visibility</i>Ver
-                </button>
-                <button
-                  className="btn-borderless-white d-flex align-content-center mx-3 mb-4 pb-3 px-3"
-                  onClick={() => handleDelete(image.id)}
-                >
-                  <i className="material-symbols-outlined mx-1">delete</i>Borrar
-                </button>
-              </div>
-            </>
+            <img
+              className="upload-image-fixed"
+              src={image.image}
+              alt={image.image}
+            />
+            <div className="overlay-sm">
+              <button
+                className="btn-borderless-white d-flex align-content-center mx-3 my-3 px-3"
+                onClick={() => openModal(image.image)}
+              >
+                <i className="material-symbols-outlined mx-1">visibility</i>Ver
+              </button>
+              <button
+                className="btn-borderless-white d-flex align-content-center mx-3 mb-4 pb-3 px-3"
+                onClick={() => handleDelete(image.id)}
+              >
+                <i className="material-symbols-outlined mx-1">delete</i>Borrar
+              </button>
+            </div>
           </div>
         ))}
 
-
-        {gallery.length < 10 && (
-          <div className="img-section-s" onDrop={(e) =>
-          {
+        {imgs.length < 10 && (
+          <div className="img-section-s" onDrop={(e) => {
             e.preventDefault();
             handleImageChange(e.dataTransfer ? e.dataTransfer.files : e.target.files);
           }} onDragOver={(e) => e.preventDefault()}>
@@ -145,13 +104,14 @@ function UploadImgsm({ projectId, useGalleryHook })
                 role="progressbar"
                 aria-label="carga"
               >
-                <div className="progress-bar-striped progress-bar-animated bg-primary w-100" style={{ width: `${uploadPercentage}%` }}>
-                </div>
+                <div className="progress-bar-striped progress-bar-animated bg-primary w-100" >
+                </div> 
               </div>
             )}
           </div>
         )}
       </div>
+
       {showModal && (
         <div ref={modalRef} className="modal-uploadImg" onClick={handleOutsideClick}>
           <div className="modalImg-content">
@@ -164,6 +124,13 @@ function UploadImgsm({ projectId, useGalleryHook })
             ></button>
             <img src={currentImg} alt="Modal view" className="img-modal" />
           </div>
+        </div>
+      )}
+
+      {/* Aquí mostramos el mensaje de alerta si existe */}
+      {alertMessage && (
+        <div className="text-sans-lg-danger">
+          {alertMessage}
         </div>
       )}
     </div>
