@@ -48,8 +48,8 @@
     min-height: 158px;
 }
 .img-l-container{
-    width: 550px;
-    height: 356px;
+    width: 500px;
+    height: 400px;
 }
 .img-xl-container{
 width: 750px;
@@ -91,16 +91,18 @@ border-radius: 0% !important;
     min-height: 60px;
 }
   .title-input-container-edit {
-    min-width: 75%;
+    min-width: 100%;
     position: relative;
     min-height: 40px; 
   }
+
+  
 
 
   .ghost-input-edit{
     border: none;
     outline: none;
-    width: 75%;
+    width: 100%
 }
 
   input.ghost-input-edit, h3.text-sans-h1 {
