@@ -114,7 +114,19 @@
   display: grid;
   grid-template-columns: repeat(1, 1fr);
 }
-
+.panel-option {
+  position: absolute;
+  z-index:5000; 
+  height: auto;
+  overflow-y:auto;
+  margin-top:110px;
+  background: $white-color; 
+  color: $grey-a-color;
+  width: 418px;
+  border: solid 1px $grey-a-color;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+}
 .panel-sort, .filter-container {
   position: absolute;
   z-index: 1000;

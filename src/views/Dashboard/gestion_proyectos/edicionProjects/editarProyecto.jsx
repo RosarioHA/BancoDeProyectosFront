@@ -2,46 +2,187 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApiProjectsDetailAdmin } from "../../../../hooks/proyectos/useApiProjectDetailAdmin";
 import { useApiUpdateProject } from "../../../../hooks/proyectos/useUpdateProject"
+import { useGalleryProject } from "../../../../hooks/proyectos/useGalleryProject";
+import { useDocumentsAdicional } from "../../../../hooks/proyectos/useDocumentsAdicional";
 import Carrusel from "../../../../components/Commons/carrusel";
 import { EditableTitle } from "../../../../components/Tables/InputTitle";
-
+import { ModalDetalles } from "../../../../components/Modals/ModalDetalles";
+import UploadImg from "../../../../components/Commons/UploadImg";
+import UploadImgsm from "../../../../components/Commons/UploadImgsm";
+import { DocumentsProjects } from "../../../../components/Tables/DocumentsProjects";
+import DocumentsAditionals from "../../../../components/Commons/DocumentsAditionals";
+import { DeleteProjectModal } from "../../../../components/Modals/EliminarProyecto";
 const EditarProyecto = () =>
 {
   const { slug } = useParams();
-  const { dataProjectAdmin, loadingProject, errorProject } = useApiProjectsDetailAdmin(slug);
-  const { updateProject } = useApiUpdateProject(slug)
+  const { dataProjectAdmin, loadingProject, errorProject, fetchProjectAdminData } = useApiProjectsDetailAdmin(slug);
+  const { updateProject } = useApiUpdateProject();
+  const { deleteImage, addImage } = useGalleryProject(slug);
+  const { addDocument, deleteDocument } = useDocumentsAdicional(slug)
+
+  const [ dataProject, setDataProject ] = useState(null);
   const [ isPublished, setIsPublished ] = useState(null);
   const [ isEditing, setIsEditing ] = useState(false);
+  const [ editando, setEditando ] = useState(false);
   const [ editingMessage, setEditingMessage ] = useState("Editar proyecto");
-  console.log(isEditing)
+  const [ text, setText ] = useState('');
+  const [ count, setCount ] = useState(0);
+  const [ errorMessage, setErrorMessage ] = useState(null);
+  const [ detalles, setDetalles ] = useState({});
+  const [ videoLink, setVideoLink ] = useState('');
+  const [ successMessage, setSuccessMessage ] = useState('');
+  const [ beforeimage, setBeforeimage ] = useState('');
+  const [ afterimage, setAfterImage ] = useState('');
+  const [ previousLink, setPreviousLink ] = useState('');
+  const [ files, setFiles ] = useState([]);
 
-
-  const handleEditButtonClick = () =>
-  {
-    setIsEditing((prev) =>
-    {
-      const newEditingState = !prev; // Cambia el estado de edición
-      setEditingMessage(newEditingState ? "Editando proyecto" : "Editar proyecto"); // Actualiza el mensaje
-      return newEditingState; // Devuelve el nuevo estado
-    });
-  };
-  console.log(dataProjectAdmin)
 
   useEffect(() =>
   {
     if (dataProjectAdmin)
     {
       setIsPublished(dataProjectAdmin?.public);
+      setText(dataProjectAdmin?.description || '');
+      setCount(dataProjectAdmin?.description?.length || 0);
+      setVideoLink(dataProjectAdmin?.video || '');
+      setBeforeimage(dataProjectAdmin?.beforeimage),
+        setAfterImage(dataProjectAdmin?.afterimage)
+      setFiles(dataProjectAdmin?.files || []);
+      // Cargar detalles iniciales
+      setDetalles({
+        programa: dataProjectAdmin?.program?.name,
+        region: dataProjectAdmin?.comuna?.region,
+        comuna: dataProjectAdmin?.comuna?.comuna,
+        tipoProyecto: dataProjectAdmin?.type?.name,
+        year: dataProjectAdmin?.year?.number,
+        idSubdere: dataProjectAdmin?.id_subdere,
+        tag: dataProjectAdmin?.prioritized_tag?.prioritized_tag
+      });
+      setDataProject((prev) => ({
+        ...prev,
+        ...dataProjectAdmin,
+        programa: dataProjectAdmin?.program?.name,
+        region: dataProjectAdmin?.comuna?.region,
+        comuna: dataProjectAdmin?.comuna?.comuna,
+        tipoProyecto: dataProjectAdmin?.type?.name,
+        year: dataProjectAdmin?.year?.number,
+        idSubdere: dataProjectAdmin?.id_subdere,
+        tag: dataProjectAdmin?.prioritized_tag?.prioritized_tag,
+        beforeimage: dataProjectAdmin?.beforeimage,
+        afterimage: dataProjectAdmin?.afterimage
+
+      }));
     }
   }, [ dataProjectAdmin ]);
+
+  useEffect(() =>
+  {
+  }, [ dataProject ]);
+
+  useEffect(() =>
+  {
+    setSuccessMessage('');
+  }, [ isEditing ]);
+
+  useEffect(() =>
+  {
+    if (videoLink !== previousLink)
+    {
+      setSuccessMessage('');
+    }
+  }, [ videoLink, previousLink ]);
+
+  const handleGuardarDetalles = async (newDetails) =>
+  {
+    try
+    {
+      const updatedData = await updateProject(slug, newDetails);
+      setDetalles((prev) => ({ ...prev, ...newDetails }));
+      setDataProject((prev) => ({ ...prev, ...updatedData }));
+      fetchProjectAdminData()
+    } catch (error)
+    {
+      console.error("Error al actualizar el proyecto:", error);
+    }
+  };
+
+  const handleButtonClick = async () =>
+  {
+    setErrorMessage(null);
+    if (editando)
+    {
+      if (text.length > 700)
+      {
+        setErrorMessage('El texto no puede superar los 700 caracteres.');
+        return;
+      }
+      if (text.trim().length === 0)
+      {
+        setErrorMessage('No puede guardar un texto vacío.');
+        return;
+      }
+
+      try
+      {
+        const updatedData = await updateProject(slug, { description: text });
+        setDataProject((prev) => ({ ...prev, description: updatedData.description }));
+        setEditando(false);
+      } catch (error)
+      {
+        console.error("Error al actualizar la descripción del proyecto:", error);
+        setErrorMessage("No se pudo guardar la descripción.");
+      }
+    } else
+    {
+      setEditando(true);
+    }
+  };
+
+  const handleEditButtonClick = () =>
+  {
+    setIsEditing((prev) =>
+    {
+      const newEditingState = !prev;
+      setEditingMessage(newEditingState ? "Editando proyecto" : "Editar proyecto");
+      if (newEditingState && dataProjectAdmin)
+      {
+        setDataProject((prevData) => ({
+          ...prevData,
+          ...dataProjectAdmin
+        }));
+      }
+
+      return newEditingState;
+    });
+  };
+
+  const handleTextChange = (e) =>
+  {
+    const newText = e.target.value;
+    setText(newText);
+    setCount(newText.length);
+  };
+
+  const handleTitleSave = async (newTitle) =>
+  {
+    try
+    {
+      const updatedData = await updateProject(slug, { name: newTitle });
+      setDataProject((prev) => ({ ...prev, name: updatedData.name }));
+    } catch (error)
+    {
+      console.error("Error al actualizar el título del proyecto:", error);
+    }
+  };
+
 
   const handleStatusChange = async (status) =>
   {
     setIsPublished(status);
     try
     {
-      const updatedData = { public: status };
-      await updateProject(slug, updatedData);
+      const updatedData = await updateProject(slug, { public: status });
+      setDataProject((prev) => ({ ...prev, public: updatedData.public }));
     } catch (error)
     {
       console.error("Error al actualizar el estado de publicación:", error);
@@ -71,6 +212,127 @@ const EditarProyecto = () =>
     ...dataProjectAdmin.program.documents,
     ...dataProjectAdmin.type.documents,
   ];
+
+  const handleSaveImage = async (formData) =>
+  {
+    try
+    {
+      const updatedData = await updateProject(slug, formData);
+
+      setDataProject((prev) =>
+      {
+        const images = Array.isArray(updatedData.images) && typeof updatedData.images[ 0 ] === 'object'
+          ? updatedData.images
+          : prev.images;
+
+        const updatedProject = {
+          ...prev, ...updatedData, images
+        }
+        return updatedProject;
+      });
+    } catch (error)
+    {
+      console.error('Error al actualizar la imagen de portada:', error);
+    }
+  };
+  const addImageGallery = async (image) =>
+  {
+    try
+    {
+      const newImage = await addImage(image);
+      setDataProject((prev) => ({
+        ...prev,
+        images: [ ...prev.images, newImage ],
+      }));
+    } catch (error)
+    {
+      console.error("Error al agregar la imagen:", error);
+    }
+  };
+
+  const deleteImageGallery = async (imageId) =>
+  {
+    try
+    {
+      await deleteImage(imageId);
+      setDataProject((prev) => ({
+        ...prev,
+        images: prev.images.filter((img) => img.id !== imageId),
+      }));
+    } catch (error)
+    {
+      console.error("Error al eliminar la imagen:", error);
+    }
+  };
+
+
+
+  const handleVideoChange = async () =>
+  {
+    try
+    {
+      const videoData = { video: videoLink };
+      const updatedData = await updateProject(slug, videoData); // Llamada a la API para actualizar el proyecto
+      setDataProject((prev) => ({ ...prev, video: updatedData.video }));
+
+      // Solo mostrar el mensaje si hubo cambios en el enlace
+      if (videoLink !== previousLink)
+      {
+        setSuccessMessage('Link guardado exitosamente');
+        setPreviousLink(videoLink); // Actualizar el enlace anterior
+      }
+    } catch (error)
+    {
+      console.error('Error al actualizar el video:', error);
+    }
+  };
+
+  const handleFileUpload = async (field, file) =>
+  {
+    const formData = new FormData();
+    formData.append(field, file || '');
+
+    try
+    {
+      const updatedData = await updateProject(slug, formData);
+      setDataProject((prevData) => ({
+        ...prevData,
+        [ field ]: updatedData[ field ] || prevData[ field ],
+      }));
+    } catch (error)
+    {
+      console.error("Error al subir/eliminar el archivo:", error);
+    }
+  };
+
+
+  const handleAddDocument = async (name, file) =>
+  {
+    console.log(name);
+    try
+    {
+      const response = await addDocument(name, file);
+      console.log(response);
+      setFiles((prevFiles) => [ ...prevFiles, { ...response, file, name } ]);
+    } catch (error)
+    {
+      console.error("Error adding document:", error);
+    }
+  };
+
+  const handleDeleteDocument = async (documentId) =>
+  {
+    try
+    {
+      await deleteDocument(documentId);
+      setFiles((prevFiles) => prevFiles.filter((file) => file.id !== documentId));
+    } catch (error)
+    {
+      console.error("Error deleting document:", error);
+    }
+  };
+
+
 
   return (
     <div className="container col-11 ms-5 my-5">
@@ -123,10 +385,11 @@ const EditarProyecto = () =>
                     <u>{editingMessage}</u>
                     <i className="material-symbols-rounded ms-2">edit</i>
                   </button>
-                  <button className="btn-logout d-flex  px-3 me-4">
-                    <u>Eliminar proyecto</u>
-                    <i className="material-symbols-rounded ms-2">delete_forever</i>
-                  </button>
+                  {/* Modal de confirmación */}
+                  <DeleteProjectModal 
+                  slug={dataProjectAdmin?.slug} 
+                  name={dataProjectAdmin?.name}
+                  />
                 </div>
               </div>
             </div>
@@ -134,30 +397,101 @@ const EditarProyecto = () =>
 
         </div>
       </div>
-
+      {/* titulo del proyecto */}
       {isEditing ? (
-        <>
+        <div className="">
           <EditableTitle
-            initialTitle={dataProjectAdmin?.name}
+            initialTitle={dataProject?.name}
+            onSave={handleTitleSave}
+            maxChars={200}
+            minChars={10}
           />
-        </>
+        </div>
       ) : (
         <h1 className="text-sans-h1 my-md-5">{dataProjectAdmin?.name}</h1>
       )}
       {/* Descripcion del proyecto */}
-      <div className="neutral-container py-3 px-3">
-        <h2 className="text-sans-h2 my-2">Descripción del proyecto</h2>
-        <p className="text-sans-p" style={{ whiteSpace: 'pre-line' }}>{dataProjectAdmin?.description}</p>
-      </div>
-
+      {isEditing ? (
+        <>
+          <div className="neutral-container py-3 px-3">
+            <div className="d-flex justify-content-between">
+              <label htmlFor="FormControlTextarea" className="form-label text-sans-h3 ms-1">Descripción del Proyecto</label>
+              <button
+                className="btn-principal-s d-flex text-sans-h4 pb-0 me-1"
+                onClick={handleButtonClick}
+              >
+                <p className={editando ? "text-decoration-underline" : "text-decoration-underline"}>
+                  {editando ? 'Guardar' : 'Editar'}
+                </p>
+                <i className="material-symbols-rounded ms-2 pt-1">
+                  {editando ? 'save' : 'edit'}
+                </i>
+              </button>
+            </div>
+            {editando ? (
+              <>
+                <textarea
+                  className="form-control my-3"
+                  id="FormControlTextarea"
+                  placeholder="Descripción del proyecto"
+                  rows="7"
+                  value={text}
+                  onChange={handleTextChange}
+                  maxLength="700"
+                />
+                <span className="text-sans-h5 m-0">{count}/700 caracteres.</span>
+                {errorMessage && <p className="text-danger">{errorMessage}</p>}
+              </>
+            ) : (
+              <p className="text-sans-h5 m-3">{text}</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="neutral-container py-3 px-3">
+          <p className="text-sans-h5">{dataProjectAdmin?.description}</p>
+        </div>
+      )}
       {/* Imágenes del proyecto */}
       <h2 className="text-sans-h2 my-5">Imágenes del proyecto</h2>
+      {isEditing ? (
+        <>
+          <div className="mx-5">
+            <div>Imagen Portada</div>
+            <div className="img-xl-container">
+              <UploadImg
+                img={dataProject?.portada}
+                onSave={handleSaveImage}
+                tag='portada'
+              />
 
-      <Carrusel imgPortada={dataProjectAdmin?.portada} imgGeneral={dataProjectAdmin?.images} />
+            </div>
+            <div className="text-sans-h5-blue info d-flex  align-content-center mt-2">
+              <i className="material-symbols-outlined">
+                info
+              </i>
+              <span className="ms-2 align-self-center">La foto de portada será la primera que se verá en la galería y en el buscador de proyectos.</span>
+            </div>
+          </div>
+          {/*galeria imagenes */}
+          <div className="mx-1">
+            <UploadImgsm
+              imgs={dataProject?.images}
+              add={addImageGallery}
+              delete={deleteImageGallery}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <Carrusel imgPortada={dataProject?.portada} imgGeneral={dataProject?.images} />
+        </>
+      )}
+
 
       {/* Tabla detalles del proyecto */}
       <div className="detalles-proyecto my-4 mt-5">
-        <h2 className="text-sans-h2-white ms-3 ">Detalles del proyecto</h2>
+        <h2 className="text-sans-h2-white ms-3">Detalles del proyecto</h2>
       </div>
       <div className="ms-3">
         <div className="row">
@@ -195,36 +529,101 @@ const EditarProyecto = () =>
         </div>
 
         <div className="row">
-          <p className="text-sans-p"><strong>Código de identificación SUBDERE</strong></p>
-          <p className="text-sans-p">{dataProjectAdmin?.id_subdere}</p>
+          <div className="col">
+            <p className="text-sans-p"><strong>Código de identificación SUBDERE</strong></p>
+            <p className="text-sans-p">{dataProjectAdmin?.idSubdere}</p>
+          </div>
+          <div className="col">
+            <p className="text-sans-p"><strong>Tag Priorización</strong></p>
+            <p className="text-sans-p">{dataProjectAdmin?.prioritized_tag?.prioritized_tag}</p>
+          </div>
         </div>
       </div>
 
+      {isEditing && (
+        <ModalDetalles
+          initialDetails={detalles}
+          setDetalles={setDetalles}
+          onGuardar={handleGuardarDetalles}
+        />
+      )}
+
       {/* Imágenes antes y después */}
-      {(dataProjectAdmin?.beforeimage && dataProjectAdmin?.afterimage) &&
+      {isEditing ? (
+        <>
+          <div className="p-0 d-md-flex justify-content-between my-4 gap-1">
+            <div className="col-md-6 img-l-container">
+              <h3 className="text-sans-h3">Antes del proyecto</h3>
+              <UploadImg
+                img={dataProject?.beforeimage}
+                onSave={handleSaveImage}
+                tag='beforeimage'
+              />
+            </div>
+            <div className="col-md-6 img-l-container">
+              <h3 className="text-sans-h3">Antes del proyecto</h3>
+              <UploadImg
+                img={dataProject?.afterimage}
+                onSave={handleSaveImage}
+                tag='afterimage'
+              />
+            </div>
+          </div>
+        </>) : (
         <>
           <div className=" p-0 d-md-flex justify-content-between my-4">
             <div className="col-md-6">
               <h3 className="text-sans-h3">Antes del proyecto</h3>
-              <img src={dataProjectAdmin.beforeimage} className="img-proyecto" />
+              <img src={beforeimage} className="img-proyecto" />
             </div>
             <div className="col-md-6">
-              <h3 className="text-sans-h3">Después del proyecto</h3>
-              <img src={dataProjectAdmin.afterimage} className="img-proyecto" />
+              <h3 className="text-sans-h3">Antes del proyecto</h3>
+              <img src={afterimage} className="img-proyecto" />
             </div>
           </div>
         </>
-      }
-
-      {/* Video del proyecto */}
-      {dataProjectAdmin?.video &&
+      )}
+      {isEditing ? (
         <>
-          <h3 className="text-sans-h3">Video del proyecto</h3>
-          <div className="d-flex justify-content-center mb-md-5">
-            <div className="col-md-7 img-proyecto" src={dataProjectAdmin?.video} />
+          <div className="my-5 me-4 pe-4 py-3">
+            <span className='text-sans-h2'>Video del proyecto</span>
+            <p>(Máximo 1 enlace)</p>
+            <div className="input-group ">
+              <span className="input-group-text" id="basic-addon3">https://</span>
+              <input
+                type="text"
+                className="form-control"
+                id="basic-url"
+                aria-describedby="basic-addon3 basic-addon4"
+                value={videoLink}
+                onChange={(e) => setVideoLink(e.target.value)}
+              />
+              <button
+                className="btn-principal-s d-flex mx-1"
+                type="button"
+                id="button-addon2"
+                onClick={handleVideoChange}
+              >
+                <i className="material-symbols-outlined">upgrade</i>
+                <u className="align-self-center">Subir Link</u>
+              </button>
+            </div>
+            {successMessage && (
+              <div className=" d-flex flex-column text-sans-h5-blue ">
+                {successMessage}
+              </div>
+            )}
           </div>
-        </>
-      }
+        </>) : (
+        <>
+          {dataProjectAdmin?.video &&
+            <>
+              <h3 className="text-sans-h3">Video del proyecto</h3>
+              <div className="d-flex justify-content-center mb-md-5">
+                <div className="col-md-7 img-proyecto" src={dataProject?.video} />
+              </div>
+            </>
+          }</>)}
       <div className="my-5">
         <h2 className="text-sans-h2 my-4 mt-5">Documentos del proyecto</h2>
         {/* Tabla documentos del proyecto */}
@@ -236,77 +635,141 @@ const EditarProyecto = () =>
           <div className="col mt-3">Formato</div>
           <div className="col mt-3">Acción</div>
         </div>
-        {/* Planimetria */}
-        <div className="row border-top">
-          <div className="col-1 p-3">1</div>
-          <div className="col p-3">Planimetria</div>
-          <div className="col p-3">PDF</div>
-          <div className="col p-3">
-            {dataProjectAdmin?.planimetria && dataProjectAdmin.planimetria.length > 0
-              ? <a className="col p-3 text-sans-p-tertiary" href={dataProjectAdmin?.planimetria} target="_blank" rel="noopener noreferrer">Ver Documento</a>
-              : 'No hay documento disponible'}
-          </div>
-
-        </div>
-
-        {/* Especificaciones Técnicas */}
-        <div className="row border-top grey-table-line">
-          <div className="col-1 p-3">2</div>
-          <div className="col p-3">Especificaciones Técnicas</div>
-          <div className="col p-3">PDF</div>
-          <div className="col p-3">
-            {dataProjectAdmin?.eett && dataProjectAdmin.eett.length > 0
-              ? <a className="col p-3 text-sans-p-tertiary" href={dataProjectAdmin?.eett} target="_blank" rel="noopener noreferrer">Ver Documento</a>
-              : 'No hay documento disponible'}
-          </div>
-        </div>
-
-        {/* Presupuesto */}
-        <div className="row border-top">
-          <div className="col-1 p-3">3</div>
-          <div className="col p-3">Presupuesto</div>
-          <div className="col p-3">PDF</div>
-          <div className="col p-3">
-            {dataProjectAdmin?.presupuesto && dataProjectAdmin.presupuesto.length > 0
-              ? <a className="col p-3 text-sans-p-tertiary" href={dataProjectAdmin?.presupuesto} target="_blank" rel="noopener noreferrer">Ver Documento</a>
-              : 'No hay documento disponible'}
-          </div>
-
-        </div>
-
-
-
-      </div>
-      <div className="my-5">
-        <span className="text-sans-h4 my-4 mt-5">Documentos Adicionales (Opcionales)</span>
-        <p>(Número de archivos máximo, peso máximo 20 MB, formato libre)</p>
-        <div className="row my-4 fw-bold border-top">
-          <div className="col-1 mt-3">#</div>
-          <div className="col mt-3">Documento</div>
-          <div className="col mt-3">Formato</div>
-          <div className="col mt-3">Acción</div>
-        </div>
-
-        {
-          dataProjectAdmin?.files?.map((file, index) => (
-            <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-              <div className="col-1 p-3">{index + 1}</div>
-              <div className="col p-3">{file.name}</div>
-              <div className="col p-3">PDF</div>
-              <a className="col p-3 text-sans-p-tertiary" href={document.document} target="_blank" rel="noopener noreferrer">Ver Documento</a>
+        {isEditing ? (
+          <>
+            <div className="row border-top">
+              <DocumentsProjects
+                index="1"
+                description="Planimetría"
+                fileType="No seleccionado"
+                value={dataProject.planimetria}
+                maxSize={20}
+                fieldName="planimetria"
+                onUpload={(file) => handleFileUpload('planimetria', file)}
+              />
             </div>
-          ))
-        }
+          </>
+        ) : (
+          <div className="row border-top">
+            <div className="col-1 p-3">1</div>
+            <div className="col p-3">Planimetría</div>
+            <div className="col p-3">PDF</div>
+            <div className="col p-3">
+              {/* Mostramos el enlace solo si el documento está disponible */}
+              {dataProject?.planimetria && dataProject.planimetria.length > 0 ? (
+                <a className="col p-3 text-sans-p-tertiary" href={dataProject.planimetria} target="_blank" rel="noopener noreferrer">
+                  Ver Documento
+                </a>
+              ) : (
+                'No hay documento disponible'
+              )}
+            </div>
+          </div>
+        )}
+
+        {isEditing ? (
+          <>
+            <div className="row border-top">
+              <DocumentsProjects
+                index="2"
+                description="Especificaciones Técnicas"
+                fileType="No seleccionado"
+                fieldName="eett"
+                value={dataProject.eett}
+                maxSize={5} // 5 MB
+                onUpload={(file) => handleFileUpload('eett', file)}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="row border-top grey-table-line">
+            <div className="col-1 p-3">2</div>
+            <div className="col p-3">Especificaciones Técnicas</div>
+            <div className="col p-3">PDF</div>
+            <div className="col p-3">
+              {dataProject?.eett && dataProject.eett.length > 0
+                ? <a className="col p-3 text-sans-p-tertiary" href={dataProject?.eett} target="_blank" rel="noopener noreferrer">Ver Documento</a>
+                : 'No hay documento disponible'}
+            </div>
+          </div>
+        )}
+
+        {isEditing ? (
+          <>
+            <div className="row border-top">
+              <DocumentsProjects
+                index="3"
+                description="Presupuesto"
+                fileType="No seleccionado"
+                fieldName="presupuesto"
+                value={dataProject?.presupuesto}
+                maxSize={5} // 5 MB
+                onUpload={(file) => handleFileUpload('presupuesto', file)}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="row border-top">
+              <div className="col-1 p-3">3</div>
+              <div className="col p-3">Presupuesto</div>
+              <div className="col p-3">PDF</div>
+              <div className="col p-3">
+                {dataProject?.presupuesto && dataProject.presupuesto.length > 0
+                  ? <a className="col p-3 text-sans-p-tertiary" href={dataProject?.presupuesto} target="_blank" rel="noopener noreferrer">Ver Documento</a>
+                  : 'No hay documento disponible'}
+              </div>
+            </div>
+          </>
+        )}
+
+
       </div>
-      <>
-        <h2 className="text-sans-h2 my-4 mt-5">Documentos con normativa de uso general</h2>
-        <div className="d-flex text-sans-h5-blue align-items-center">
-          <span className="material-symbols-outlined mx-2 ">
-            info
-          </span>
-          Estos documentos están asociados al programa y tipo de proyecto que elegiste anteriormente y se suben automáticamente.</div>
-        {/* Normativa por programa y tipo de proyecto */}
-        {combinedDocuments.length > 0 && (
+      {isEditing ? (
+        <>
+          <DocumentsAditionals
+            documents={files}
+            addDocument={handleAddDocument}
+            deleteDocument={handleDeleteDocument}
+          />
+        </>
+      ) : (
+        <>
+
+          <>
+            <div>
+              <div className="my-5">
+                <span className="text-sans-h4 my-4 mt-5">Documentos Adicionales (Opcionales)</span>
+                <p>(Número de archivos máximo, peso máximo 20 MB, formato libre)</p>
+                <div className="row my-4 fw-bold border-top">
+                  <div className="col-1 mt-3">#</div>
+                  <div className="col mt-3">Documento</div>
+                  <div className="col mt-3">Formato</div>
+                  <div className="col mt-3">Acción</div>
+                </div>
+                {files?.map((file, index) => (
+                  <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
+                    <div className="col-1 p-3">{index + 1}</div>
+                    <div className="col p-3">{file.name}</div>
+                    <div className="col p-3">{file.file_format}</div>
+                    <a className="col p-3 text-sans-p-tertiary" href={file.file} target="_blank" rel="noopener noreferrer">Ver Documento</a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        </>
+      )
+      }
+      <h2 className="text-sans-h2 my-4 mt-5">Documentos con normativa de uso general</h2>
+      <div className="d-flex text-sans-h5-blue align-items-center">
+        <span className="material-symbols-outlined mx-2 ">
+          info
+        </span>
+        Estos documentos están asociados al programa y tipo de proyecto que elegiste anteriormente y se suben automáticamente.</div>
+      {/* Normativa por programa y tipo de proyecto */}
+      {
+        combinedDocuments.length > 0 && (
           <>
             <div className="row my-4 fw-bold border-top">
               <div className="col-1 mt-3">#</div>
@@ -323,9 +786,9 @@ const EditarProyecto = () =>
               </div>
             ))}
           </>
-        )}
-      </>
-    </div>
+        )
+      }
+    </div >
   )
 }
 

@@ -13,8 +13,8 @@ export const useApiUpdateProject = () => {
 
     try {
       const response = await apiBancoProyecto.patch(`projects/v1/${slug}/`, updatedData);
-      setSuccess(true); // La actualización fue exitosa
-      return response.data; // Devuelve los datos actualizados
+      setSuccess(true);
+      return response.data; // Devuelve los datos actualizados para actualizar el estado local
     } catch (error) {
       setError(error.message || 'Error al actualizar el proyecto');
       setSuccess(false);
@@ -25,5 +25,3 @@ export const useApiUpdateProject = () => {
 
   return { updateProject, loading, error, success };
 };
-
-

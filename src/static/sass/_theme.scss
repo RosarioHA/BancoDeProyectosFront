@@ -118,6 +118,9 @@ $border-claveunica-color: #000000;
 .text-sans-p-lightgrey{
     @include font-sans(16px, 400, $grey-light-color); 
 }
+.text-sans-xl-danger{
+    @include font-sans(50px, 700, $dark-red); 
+}
 .text-sans-lg-danger{
     @include font-sans(24px, 700, $alert-danger); 
 }
@@ -195,7 +198,7 @@ $border-claveunica-color: #000000;
 .btn-principal-s{
    @include btn-principal(fit-content, $blue-color);
    height: fit-content;
-   color: white;
+   color: $white-color;
    border:  2px solid $blue-color ;
 
    &:hover {

@@ -5,13 +5,13 @@
   
   .modal-dialog {
   min-width: fit-content;
+
   }
   
   .modal-detalle { 
   display: flex;
-  padding: 0px 15px;
   width: 800px;
-  height: 800px;
+  height: fit-content;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;

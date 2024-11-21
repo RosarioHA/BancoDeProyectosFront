@@ -7,55 +7,70 @@ const UploadFile = ({
   editingFile,
   onFileAdded,
   onFileUpdated,
-  editingIndex
+  editingIndex,
 }) =>
 {
-  const [file, setFile] = useState(isEditMode ? editingFile.file : null);
-  const [inputValue, setInputValue] = useState(isEditMode ? editingFile.title : '');
-
+  const [ file, setFile ] = useState(isEditMode ? editingFile.file : null);
+  const [ inputValue, setInputValue ] = useState(isEditMode ? editingFile.title : '');
   const triggerFileInput = () => document.getElementById('fileInput').click();
 
-  const resetState = () => {
+  const resetState = () =>
+  {
     setFile(null);
     setInputValue('');
   };
 
-  const handleSave = () => {
-    if (!file || !inputValue) {
+  const handleSave = () =>
+  {
+    if (!file || !inputValue)
+    {
       alert('Por favor, asegúrate de seleccionar un archivo y proporcionar un nombre para el documento.');
       return;
     }
 
-    if (isEditMode) {
+    if (isEditMode)
+    {
       onFileUpdated(editingIndex, file, inputValue);
-    } else {
+    } else
+    {
       onFileAdded(file, inputValue);
     }
 
     resetState();
   }
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     if (reset) resetState();
-  }, [reset]);
+  }, [ reset ]);
 
-  useEffect(() => {
-    if (isEditMode && editingFile) {
+  useEffect(() =>
+  {
+    if (isEditMode && editingFile)
+    {
       setFile(editingFile.file);
       setInputValue(editingFile.title);
-    } else {
+    } else
+    {
       resetState(); // Si no está editando, reinicia el estado.
     }
-  }, [isEditMode, editingFile]);
+  }, [ isEditMode, editingFile ]);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-};
+  const handleFileChange = (e) =>
+  {
+    setFile(e.target.files[ 0 ]);
+  };
 
 
   return (
     <>
-      <ModalBase title="Agregar archivo adicional" btnName="Subir Archivo" btnIcon="add" modalID="uploadFile">
+      <ModalBase
+        title="Agregar archivo adicional"
+        btnName="Subir Archivo"
+        btnIcon="add"
+        modalID="uploadFile"
+        classStyle="btn-secundario-s"
+        titleStyle="text-sans-h4">
         <div className="modal-archivos d-flex flex-column my-3 mx-5" >
           {!file && (
             <div className="container-upload" >
@@ -64,7 +79,7 @@ const UploadFile = ({
               <input type="file" onChange={handleFileChange} className="d-none" id="fileInput" />
               <button className="btn-principal-s d-flex" onClick={triggerFileInput}>
                 <i className="material-symbols-outlined ">upgrade</i>
-                <u className="align-self-center text-sans-b-white">Subir Archivo</u>
+                <u className="align-self-center ">Subir Archivo</u>
               </button>
             </div>
           )}
@@ -105,7 +120,7 @@ const UploadFile = ({
               data-bs-dismiss="modal"
               onClick={handleSave}
             >
-              <p className="text-sans-p-white text-decoration-underline">Guardar</p>
+              <p className="text-decoration-underline">Guardar</p>
               <i className="material-symbols-rounded ms-2 pt-1">save</i>
             </button>
           </div>
