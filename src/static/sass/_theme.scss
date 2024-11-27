@@ -94,6 +94,9 @@ $border-claveunica-color: #000000;
 .text-sans-h5-blue{
     @include font-sans(14px, 400, $primary-color);
 }
+.text-sans-h5-error{
+    @include font-sans(14px, 400, $secondary-color);
+}
 .text-sans-h5-red{
     @include font-sans(14px, 400, $dark-red);
 }

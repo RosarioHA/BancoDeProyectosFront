@@ -29,7 +29,7 @@ const AdministrarProyectosInnovadores = () =>
 
   const handleDetailsProject = (project) =>
   {
-    navigate(`/dashboard/edicion_innovadores/${project.id}`, { state: { project } });
+    navigate(`/dashboard/edicion_innovador/${project.id}`, { state: { project } });
   };
 
 

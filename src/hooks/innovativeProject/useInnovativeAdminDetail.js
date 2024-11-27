@@ -232,14 +232,17 @@ const useApiInnovativeProjects = () =>
 
   const updateWebSource = async (projectId, webSourceId, webSourceData) => {
     try {
-      const response = await apiBancoProyecto.patch(`innovative_projects/v1/${projectId}/update_web_source/${webSourceId}/`, webSourceData);
-      return response.data;
+      const response = await apiBancoProyecto.patch(
+        `innovative_projects/v1/${projectId}/update_web_source/${webSourceId}/`,
+        webSourceData,
+        console.log(webSourceData)
+      );
+      return response.data; // Devuelve los datos actualizados
     } catch (error) {
-      console.error("Error al actualizar la fuente web:", error);
-      throw error;
+      console.error('Error al actualizar la fuente web:', error);
+      throw error; // Lanza el error para que sea manejado en el componente
     }
   };
-
   const deleteWebSource = async (projectId, webSourceId) => {
     try {
       await apiBancoProyecto.delete(`innovative_projects/v1/${projectId}/delete_web_source/${webSourceId}/`);

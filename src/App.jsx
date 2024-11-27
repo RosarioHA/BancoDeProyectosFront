@@ -79,18 +79,18 @@ function App()
           >
             <Route index element={<HomeDashboard />} />
             <Route path="crear_proyectos" element={<CrearProyectos />} />
-            <Route path="crear_proyecto_paso1" element={<CrearProyecto_paso1 />} />
-            <Route path="crear_innovador_paso1" element={<CrearInnovador_paso1 />} />
+            <Route path="crear_proyecto/:slug" element={<CrearProyecto_paso1 />} />
+            <Route path="crear_innovador/:id" element={<CrearInnovador_paso1 />} />
             {createProtectedRoute("administrar_proyectos", AdministrarProyectos, [ 'Editor' ])}
             {createProtectedRoute("administrar_proyectos_innovadores", AdministrarProyectosInnovadores, [ 'Editor' ])}
-            <Route path="success" element={<Success />} />
+            <Route path="creacion_exitosa" element={<Success />} />
             {createProtectedRoute("editar_usuario/:id", EdicionUsuario, [ 'Editor' ])}
             <Route path="editar_perfil/:id" element={<EdicionProfile />} />
             <Route path="envio_exitoso" element={<SuccessViews />} />
             {createProtectedRoute("gestion_usuarios", GestionUsuarios, [ 'Editor' ])}
             <Route path="edicion_exitosa" element={<SuccessEdicion />} />
             <Route path="editar_proyecto/:slug" element={<EditarProyecto />} />
-            <Route path="edicion_innovadores/:id" element={<EditarInnovadores />} />
+            <Route path="edicion_innovador/:id" element={<EditarInnovadores />} />
           </Route>
         </Routes>
       </Suspense>

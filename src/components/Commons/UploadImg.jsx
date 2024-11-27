@@ -1,59 +1,76 @@
 import { useState, useRef } from 'react';
 
-export default function UploadImg({ img, onSave,  tag }) {
-  const [showModal, setShowModal] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+export default function UploadImg({ img, onSave, tag, title })
+{
+  const [ showModal, setShowModal ] = useState(false);
+  const [ isEditMode, setIsEditMode ] = useState(false);
+  const [ selectedFile, setSelectedFile ] = useState(null);
+  const [ preview, setPreview ] = useState(null);
+  const [ isHovered, setIsHovered ] = useState(false);
   const modalRef = useRef(null);
 
-  const openModal = (editMode = false) => {
+  const openModal = (editMode = false) =>
+  {
     setIsEditMode(editMode);
     setShowModal(true);
   };
 
-  const closeModal = () => {
+  const closeModal = () =>
+  {
     setShowModal(false);
     setSelectedFile(null);
     setPreview(null);
     setIsEditMode(false);
   };
 
-  const handleOutsideClick = (e) => {
-    if (e.target === modalRef.current) {
+  const handleOutsideClick = (e) =>
+  {
+    if (e.target === modalRef.current)
+    {
       closeModal();
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (e) =>
+  {
+    const file = e.target.files[ 0 ];
     setSelectedFile(file);
 
-    if (file) {
+    if (file)
+    {
       setPreview(URL.createObjectURL(file));
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async () =>
+  {
     if (!selectedFile) return;
 
     const formData = new FormData();
     formData.append(tag, selectedFile);
 
-    try {
+    try
+    {
+      // Envía solo el nombre del archivo al backend
       await onSave(formData);
+
+      // Guarda solo el nombre de la imagen en el estado (no la URL)
+      const fileName = selectedFile.name;
       setSelectedFile(null);
       setPreview(null);
       closeModal();
-    } catch (error) {
+      onSave(fileName);  // Envía solo el nombre si es necesario
+
+    } catch (error)
+    {
       console.error('Error uploading image:', error);
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async () =>
+  {
     const formData = new FormData();
-    formData.append(tag, ''); // Sending an empty field to remove the image
+    formData.append(tag, '');
     await onSave(formData);
   };
   return (
@@ -65,7 +82,7 @@ export default function UploadImg({ img, onSave,  tag }) {
           onMouseLeave={() => setIsHovered(false)}
         >
           <img className="upload-image" src={img} alt={tag} />
-          
+
           {/* Show overlay when hovering */}
           {isHovered && (
             <div className="overlay">
@@ -92,6 +109,7 @@ export default function UploadImg({ img, onSave,  tag }) {
         </div>
       ) : (
         <div>
+
           <button
             className="btn-borderless-white d-flex  align-content-center mx-3 px-3"
             onClick={() => openModal(true)}
@@ -104,6 +122,7 @@ export default function UploadImg({ img, onSave,  tag }) {
       {showModal && (
         <div ref={modalRef} className="modal-uploadImg" onClick={handleOutsideClick}>
           <div className="modalImg-content">
+            <div className="text-sans-h3 text-start">{title}</div>
             <button type="button" onClick={closeModal} className="btn-close btn-close-img" aria-label="Close"></button>
             {preview ? (
               <img src={preview} alt="Preview" className="img-modal" />
@@ -114,7 +133,7 @@ export default function UploadImg({ img, onSave,  tag }) {
             {isEditMode && (
               <div className="modal-actions my-auto">
                 <input type="file" onChange={handleFileChange} accept="image/*" className="file-input my-3 mx-5" />
-                <button className="btn-principal-s my-2 mx-3 d-flex align-content-center" onClick={handleUpload}>
+                <button className="btn-principal-s my-2 mx-3 d-flex align-content-center" type="submit" onClick={handleUpload}>
                   <i className="material-symbols-outlined mx-2">save</i><u>Guardar Imagen</u>
                 </button>
               </div>
