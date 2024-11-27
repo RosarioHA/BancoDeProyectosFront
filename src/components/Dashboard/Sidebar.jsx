@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink , Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useFormContext } from '../../context/FormContext'
 import ModalAbandonoFormulario from '../Modals/ModalAbandono';
@@ -115,15 +115,13 @@ export const Sidebar = () =>
               </button>
               <ul className={openDropdownSidebar ? "dropdown-menu show bg-white border-0 ms-3" : "dropdown-menu bg-white border-0 ms-4"}>
                 <li className="my-1">
-                  <SidebarLink to="#" icon="local_parking" text="Programas" hasBorder={false} />
-                </li>
-                <li className="my-1">
-                  <SidebarLink to="#" icon="file_copy" text="Documentos" hasBorder={false}/>
+                  <SidebarLink to="#" icon="file_copy" text="Documentos" hasBorder={false} />
 
                 </li>
-                <li className="my-1" >
-                  <SidebarLink to="#" icon="admin_panel_settings" text="Tipos de Usuarios" hasBorder={false}/>
+                <li className="my-1">
+                  <SidebarLink to="#" icon="local_parking" text="Tag Priorización" hasBorder={false} />
                 </li>
+
               </ul>
             </li>
           </>

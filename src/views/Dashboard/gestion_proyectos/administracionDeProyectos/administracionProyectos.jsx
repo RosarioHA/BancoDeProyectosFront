@@ -1,60 +1,50 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../../context/AuthContext';
+// import { useAuth } from '../../../../context/AuthContext';
 import { useProjectsListAdmin } from '../../../../hooks/proyectos/useProjectsListAdmin'
 import { InputSearch } from '../../../../components/Commons/input_search';
 
-
-const AdministrarProyectos = () =>
-{
+const AdministrarProyectos = () => {
   const { projectsAdmin, metadata, pagination, setPagination, setSearchTerm, searchTerm } = useProjectsListAdmin();
   const navigate = useNavigate();
-  const [ setSearching ] = useState(false);
-  const { userData } = useAuth();
+  const [setSearching] = useState(false);
+  // const { userData } = useAuth();
   const [isPublicSorted, setIsPublicSorted] = useState(false);
 
   const projectsPerPage = 10;
   const totalPages = Math.ceil(metadata.count / projectsPerPage);
-  const handlePageChange = (pageNumber) =>
-  {
+  const handlePageChange = (pageNumber) => {
     setPagination(pageNumber);
   };
 
-  console.log('U', userData)
-
   // Funcion para manejar la busqueda
-
   const handleSearch = (term) => {
     const normalizedTerm = term.trim().toLowerCase();
     setSearchTerm(normalizedTerm);
     setSearching(!!normalizedTerm);
   };
 
-
-
-  const handleDetailsProject = (project) =>
-  {
+  const handleDetailsProject = (project) => {
     console.log(project.slug)
     navigate(`/dashboard/editar_proyecto/${project.slug}/`, { state: { project } });
   };
 
-    // Función para manejar el ordenamiento
-    const handleSortByPublic = () => {
-      setIsPublicSorted(!isPublicSorted);
-    };
-  
-    // Ordenar proyectos según 'public'
-    const sortedProjectsAdmin = [...projectsAdmin].sort((a, b) => {
-      if (isPublicSorted) {
-        return (a.public === b.public) ? 0 : a.public ? -1 : 1; // Ascendente
-      } else {
-        return (a.public === b.public) ? 0 : a.public ? 1 : -1; // Descendente
-      }
-    });
-  const renderPaginationButtons = () =>
-  {
-    if (!pagination)
-    {
+  // Función para manejar el ordenamiento
+  const handleSortByPublic = () => {
+    setIsPublicSorted(!isPublicSorted);
+  };
+
+  // Ordenar proyectos según 'public'
+  const sortedProjectsAdmin = [...projectsAdmin].sort((a, b) => {
+    if (isPublicSorted) {
+      return (a.public === b.public) ? 0 : a.public ? -1 : 1; // Ascendente
+    } else {
+      return (a.public === b.public) ? 0 : a.public ? 1 : -1; // Descendente
+    }
+  });
+
+  const renderPaginationButtons = () => {
+    if (!pagination) {
       return null;
     }
 
@@ -95,7 +85,7 @@ const AdministrarProyectos = () =>
         <div className="my-5 d-flex justify-content-between">
           <h3 className="text-sans-h3">Proyectos </h3>
           <div >
-          <InputSearch
+            <InputSearch
               value={searchTerm}
               onSearch={handleSearch}
               setHasSearched={setSearching}
@@ -115,7 +105,7 @@ const AdministrarProyectos = () =>
           <p className="text-sans-b-gray ">Tipo de Proyecto</p>
         </div>
         <div className="col-1 mt-2 mx-auto">
-        <button className="sort-estado-btn d-flex align-items-top" onClick={handleSortByPublic}>
+          <button className="sort-estado-btn d-flex align-items-top" onClick={handleSortByPublic}>
             <p className="text-sans-b-gray mt-1">Estado</p>
             <i className="material-symbols-rounded ms-2 pt-1">filter_alt</i>
           </button>
@@ -130,7 +120,6 @@ const AdministrarProyectos = () =>
           <p className="text-sans-b-gray">Acción</p>
         </div>
 
-
         {/* Mostrar proyectos segun si se aplico una busqueda o no */}
         {sortedProjectsAdmin?.length > 0 ? (
           sortedProjectsAdmin?.map((project, index) => (
@@ -141,9 +130,14 @@ const AdministrarProyectos = () =>
               </div>
               <div className="col-2 mx-1 py-3">{project?.type?.name}</div>
               <div className="col-1 px-1 py-3">
-                <p className={`mx-auto px-1 py-1 ${project.public ? "publicado" : "privado"}`}>
-                  {project.public ? "Publicado" : "Privado"}
-                </p>
+                {/* Badge adicional para el estado 'is_complete' */}
+                {project.is_complete === false ? (
+                  <span className="mx-auto px-1 py-1 incompleto ">Incompleto</span>
+                ) : project.public === false ? (
+                  <span className="mx-auto px-1 py-1 privado">Privado</span>
+                ) : (
+                  <span className="mx-auto px-1 py-1 publicado">Publicado</span>
+                )}
               </div>
               <div className="col-1 px-1 py-3">
                 <p className="program mx-auto px-1 py-1">{project.program?.sigla || "No seleccionado"}</p>
@@ -171,4 +165,5 @@ const AdministrarProyectos = () =>
     </>
   );
 };
-export default AdministrarProyectos; 
+
+export default AdministrarProyectos;

@@ -1,130 +1,73 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useAuth } from '../../../../context/AuthContext';
 import { UseApiPrograms } from '../../../../hooks/usePrograms';
-import useApiInnovativeProjects from '../../../../hooks/innovativeProject/useApiInnovativeProjects';
+import { useCreateProjects } from '../../../../hooks/proyectos/useCreateProjects';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {validationSchema} from '../../../../validaciones/crearProject.js'
+import { useCreateInnovative } from '../../../../hooks/innovativeProject/useCreateInnovative.js';
 
 const CrearProyectos = () =>
 {
-
-  //permisos de usuarios
-  // const { userData } = useAuth();
-  // const isEditorOrSuperuser = [ 'Superusuario', 'Editor General' ].includes(userData.tipo_de_usuario);
-  // Hooks de estado
-  const [ selectedOption, setSelectedOption ] = useState(null);
-  const [ showOptionErrorMessage, setShowOptionErrorMessage ] = useState(false);
-  const [ inputText, setInputText ] = useState('');
-  const [ isEditing, setIsEditing ] = useState(true);
-  const [ showTitleErrorMessage, setShowTitleErrorMessage ] = useState(false);
-  const { dataPrograms, loadingPrograms } = UseApiPrograms();
-  const [ selectedProgram, setSelectedProgram ] = useState(null);
-  const { createInnovativeProject } = useApiInnovativeProjects();
-  const [ activeButton, setActiveButton ] = useState(null);
-
-
-  //Hooks para conteo y manejo de caracteres maximos
-  const [ maxTitleChars ] = useState(70); // Maximo de caracteres para el titulo
-  const [ titleCharsCount, setTitleCharsCount ] = useState(0);
-  const [ titleCharsExceeded, setTitleCharsExceeded ] = useState(false);
-
-  // Maneja cambios en la seleccion y la actualiza en el estado.
-  const handleOptionChange = (value) =>
-  {
-    setSelectedOption(value);
-    setActiveButton(value);
-  };
-
-  // Maneja cambios en el input y actualiza el estado.
-  const handleInputChange = (event) =>
-  {
-    const text = event.target.value;
-    if (text.length <= maxTitleChars)
-    {
-      setInputText(text);
-      setTitleCharsCount(text.length);
-      setTitleCharsExceeded(false);
-    } else
-    {
-      setTitleCharsExceeded(true);
-    }
-  };
-
-  const handleEditarClick = () =>
-  {
-    setIsEditing(true);
-  };
-
-  // Maneja click en Subir proyecto y redireccion.
+  const { createProject } = useCreateProjects();
+  const {createInnovative} = useCreateInnovative(); 
   const navigate = useNavigate();
+  const { dataPrograms, loadingPrograms } = UseApiPrograms();
 
-  const handleSubirProyectoClick = async () =>
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      title: '',
+      projectType: '',
+      program: '',
+    },
+  });
+
+  const selectedOption = watch('projectType');
+
+  const onSubmit = async (data) =>
   {
-    // Resetear los mensajes de error
-    setShowTitleErrorMessage(false);
-    setShowOptionErrorMessage(false);
-
-    // Verifica si se ha seleccionado una opción
-    if (!selectedOption)
+    try
     {
-      setShowOptionErrorMessage(true);
-      return;
-    }
-
-    // Verifica si se ha ingresado un titulo
-    const trimmedTitle = inputText.trim();
-    if (!trimmedTitle)
-    {
-      setShowTitleErrorMessage(true);
-      return;
-    }
-
-    if (selectedOption === 'bancoProyectos')
-    {
-      navigate('/dashboard/crear_proyecto_paso1');
-      return;
-    }
-
-    if (selectedOption === 'proyectosInnovadores')
-    {
-      if (!selectedProgram)
+      const { title, projectType, program } = data;
+      if (projectType === 'bancoProyectos')
       {
-        // Aquí deberías manejar o mostrar un mensaje de error si no se ha seleccionado un programa
-        // Usa tu sistema de notificaciones o UI aquí en lugar de alert:
-        // Notificacion.show("Por favor selecciona un programa.");
-        return;
+        const slug = await createProject({ name: title, program: program || null });
+        if (slug)
+        {
+          navigate(`/dashboard/crear_proyecto/${slug}/`, { state: { project: data } });
+        } else
+        {
+          alert('No se pudo obtener el slug del proyecto.');
+        }
+      } else if (projectType === 'proyectosInnovadores')
+      {
+        const id = await createInnovative({ title: title, program: program || null });
+        if (id){
+          navigate(`/dashboard/crear_innovador/${id}/`, { state: { project: data } });
+        }else {
+          alert('No se pudo obtener el id del proyecto.');
+        }
       }
-
-      const newProjectData = {
-        title: trimmedTitle,
-        program: selectedProgram
-      };
-
-      const result = await createInnovativeProject(newProjectData);
-
-      if (result.success)
-      {
-        navigate(`/dashboard/crearinnovador_paso1?id=${result.id}`);
-      } else
-      {
-        // Manejar error aquí
-        // Usa tu sistema de notificaciones o UI aquí en lugar de alert:
-        // Notificacion.show("Error al crear el proyecto innovador: " + result.error);
-      }
+    } catch (error)
+    {
+      console.error('Error al crear el proyecto:', error);
+      alert('Ocurrió un error al intentar crear el proyecto. Por favor, inténtalo nuevamente.');
     }
   };
 
-  return (
-    <div className="container view-container mx-5 mb-5">
-      <h2 className="text-sans-h2 mt-4 mb-5">Subir Proyecto</h2>
-      <div className="col-10 mx-5">
-        <h3 className="text-sans-h3 ms-1">Elige donde quieres mostrar el proyecto:</h3>
-
-        <div className="row my-5">
-          <div
-            className={`col-5 opt-container p-3 mx-3 ${activeButton === 'bancoProyectos' ? 'opt-container-active' : 'opt-container'
-              }`}
-          >
-            <h3 className="text-serif-h3 text-center text-decoration-underline">Banco de Proyectos</h3>
+  const getContentForType = (type) =>
+  {
+    switch (type)
+    {
+      case 'bancoProyectos':
+        return (
+          <>
             <hr />
             <div className="d-flex flex-row">
               <i className="material-symbols-rounded me-2">check</i>
@@ -139,23 +82,11 @@ const CrearProyectos = () =>
               <p className="text-sans-h5">Comparten documentación como presupuestos, especificaciones técnicas, entre otros.</p>
             </div>
             <hr />
-            <div className="d-flex justify-content-center">
-              <button
-                className={`btn-secundario-s text-decoration-underline px-4 ${activeButton === 'bancoProyectos' ? 'btn-secundario-s-active' : 'btn-secundario-s'
-                  }`}
-                onClick={() => handleOptionChange('bancoProyectos')}
-                value='bancoProyectos'
-              >
-                Seleccionar
-              </button>
-            </div>
-          </div>
-
-          <div
-            className={`col-5 opt-container p-3 mx-3 ${activeButton === 'proyectosInnovadores' ? 'opt-container-active' : 'opt-container'
-              }`}
-          >
-            <h3 className="text-serif-h3 text-center text-decoration-underline">Proyectos Innovadores</h3>
+          </>
+        );
+      case 'proyectosInnovadores':
+        return (
+          <>
             <hr />
             <div className="d-flex flex-row">
               <i className="material-symbols-rounded me-2">check</i>
@@ -174,98 +105,109 @@ const CrearProyectos = () =>
               <p className="text-sans-h5">Proyectos novedosos que escapan de lo que normalmente se postula.</p>
             </div>
             <hr />
-            <div className="d-flex justify-content-center">
-              <button
-                className={`btn-secundario-s text-decoration-underline px-4 ${activeButton === 'proyectosInnovadores' ? 'btn-secundario-s-active' : 'btn-secundario-s'
-                  }`}
-                onClick={() => handleOptionChange('proyectosInnovadores')}
-                value="proyectosInnovadores"
-              >
-                Seleccionar
-              </button>
+          </>
+        );
+      default:
+        return <p className="text-sans-h5">Selecciona un tipo de proyecto para ver más información.</p>;
+    }
+  };
 
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="container view-container mx-5 mb-5">
+      <h2 className="text-sans-h2 mt-4 mb-5">Subir Proyecto</h2>
+      <div className="col-10 mx-5">
+        <h3 className="text-sans-h3 ms-1">Elige donde quieres mostrar el proyecto:</h3>
+
+        <div className="row my-5">
+          {[ 'bancoProyectos', 'proyectosInnovadores' ].map((option) => (
+            <div
+              key={option}
+              className={`col-5 opt-container p-3 mx-4 ${selectedOption === option ? 'opt-container-active' : ''}`}
+            >
+              <h3 className="text-serif-h3 text-center text-decoration-underline">
+                {option === 'bancoProyectos' ? 'Banco de Proyectos' : 'Proyectos Innovadores'}
+              </h3>
+              <div className="mx-2">{getContentForType(option)}</div>
+              <div className="d-flex justify-content-center">
+                <Controller
+                  name="projectType"
+                  control={control}
+                  render={({ field }) => (
+                    <button
+                      className={`btn-secundario-s  px-4 ${selectedOption === option ? 'btn-secundario-s-active' : ''}`}
+                      onClick={() => field.onChange(option)}
+                    >
+                      Seleccionar
+                    </button>
+                  )}
+                />
+              </div>
             </div>
-          </div>
+          ))}
         </div>
 
-        {showOptionErrorMessage &&
-          <p className="text-sans-h5-red ms-1 ">
-            Debes elegir donde quieres mostrar el proyecto antes de continuar.
-          </p>
-        }
+        {errors.projectType && <p className="text-sans-h5-red ms-1">{errors.projectType.message}</p>}
 
         <div className="container">
-          {isEditing ? (
-            // Modo de edición
-            <>
-              <div className="d-flex flex-row justify-content-between my-3">
-                <div>
-                  <p className="text-sans-h5">Escribe el título del proyecto (Obligatorio)</p>
-                  <input
-                    className="text-sans-h1 container-fluid ghost-input"
-                    placeholder="Titulo del Proyecto"
-                    value={inputText}
-                    onChange={handleInputChange}
-                  />
-                  <p className={`text-sans-h5 ${titleCharsExceeded ? "text-sans-h5-red" : ""}`}> {titleCharsCount} / {maxTitleChars} caracteres </p>
-                </div>
-
-              </div>
-
-              {showTitleErrorMessage && (
-                <p className="text-sans-h5-red mt-1">Debes ingresar un título antes de continuar.</p>
-              )}
-            </>
-          ) : (
-            // Modo de visualización
+          <div className="d-flex flex-row justify-content-between my-3">
             <div>
-              <p>Título del Proyecto</p>
-              <div className="d-flex flex-row justify-content-between my-3">
-                <h1 className="text-sans-h1">{inputText || "Titulo del Proyecto"}</h1>
-                <button
-                  className="btn-secundario-s d-flex pb-0"
-                  onClick={handleEditarClick}
-                >
-                  <p className=" text-decoration-underline">Editar</p>
-                  <i className="material-symbols-rounded ms-2 pt-1">edit</i>
-                </button>
-              </div>
+              <p className="text-sans-h5">Escribe el título del proyecto (Obligatorio)</p>
+              <Controller
+                name="title"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <input
+                      className="text-sans-h1 container-fluid ghost-input"
+                      placeholder="Titulo del Proyecto"
+                      {...field}
+                    />
+                    <p className={`text-sans-h5 ${field.value.length > 70 ? 'text-sans-h5-red' : ''}`}>
+                      {field.value.length} / 700 caracteres
+                    </p>
+                  </>
+                )}
+              />
+              {errors.title && <p className="text-sans-h5-red mt-1">{errors.title.message}</p>}
             </div>
-          )}
+          </div>
 
           <div>
             <p className="text-sans-p">Este proyecto corresponde al programa:</p>
-            {/* {isEditorOrSuperuser && ( */}
-              <div>
+            <Controller
+              name="program"
+              control={control}
+              render={({ field }) => (
                 <select
                   className="custom-selector p-3"
-                  onChange={(e) => setSelectedProgram(e.target.value)}
+                  {...field}
                   disabled={loadingPrograms}
                 >
-                  {/* Aquí irían las opciones del programa, asumiendo que dataPrograms es un array de programas */}
-                  {dataPrograms.map(program => (
+                  <option value="">Seleccionar Programa</option>
+                  {dataPrograms.map((program) => (
                     <option key={program.id} value={program.id}>
                       {program.name}
                     </option>
                   ))}
                 </select>
-              </div>
-            {/* )} */}
+              )}
+            />
+            {errors.program && <p className="text-sans-h5-red">{errors.program.message}</p>}
           </div>
         </div>
 
         <div className="container d-flex justify-content-end mt-5">
           <button
-            onClick={handleSubirProyectoClick}
+            onClick={handleSubmit(onSubmit)}
             className="btn-principal-s d-flex text-sans-h4 pb-0"
           >
-            <p className="text-sans-h4-white text-decoration-underline">Subir Proyecto</p>
+            <p className="text-decoration-underline">Subir Proyecto</p>
             <i className="material-symbols-rounded ms-2">arrow_forward_ios</i>
           </button>
         </div>
-
       </div>
-    </div>
+    </form>
   );
 };
-export default CrearProyectos; 
+
+export default CrearProyectos;

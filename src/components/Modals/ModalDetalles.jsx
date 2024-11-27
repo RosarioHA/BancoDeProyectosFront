@@ -14,16 +14,18 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
   const { dataPrograms, loadingPrograms, errorPrograms } = UseApiPrograms();
   const { dataTag } = useApiTagProject();
   const { dataYears, addYear } = useApiYears();
+
   // Estados para los inputs, inicializados con los valores preseleccionados si existen
   const [ selectedPrograma, setSelectedPrograma ] = useState(initialDetails.programa || '');
   const [ selectedTipoProyecto, setSelectedTipoProyecto ] = useState(initialDetails.tipoProyecto || '');
   const [ selectedTag, setSelectedTag ] = useState(initialDetails.tag || '');
   const [ selectedRegion, setSelectedRegion ] = useState(initialDetails.region || '');
   const [ selectedRegionID, setSelectedRegionID ] = useState(null);
-  const [ selectedComuna, setSelectedComuna ] = useState(initialDetails.comuna || ''); // Muestra el string de la comuna
+  const [ selectedComuna, setSelectedComuna ] = useState(initialDetails.comuna || ''); 
   const [ selectedYear, setSelectedYear ] = useState(initialDetails.year || '');
   const [ idSubdere, setIdSubdere ] = useState(initialDetails.idSubdere || '');
-  // Reutilizable: Función para buscar un valor por nombre y establecer su ID en el estado correspondiente
+  const [ filteredTypes, setFilteredTypes ] = useState(dataType);
+
   const findAndSetByName = useCallback((name, dataList, setter, key = 'name') =>
   {
     if (name && dataList)
@@ -62,16 +64,58 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
     }
   }, [ data, initialDetails.region, initialDetails.comuna ]);
 
-  // Efectos reutilizando `findAndSetByName`
   useEffect(() =>
   {
-    findAndSetByName(initialDetails.programa, dataPrograms, setSelectedPrograma);
-  }, [ dataPrograms, initialDetails.programa, findAndSetByName ]);
+    if (initialDetails.tipoProyecto)
+    {
+      setSelectedTipoProyecto(initialDetails.tipoProyecto);
+    }
+  }, [ initialDetails.tipoProyecto ]);
 
   useEffect(() =>
   {
-    findAndSetByName(initialDetails.tipoProyecto, dataType, setSelectedTipoProyecto);
-  }, [ dataType, initialDetails.tipoProyecto, findAndSetByName ]);
+    if (selectedPrograma && dataType)
+    {
+      const filtered = dataType.filter((type) => type.program === parseInt(selectedPrograma));
+      setFilteredTypes(filtered);
+      const initialType = filtered.find((type) => type.name === initialDetails.tipoProyecto);
+      if (initialType)
+      {
+        setSelectedTipoProyecto(initialType.id);
+      } else
+      {
+        setSelectedTipoProyecto('');
+      }
+    }
+  }, [ selectedPrograma, dataType, initialDetails.tipoProyecto ]);
+
+
+
+  useEffect(() =>
+  {
+    if (dataPrograms && initialDetails.programa)
+    {
+      const selectedProgram = dataPrograms.find(program => program.name === initialDetails.programa);
+      if (selectedProgram)
+      {
+        setSelectedPrograma(selectedProgram.id);
+      }
+    }
+  }, [ dataPrograms, initialDetails.programa ]);
+
+  useEffect(() =>
+  {
+    if (dataPrograms && initialDetails.programa)
+    {
+      const selectedProgram = dataPrograms.find(program => program.name === initialDetails.programa);
+      if (selectedProgram)
+      {
+        setSelectedPrograma(selectedProgram.id);
+      }
+    }
+  }, [ dataPrograms, initialDetails.programa ]);
+
+
 
   useEffect(() =>
   {
@@ -151,7 +195,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
 
   const handleGuardar = () =>
   {
-    const tipoProyectoid = dataType.find(type => type.id === parseInt(selectedTipoProyecto))?.id;
+    const tipoProyectoid = dataType.find((type) => type.id === parseInt(selectedTipoProyecto))?.id;
     const comunaID = data.find(region => region.id === parseInt(selectedRegionID))
       ?.comunas.find(comuna => comuna.comuna === selectedComuna)?.id;
     const newDetails = {
@@ -161,7 +205,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
       comuna: comunaID,
       year: selectedYear,
       id_subdere: idSubdere,
-      prioritized_tag: selectedTag,
+      prioritized_tag: selectedTag || null,
     };
 
     // Llamar a la función de callback para pasar los nuevos detalles al componente padre
@@ -180,10 +224,10 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
         modalID="modalDetalles">
         <div className="modal-detalle d-flex align-items-center">
 
-          <form className="col">
+          <div className="col">
             {/* Programa */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">Elige el programa</label>
+              <label className="text-sans-p px-3">Elige el programa (Obligatorio)</label>
               <select
                 className="custom-select px-3"
                 value={selectedPrograma || ''}
@@ -198,14 +242,14 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
 
             {/* Tipo de Proyecto */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">Elige el tipo de proyecto</label>
+              <label className="text-sans-p px-3">Elige el tipo de proyecto (Obligatorio)</label>
               <select
                 className="custom-select px-3"
-                value={selectedTipoProyecto}
+                value={selectedTipoProyecto || ''}
                 onChange={(e) => setSelectedTipoProyecto(e.target.value)}
               >
                 <option value="">Elige una opción</option>
-                {!typeLoading && !typeError && dataType?.map(type => (
+                {!typeLoading && !typeError && filteredTypes?.map((type) => (
                   <option key={type.id} value={type.id}>{type.name}</option>
                 ))}
               </select>
@@ -216,7 +260,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
               <select
                 className="custom-select px-3"
                 value={selectedTag || ''}
-                onChange={(e) => setSelectedTag(e.target.value)} // Update state with selected tag ID
+                onChange={(e) => setSelectedTag(e.target.value)} // selectedTag should be ID here
               >
                 <option value="">Elige una opción</option>
                 {dataTag?.map(tag => (
@@ -226,7 +270,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
             </div>
             {/* Región */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">¿En qué región está el proyecto?</label>
+              <label className="text-sans-p px-3">¿En qué región está el proyecto? (Obligatorio)</label>
               <select
                 className="custom-select px-3"
                 value={selectedRegionID || ''}
@@ -241,7 +285,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
 
             {/* Comuna */}
             <div className="col-12 d-flex flex-column my-4">
-              <label className="text-sans-p px-3">¿En qué comuna?</label>
+              <label className="text-sans-p px-3">¿En qué comuna? (Obligatorio)</label>
               <select
                 className="custom-select px-3"
                 value={selectedComuna || ''}
@@ -264,7 +308,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
 
             {/* ID SUBDERE */}
             <div className="d-flex flex-column input-container my-4">
-              <label className="text-sans-p input-label ms-3 ms-sm-0" htmlFor="idSubdere">ID SUBDERE </label>
+              <label className="text-sans-p input-label ms-3 ms-sm-0" htmlFor="idSubdere">ID SUBDERE (Obligatorio) </label>
               <input
                 className="input-s px-3"
                 type="text"
@@ -273,7 +317,7 @@ export const ModalDetalles = ({ initialDetails = {}, onGuardar }) =>
                 placeholder="Ingresa el ID SUBDERE del Proyecto"
               />
             </div>
-          </form>
+          </div>
 
 
           <div className="col-10 d-flex justify-content-between">

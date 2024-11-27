@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useApiInnovativeProjects from './innovativeProject/useApiInnovativeProjects';
+import useApiInnovativeProjects from './innovativeProject/useInnovativeAdminDetail';
 
 const useGalleryInnovative = (projectId) =>
 {

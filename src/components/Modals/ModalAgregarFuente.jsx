@@ -1,31 +1,39 @@
 import { useState, useEffect } from "react";
 import { ModalBase } from "./ModalBase";
-import useApiInnovativeProjects from "../../hooks/innovativeProject/useApiInnovativeProjects";
+import useApiInnovativeProjects from "../../hooks/innovativeProject/useInnovativeAdminDetail";
 
-const ModalAgregarFuente = ({ projectId }) => {
-  const [newWebSource, setNewWebSource] = useState("");
-  const [webSources, setWebSources] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false); 
+const ModalAgregarFuente = ({ projectId,  onRefresh }) =>
+{
+  const [ newWebSource, setNewWebSource ] = useState("");
+  const [ webSources, setWebSources ] = useState([]);
+  const [ modalVisible, setModalVisible ] = useState(false);
   const { getInnovativeProjectById, updateInnovativeProject } = useApiInnovativeProjects();
 
-  useEffect(() => {
-    const fetchWebSources = async () => {
+  useEffect(() =>
+  {
+    const fetchWebSources = async () =>
+    {
       const project = await getInnovativeProjectById(projectId);
-      if (project && project.web_sources) {
+      if (project && project.web_sources)
+      {
         setWebSources(project.web_sources);
       }
     };
     fetchWebSources();
-  }, [projectId, getInnovativeProjectById]);
+  }, [ projectId, getInnovativeProjectById ]);
 
-  const addNewWebSource = async () => {
-    if (newWebSource) {
-      const updatedWebSources = [...webSources, { url: `https://${newWebSource}` }];
+  const addNewWebSource = async () =>
+  {
+    if (newWebSource)
+    {
+      const updatedWebSources = [ ...webSources, { url: `https://${newWebSource}` } ];
       const result = await updateInnovativeProject(projectId, { web_sources: updatedWebSources });
-      if (result) {
+      onRefresh(); 
+      if (result)
+      {
         setWebSources(updatedWebSources);
         setNewWebSource("");
-        setModalVisible(false); 
+        setModalVisible(false);
       }
     }
   };
@@ -38,6 +46,7 @@ const ModalAgregarFuente = ({ projectId }) => {
         title="Agregar fuente (Opcional)"
         modalID="ModalAgregarFuente"
         visible={modalVisible}
+        classStyle="btn-secundario-s"
         onClose={() => setModalVisible(false)}
       >
         <p>Enlace de la fuente referencial:</p>
@@ -54,11 +63,11 @@ const ModalAgregarFuente = ({ projectId }) => {
 
         <hr />
         <div className="d-flex justify-content-between">
-          <button className="btn-secundario-s d-flex align-items-center"  data-bs-dismiss="modal">
+          <button className="btn-secundario-s d-flex align-items-center" data-bs-dismiss="modal">
             <i className="material-symbols-rounded">chevron_left</i>
             <p className="text-decoration-underline mb-0">Volver a la solicitud</p>
           </button>
-          <button className="btn-principal-s d-flex align-items-center" onClick={addNewWebSource}  data-bs-dismiss="modal">
+          <button className="btn-principal-s d-flex align-items-center" onClick={addNewWebSource} data-bs-dismiss="modal">
             <i className="material-symbols-rounded">add</i>
             <p className="text-decoration-underline mb-0">Agregar Fuentes</p>
           </button>
