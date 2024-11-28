@@ -133,12 +133,12 @@ const CrearProyectos = () =>
                   name="projectType"
                   control={control}
                   render={({ field }) => (
-                    <button
+                    <a
                       className={`btn-secundario-s  px-4 ${selectedOption === option ? 'btn-secundario-s-active' : ''}`}
                       onClick={() => field.onChange(option)}
                     >
                       Seleccionar
-                    </button>
+                    </a>
                   )}
                 />
               </div>

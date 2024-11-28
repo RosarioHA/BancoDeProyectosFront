@@ -7,6 +7,8 @@ function UploadImgsm({ imgs = [], add, delete: deleteImage }) {
   const [alertMessage, setAlertMessage] = useState('');
   const modalRef = useRef(null);
 
+  console.log(imgs)
+
   const openModal = (imageUrl) => {
     setCurrentImg(imageUrl);
     setShowModal(true);
