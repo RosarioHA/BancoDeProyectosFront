@@ -7,7 +7,7 @@ const ModalAgregarFuente = ({ projectId,  onRefresh }) =>
   const [ newWebSource, setNewWebSource ] = useState("");
   const [ webSources, setWebSources ] = useState([]);
   const [ modalVisible, setModalVisible ] = useState(false);
-  const { getInnovativeProjectById, updateInnovativeProject } = useApiInnovativeProjects();
+  const { getInnovativeProjectById, createWebSource} = useApiInnovativeProjects();
 
   useEffect(() =>
   {
@@ -26,8 +26,8 @@ const ModalAgregarFuente = ({ projectId,  onRefresh }) =>
   {
     if (newWebSource)
     {
-      const updatedWebSources = [ ...webSources, { url: `https://${newWebSource}` } ];
-      const result = await updateInnovativeProject(projectId, { web_sources: updatedWebSources });
+      const updatedWebSources = {url: `https://${newWebSource}`};
+      const result = await  createWebSource(projectId,  updatedWebSources );
       onRefresh(); 
       if (result)
       {
@@ -37,6 +37,8 @@ const ModalAgregarFuente = ({ projectId,  onRefresh }) =>
       }
     }
   };
+
+  console.log('ws', webSources)
 
   return (
     <>

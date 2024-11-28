@@ -122,7 +122,7 @@ const EditarInnovador = () =>
   {
     try
     {
-      const updatedData = await fetchInnovativeAdminData(id); // Asegúrate de tener un método para refrescar datos.
+      const updatedData = await fetchInnovativeAdminData(id); 
       setWebSource(updatedData?.web_sources || []);
       setInnovativeData((prev) => ({
         ...prev,
@@ -147,7 +147,6 @@ const EditarInnovador = () =>
           ...dataInnovativeAdmin
         }));
       }
-
       return newEditingState;
     });
   };
@@ -203,13 +202,18 @@ const EditarInnovador = () =>
     }
   };
 
-  const handleStatusChange = (status) =>
-  {
-    setIsPublished(status);
-    // Lógica para guardar el cambio en la base de datos
-    console.log("Estado seleccionado:", status ? "Publicado" : "Privado");
-
-  };
+  const handleStatusChange = async (status) =>
+    {
+      setIsPublished(status);
+      try
+      {
+        const updatedData = await updateInnovative(id, { public: status });
+        setInnovativeData((prev) => ({ ...prev, public: updatedData.public }));
+      } catch (error)
+      {
+        console.error("Error al actualizar el estado de publicación:", error);
+      }
+    };
   // Maneja el botón de volver atrás
   const handleBackButtonClick = () =>
   {
@@ -328,9 +332,9 @@ const EditarInnovador = () =>
           <div className="container mx-2 my-2">
             <div className="row row-cols-2">
               <div className="col ">Creado por: {innovativeData?.author_name || ''}</div>
-              <div className="col ">Publicado por:  </div>
+              <div className="col ">Publicado por: {innovativeData?.published_name || ''}  </div>
               <div className="col ">Fecha de creación: {innovativeData?.created || ''}</div>
-              <div className="col ">Fecha de publicación: </div>
+              <div className="col ">Fecha de publicación: {innovativeData?.published_date|| ''} </div>
               <div className="col ">Última modificación: {innovativeData?.modified || ''}</div>
             </div>
             <div className="row my-3">
@@ -338,7 +342,7 @@ const EditarInnovador = () =>
                 <div className="col-4">
                   {isCompleted ? (
                     <>
-                      <div className="">Cambiar estado de publicación</div>
+                      <div>Cambiar estado de publicación</div>
                       <div className="d-flex my-2">
                         <button
                           className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
@@ -378,6 +382,7 @@ const EditarInnovador = () =>
                     slug={dataInnovativeAdmin?.id}
                     name={dataInnovativeAdmin?.title}
                     text='innovador'
+                    buttonText="innovadores"
                     type="innovative"
                   />
                 </div>
@@ -462,7 +467,7 @@ const EditarInnovador = () =>
                         rows="7"
                         value={text}
                         onChange={handleTextChange}
-                        maxLength="700"
+                        maxLength="2000"
                       />
                       <span className="text-sans-h5 m-0">{count}/2000 caracteres.</span>
                       {errorMessage && <p className="text-danger">{errorMessage}</p>}
@@ -602,7 +607,6 @@ const EditarInnovador = () =>
                   <div className="text-sans-h5-red mt-3 mx-5">{errorComplete}</div>
                 )}
                 <button className="btn-principal-s d-flex text-sans-h4 pb-0 me-4"
-                  type="submit"
                   onClick={handleCompleteButtonClick}>
                   <p className="text-decoration-underline">Completar Proyecto</p>
                   <i className="material-symbols-rounded ms-2">arrow_forward_ios</i>

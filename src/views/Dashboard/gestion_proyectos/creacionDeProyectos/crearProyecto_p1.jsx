@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate , useLocation} from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useApiProjectsDetailAdmin } from "../../../../hooks/proyectos/useApiProjectDetailAdmin";
 import { useApiUpdateProject } from "../../../../hooks/proyectos/useUpdateProject"
 import { useGalleryProject } from "../../../../hooks/proyectos/useGalleryProject";
@@ -10,10 +10,10 @@ import UploadImg from "../../../../components/Commons/UploadImg";
 import UploadImgsm from "../../../../components/Commons/UploadImgsm";
 import { DocumentsProjects } from "../../../../components/Tables/DocumentsProjects";
 import DocumentsAditionals from "../../../../components/Commons/DocumentsAditionals";
-
+import { Desechar } from "../../../../components/Modals/desechar";
 const CrearProyectoP1 = () =>
 {
-  const location= useLocation()
+  const location = useLocation()
   const { slug } = useParams();
   const { dataProjectAdmin, loadingProject, errorProject, fetchProjectAdminData } = useApiProjectsDetailAdmin(slug);
   const { updateProject } = useApiUpdateProject();
@@ -31,8 +31,7 @@ const CrearProyectoP1 = () =>
   const [ previousLink, setPreviousLink ] = useState('');
   const [ files, setFiles ] = useState([] || '');
   const navigate = useNavigate();
-  const projectData = location.state?.project; 
-  console.log(projectData)
+  const projectData = location.state?.project;
 
   useEffect(() =>
   {
@@ -291,11 +290,11 @@ const CrearProyectoP1 = () =>
       }));
       setSuccessMessage("El proyecto se ha marcado como completo.");
       // Redirigir a la siguiente vista
-      navigate('/dashboard/creacion_exitosa', {state:{origen:projectData.projectType, name:dataProject?.name}});
+      navigate('/dashboard/creacion_exitosa', { state: { origen: projectData.projectType, name: dataProject?.name } });
     } catch (error)
     {
       console.error("Error al marcar el proyecto como completo:", error);
-      setErrorMessage("No se pudo marcar el proyecto como completo.");
+      setErrorMessage("No se pudo marcar el proyecto como completo.", error);
     }
   };
 
@@ -574,11 +573,20 @@ const CrearProyectoP1 = () =>
             </div>
           </>
           <div className="col-10  d-flex  justify-content-between mx-auto  my-5 py-5">
-            <button className="btn-secundario-s text-sans-h4 d-flex pb-0 ">
-              <p className="text-decoration-underline">volver atrás</p>
-            </button>
+            <Desechar
+              slug={dataProjectAdmin?.slug}
+              name={dataProjectAdmin?.name}
+              type="standard"
+              text=''
+            />
+            {successMessage && (
+              <div className="alert-success mt-3">{successMessage}</div>
+            )}
+            {errorMessage && (
+              <div className="text-sans-h5-red mt-3 mx-5">{errorMessage}</div>
+            )}
             <button className="btn-principal-s d-flex text-sans-h4 pb-0 me-4"
-              type="submit"
+              type="button"
               onClick={handleCompleteProject}>
               <p className="text-decoration-underline">Crear Proyecto </p>
               <i className="material-symbols-rounded ms-2">arrow_forward_ios</i>

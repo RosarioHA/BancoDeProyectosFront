@@ -1,66 +1,60 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom"
+import { useNavigate,useParams } from "react-router-dom"
 import ModalAgregarFuente from "../../../../components/Modals/ModalAgregarFuente";
 import ModalEditarFuente from "../../../../components/Modals/ModalEditarFuente";
 import UploadImg from "../../../../components/Commons/UploadImg";
 import UploadImgsm from "../../../../components/Commons/UploadImgsm";
-import useApiInnovativeProjects from "../../../../hooks/innovativeProject/useInnovativeAdminDetail";
 import { useUpdateInnovative } from "../../../../hooks/innovativeProject/useUpdateInnovative";
 import { UseApiPrograms } from "../../../../hooks/usePrograms";
 import { EditableTitle } from "../../../../components/Tables/InputTitle";
 // import { useAuth } from '../../../../context/AuthContext';
-import useGalleryInnovative from '../../../../hooks/useGalleryInovative';
+import { useGalleryInnovative } from "../../../../hooks/innovativeProject/useGalleryInnovative";
 import { useInnovativeDetailAdmin } from '../../../../hooks/innovativeProject/useInnovativeDetail';
-import { useDeleteInnovative } from "../../../../hooks/innovativeProject/useDeleteInnovative";
 import { Desechar } from "../../../../components/Modals/desechar";
 
 const CrearProyectoInnovadorP1 = () =>
 {
   // const { userData } = useAuth();
-  const location = useLocation()
   const { id } = useParams();
-  const projectData = location.state;
-  // const isEditorOrSuperuser = [ 'Superusuario', 'Editor General' ].includes(userData.tipo_de_usuario);
-  const [ projectId, setProjectId ] = useState();
+  // const isEditorOrSuperuser = [ 'Superusuario', 'Editor' ].includes(userData.tipo_de_usuario);
   const { updateInnovative } = useUpdateInnovative()
   const { dataInnovativeAdmin, fetchInnovativeAdminData } = useInnovativeDetailAdmin(id);
-  const { updateInnovativeProject, deleteInnovativeProject } = useApiInnovativeProjects();
   const { dataPrograms } = UseApiPrograms();
   const { deleteImage, addImage } = useGalleryInnovative(id)
-  const { deleteInnovative, loading, error, success } = useDeleteInnovative();
 
   const [ completingProject, setCompletingProject ] = useState(false);
   const [ innovativeData, setInnovativeData ] = useState(null);
   const [ selectedProgram, setSelectedProgram ] = useState();
-  const [ successMessage, setSuccessMessage ] = useState('');
   const [ successComplete, setSuccessComplete ] = useState('');
   const [ errorComplete, setErrorComplete ] = useState(null);
   const [ errorMessage, setErrorMessage ] = useState(null);
-  const [ editando, setEditando ] = useState(false);
   const [ text, setText ] = useState('');
   const [ count, setCount ] = useState(0);
   const [ webSource, setWebSource ] = useState();
   const [ message, setMessage ] = useState({ type: "", text: "" });
 
+  useEffect(() =>
+  {
+    if (dataInnovativeAdmin)
+    {
+      setText(dataInnovativeAdmin?.description || '');
+      setCount(dataInnovativeAdmin?.description?.length || 0);
+      setWebSource(dataInnovativeAdmin?.web_sources || '');
+      // Cargar detalles iniciales
+      setInnovativeData((prev) => ({
+        ...prev,
+        ...dataInnovativeAdmin,
+      }));
+    }
+  }, [ dataInnovativeAdmin ]);
 
-
-  const [ inputTitle, setInputTitle ] = useState(projectData?.title || '');
-  const [ inputDescr, setInputDescr ] = useState('');
-  const [ isEditingTitle, setIsEditingTitle ] = useState(false);
-  const [ showTitleErrorMessage, setShowTitleErrorMessage ] = useState(false);
-  const [ isEditingDescr, setIsEditingDescr ] = useState(false);
-  const [ showDescrError, setShowDescrError ] = useState(false);
-  const [ currentProjectId, setCurrentProjectId ] = useState(null);
-  const [ maxDescChars ] = useState(700); // Maximo de caracteres para la descripcion
-  const [ descCharsCount, setDescCharsCount ] = useState(0);
-  const [ descCharsExceeded, setDescCharsExceeded ] = useState(false);
-
-  const [ coverImages, setCoverImages ] = useState([]);
-  console.log(coverImages)
-
-  console.log(dataInnovativeAdmin)
-
-  console.log(projectData)
+  useEffect(() =>
+    {
+      if (dataInnovativeAdmin?.web_sources)
+      {
+        setWebSource(dataInnovativeAdmin.web_sources);
+      }
+    }, [ dataInnovativeAdmin ]);
 
   // Inicializar datos y programa seleccionado
   useEffect(() =>
@@ -72,37 +66,10 @@ const CrearProyectoInnovadorP1 = () =>
     }
   }, [ dataInnovativeAdmin ]);
 
-
-
-  const handleSaveClick = async (input, setEditing, setShowError, updateFunction, field) =>
+  useEffect(() =>
   {
-    const trimmedText = input.trim();
-    if (trimmedText)
-    {
-      if (currentProjectId)
-      {
-        const updateData = {
-          [ field ]: trimmedText,
-        };
-        try
-        {
-          await updateFunction(currentProjectId, updateData);
-          setEditing(false);
-          setShowError(false);
-        } catch (error)
-        {
-          console.error(`Error al actualizar ${field}:`, error);
-          // Maneja el error según sea necesario
-        }
-      } else
-      {
-        console.log("ID del proyecto no definido");
-      }
-    } else
-    {
-      setShowError(true);
-    }
-  };
+  }, [ innovativeData ]);
+
 
 
 
@@ -115,37 +82,6 @@ const CrearProyectoInnovadorP1 = () =>
   };
 
 
-  useEffect(() =>
-  {
-    const projectId = new URLSearchParams(window.location.search).get('id');
-    if (projectId)
-    {
-      setProjectId(projectId);
-    }
-  }, []);
-
-
-
-
-
-
-
-
-  // LOGICA TITULO
-  // Maneja cambios en el input Titulo y actualiza el estado.
-  const handleInputChange = (event, setInput, setCount, setExceeded, maxChars) =>
-  {
-    const text = event.target.value;
-    if (text.length <= maxChars)
-    {
-      setInput(text);
-      setCount(text.length);
-      setExceeded(false);
-    } else
-    {
-      setExceeded(true);
-    }
-  };
 
   const handleTextChange = (e) =>
   {
@@ -158,32 +94,26 @@ const CrearProyectoInnovadorP1 = () =>
   const handleButtonClick = async () =>
   {
     setErrorMessage(null);
-    if (editando)
-    {
-      if (text.length > 2000)
-      {
-        setErrorMessage('El texto no puede superar los 2000 caracteres.');
-        return;
-      }
-      if (text.trim().length === 0)
-      {
-        setErrorMessage('No puede guardar un texto vacío.');
-        return;
-      }
 
-      try
-      {
-        const updatedData = await updateInnovative(id, { description: text });
-        setInnovativeData((prev) => ({ ...prev, description: updatedData.description }));
-        setEditando(false);
-      } catch (error)
-      {
-        console.error("Error al actualizar la descripción del proyecto:", error);
-        setErrorMessage("No se pudo guardar la descripción.");
-      }
-    } else
+    if (text.length > 2000)
     {
-      setEditando(true);
+      setErrorMessage('El texto no puede superar los 2000 caracteres.');
+      return;
+    }
+    if (text.trim().length === 0)
+    {
+      setErrorMessage('No puede guardar un texto vacío.');
+      return;
+    }
+
+    try
+    {
+      const updatedData = await updateInnovative(id, { description: text });
+      setInnovativeData((prev) => ({ ...prev, description: updatedData.description }));
+    } catch (error)
+    {
+      console.error("Error al actualizar la descripción del proyecto:", error);
+      setErrorMessage("No se pudo guardar la descripción.");
     }
   };
 
@@ -204,7 +134,7 @@ const CrearProyectoInnovadorP1 = () =>
   {
     try
     {
-      const updatedData = await fetchInnovativeAdminData(id); // Asegúrate de tener un método para refrescar datos.
+      const updatedData = await fetchInnovativeAdminData(id); 
       setWebSource(updatedData?.web_sources || []);
       setInnovativeData((prev) => ({
         ...prev,
@@ -269,12 +199,16 @@ const CrearProyectoInnovadorP1 = () =>
   };
 
 
+
   const handleCompleteProject = async () =>
   {
-    if (completingProject)
-    {  // Solo ejecuta si completingProject es verdadero
+    // Ejecuta la lógica solo si no está completando el proyecto ya.
+    if (!completingProject)
+    {
       try
       {
+        setCompletingProject(true); // Marca como completado antes de hacer la actualización
+
         await updateInnovative(id, { is_complete: true });
         setInnovativeData((prev) => ({
           ...prev,
@@ -288,22 +222,12 @@ const CrearProyectoInnovadorP1 = () =>
         console.error("Error al marcar el proyecto como completo:", err.message);
         setErrorComplete(err.message);
         setSuccessComplete("");
+      } finally
+      {
+        setCompletingProject(false); // Desactiva el estado de 'completando' después de ejecutar
       }
     }
   };
-
-  const handleCompleteButtonClick = () =>
-  {
-    setCompletingProject(true);  // Establece el estado para permitir la ejecución
-    handleCompleteProject();     // Ejecuta la función
-  };
-
-
-
-
-  const handleDescrInputChange = (event) => handleInputChange(event, setInputDescr, setDescCharsCount, setDescCharsExceeded, maxDescChars);
-  const handleSaveDescrClick = () => handleSaveClick(inputDescr, setIsEditingDescr, setShowDescrError, updateInnovativeProject, 'description', projectId);
-
 
   const handleProgramChange = async (e) =>
   {
@@ -327,26 +251,6 @@ const CrearProyectoInnovadorP1 = () =>
       setMessage({ type: "error", text: "No se pudo actualizar el programa." });
     }
   };
-
-  const handleDeleteProjectClick = async () =>
-  {
-    if (id)
-    {
-      const confirmDeletion = window.confirm("¿Estás seguro de que quieres eliminar este proyecto?");
-      if (confirmDeletion)
-      {
-        await deleteInnovative(id);
-        console.log("Proyecto eliminado");
-        history(-1);
-      }
-    } else
-    {
-      console.log("ID del proyecto no definido");
-    }
-  };
-
-
-
 
 
 
@@ -407,73 +311,45 @@ const CrearProyectoInnovadorP1 = () =>
 
           {/* Descripcion */}
           <div className="container">
-            {isEditingDescr ? (
-              // Modo de edición
-              <>
-                <div className="d-flex flex-column my-4">
-                  <h3 className="text-sans-h3">Descripción del proyecto</h3>
-                  <textarea
-                    className="description-input text-sans-p container ghost-input"
-                    placeholder="Descripción del proyecto"
-                    value={inputDescr}
-                    onChange={handleDescrInputChange}
-                  />
-                  <p className={`text-sans-h5 ${descCharsExceeded ? "text-sans-h5-red" : ""}`}>{descCharsCount} / {maxDescChars} caracteres</p>
-                  <button
-                    className="btn-principal-s d-flex text-sans-h4 pb-0 px-3"
-                    onClick={handleSaveDescrClick}
-                  >
-                    <p className="text-sans-p-white text-decoration-underline">Guardar</p>
-                    <i className="material-symbols-rounded ms-2 pt-1">save</i>
-                  </button>
+            <div>
+              <div className="d-flex flex-column my-3">
+                <h3 className="text-sans-h3">Descripción del proyecto</h3>
+                <div className="description-container">
+                  <>
+                    <textarea
+                      className="form-control my-3"
+                      id="FormControlTextarea"
+                      placeholder="Descripción del proyecto"
+                      rows="7"
+                      value={text || dataInnovativeAdmin.description}
+                      onChange={handleTextChange}
+                      maxLength="2000"
+                    />
+                    <span className="text-sans-h5 m-0">{count}/2000 caracteres.</span>
+                    {errorMessage && <p className="text-danger">{errorMessage}</p>}
+                  </>
                 </div>
-
-                {showDescrError && (
-                  <p className="text-sans-h5-red mt-1">Debes ingresar la descripción del proyecto antes de continuar.</p>
-                )}
-              </>
-            ) : (
-              // Modo de visualización
-              <div>
-                <div className="d-flex flex-column my-3">
-                  <h3 className="text-sans-h3">Descripción del proyecto</h3>
-                  <div className="description-container">
-                    <>
-                      <textarea
-                        className="form-control my-3"
-                        id="FormControlTextarea"
-                        placeholder="Descripción del proyecto"
-                        rows="7"
-                        value={text}
-                        onChange={handleTextChange}
-                        maxLength="700"
-                      />
-                      <span className="text-sans-h5 m-0">{count}/2000 caracteres.</span>
-                      {errorMessage && <p className="text-danger">{errorMessage}</p>}
-                    </>
-                  </div>
-                  <button
-                    className="btn-principal-s d-flex text-sans-h4 pb-0 me-1"
-                    onClick={handleButtonClick}
-                    type="button"
-                  >
-                    <p className="text-decoration-underline">
-                      Guardar
-                    </p>
-                    <i className="material-symbols-rounded ms-2 pt-1">
-                      save
-                    </i>
-                  </button>
-                </div>
+                <button
+                  className="btn-principal-s d-flex text-sans-h4 pb-0 me-1"
+                  type="submit"
+                  onClick={handleButtonClick}
+                >
+                  <p className="text-decoration-underline">
+                    Guardar
+                  </p>
+                  <i className="material-symbols-rounded ms-2 pt-1">
+                    save
+                  </i>
+                </button>
               </div>
-            )}
+            </div>
           </div>
           {/*fuentes */}
           <>
             {innovativeData?.web_sources?.length > 0 ? (
               <>
                 <div className="d-flex flex-column">
-                  {innovativeData?.web_sources.map((source, index) => (
+                  {webSource.map((source, index) => (
                     <div key={source?.id} className="d-flex justify-content-between my-2">
                       <div>
                         {/* Aquí se muestra el link de la fuente */}
@@ -534,16 +410,22 @@ const CrearProyectoInnovadorP1 = () =>
         </div>
       </div>
 
-      <div className="col-10  d-flex  justify-content-between mx-auto  my-5 py-5">
+      <div className="col-11  d-flex  justify-content-between mx-auto mb-5">
         <Desechar
           slug={dataInnovativeAdmin?.id}
           name={dataInnovativeAdmin?.title}
           type="innovative"
+          text='innovadores'
         />
-        <button className="btn-principal-s d-flex text-sans-h4 pb-0 me-4"
-          type="submit"
-          onClick={handleCompleteButtonClick}>
-          <p className="text-decoration-underline">Crear Proyecto </p>
+        {successComplete && (
+          <div className="alert-success mt-3">{successComplete}</div>
+        )}
+        {errorComplete && (
+          <div className="text-sans-h5-red mt-3 mx-5">{errorComplete}</div>
+        )}
+        <button className="btn-secundario-s d-flex justify-content-between"
+          onClick={handleCompleteProject}>
+          <span className="text-decoration-underline mx-1">Crear Proyecto </span>
           <i className="material-symbols-rounded ms-2">arrow_forward_ios</i>
         </button>
       </div>

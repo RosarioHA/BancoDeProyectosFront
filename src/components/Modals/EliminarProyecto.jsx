@@ -4,7 +4,8 @@ import ModalBase from './ModalBase'; // Asumiendo que tienes ModalBase en la mis
 import { useDeleteProject } from '../../hooks/proyectos/useDeleteProject';
 import { useDeleteInnovative } from '../../hooks/innovativeProject/useDeleteInnovative'
 
-export const DeleteProjectModal = ({ slug, name, text, type }) => {
+export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
+{
   const {
     deleteProject,
     error: errorStandard,
@@ -21,17 +22,22 @@ export const DeleteProjectModal = ({ slug, name, text, type }) => {
     success: successInnovative,
   } = useDeleteInnovative();
 
-  const [isDeleted, setIsDeleted] = useState(false);
+  const [ isDeleted, setIsDeleted ] = useState(false);
   const navigate = useNavigate();
 
-  const handleDelete = async () => {
-    try {
-      if (type === 'standard') {
+  const handleDelete = async () =>
+  {
+    try
+    {
+      if (type === 'standard')
+      {
         await deleteProject(slug);
-      } else if (type === 'innovative') {
+      } else if (type === 'innovative')
+      {
         await deleteInnovative(slug);
       }
-    } catch (err) {
+    } catch (err)
+    {
       console.error("Error al eliminar el proyecto", err);
     }
   };
@@ -40,11 +46,13 @@ export const DeleteProjectModal = ({ slug, name, text, type }) => {
   const error = type === 'standard' ? errorStandard : errorInnovative;
   const loading = type === 'standard' ? loadingStandard : loadingInnovative;
 
-  useEffect(() => {
-    if (success) {
+  useEffect(() =>
+  {
+    if (success)
+    {
       setIsDeleted(true);
     }
-  }, [success]);
+  }, [ success ]);
 
   return (
     <ModalBase
@@ -99,9 +107,13 @@ export const DeleteProjectModal = ({ slug, name, text, type }) => {
             <button
               className="btn-secundario-s"
               data-bs-dismiss="modal"
-              onClick={() => navigate('/dashboard/administrar_proyectos')}
+              onClick={() => navigate(
+                type === 'standard'
+                  ? '/dashboard/administrar_proyectos'
+                  : '/dashboard/administrar_proyectos_innovadores'
+              )}
             >
-              Volver a administrar proyectos
+              Volver a administrar proyectos  {buttonText}
             </button>
           </div>
         </div>

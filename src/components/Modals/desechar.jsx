@@ -88,12 +88,16 @@ export const Desechar = ({ slug,  text, type }) => {
         <div className="container text-center">
           <span className="text-sans-h4">La solicitud ha sido eliminada exitosamente.</span>
           <div className="d-flex justify-content-center">
-            <button
+          <button
               className="btn-secundario-s"
               data-bs-dismiss="modal"
-              onClick={() => navigate('/dashboard/administrar_proyectos')}
+              onClick={() => navigate(
+                type === 'standard'
+                  ? '/dashboard/administrar_proyectos'
+                  : '/dashboard/administrar_proyectos_innovadores'
+              )}
             >
-              Volver a administrar proyectos {text ||""}
+              Volver a administrar proyectos {text}
             </button>
           </div>
         </div>
