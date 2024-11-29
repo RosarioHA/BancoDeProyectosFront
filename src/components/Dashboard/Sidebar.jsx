@@ -115,11 +115,11 @@ export const Sidebar = () =>
               </button>
               <ul className={openDropdownSidebar ? "dropdown-menu show bg-white border-0 ms-3" : "dropdown-menu bg-white border-0 ms-4"}>
                 <li className="my-1">
-                  <SidebarLink to="#" icon="file_copy" text="Documentos" hasBorder={false} />
+                  <SidebarLink to="/dashboard/documentos" icon="file_copy" text="Documentos" hasBorder={false} />
 
                 </li>
                 <li className="my-1">
-                  <SidebarLink to="#" icon="local_parking" text="Tag Priorización" hasBorder={false} />
+                  <SidebarLink to="/dashboard/tag_priorizados" icon="local_parking" text="Tag Priorización" hasBorder={false} />
                 </li>
 
               </ul>

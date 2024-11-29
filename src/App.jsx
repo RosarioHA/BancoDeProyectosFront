@@ -30,6 +30,11 @@ const EdicionProfile = React.lazy(() => import('./views/Dashboard/admin/EdicionP
 const SuccessEdicion = React.lazy(() => import('./views/Dashboard/success/Edicion'));
 const EditarProyecto = React.lazy(() => import('./views/Dashboard/gestion_proyectos/edicionProjects/editarProyecto'));
 const EditarInnovadores = React.lazy(()=> import('./views/Dashboard/gestion_proyectos/edicionProjects/editarInnovadores'))
+const TagPriorizados  = React.lazy(() => import('./views/Dashboard/admin/TagPriorizados'));
+const Documents = React.lazy(()=>import('./views/Dashboard/admin/Documents')); 
+const AddDocuments = React.lazy(()=>import('./views/Dashboard/admin/AddDocuments'));
+const EditDocuments = React.lazy(()=>import('./views/Dashboard/admin/EditDocuments'));
+
 const createProtectedRoute = (path, Component, allowedProfiles) => (
   <Route
     path={path}
@@ -91,6 +96,10 @@ function App()
             <Route path="edicion_exitosa" element={<SuccessEdicion />} />
             <Route path="editar_proyecto/:slug" element={<EditarProyecto />} />
             <Route path="edicion_innovador/:id" element={<EditarInnovadores />} />
+            <Route path="documentos" element={<Documents />} />
+            <Route path="agregar_documento" element={<AddDocuments />} />
+            <Route path="editar_documento/:id" element={<EditDocuments />} />
+            <Route path="tag_priorizados" element={<TagPriorizados />} />
           </Route>
         </Routes>
       </Suspense>
