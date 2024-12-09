@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   const refreshAccessToken = async () => {
-    console.log("refreshAccessToken llamado");
+    console.log("refreshAccessToken llamado hola");
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
       console.log("No hay refresh token disponible. Usuario no autenticado.");
@@ -106,16 +106,18 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error refrescando el token:", error);
   
-      // Verificar si el error es "invalid_grant"
-      if (error.response && error.response.data && error.response.data.error === "invalid_grant") {
-        console.log("El refresh token no es válido. Cerrando sesión automáticamente...");
-        await logout(); // Llamar al logout automáticamente
+      // Si el error es 400 (Bad Request), gatilla el logout
+      if (error.response && error.response.status === 400) {
+        console.log("Token no válido o expirado. Cerrando sesión automáticamente...");
+        await logout();
+      } else {
+        console.log("Error desconocido al refrescar el token. Cerrando sesión...");
+        await logout();
       }
   
       throw new Error("Failed to refresh token");
     }
   };
-
  
     return (
       <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, refreshAccessToken, isTokenExpired }}>
