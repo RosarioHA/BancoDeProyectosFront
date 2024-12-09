@@ -1,66 +1,41 @@
-import { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useFormContext } from '../../context/FormContext'
-import ModalAbandonoFormulario from '../Modals/ModalAbandono';
-
-
-const SidebarLink = ({ to, icon, text, badgeCount, onClick, hasBorder }) =>
-{
-  const { hasChanged } = useFormContext();
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const linkStyle = hasBorder ? 'blue-border my-2' : '';
-
-  const handleOpenModal = () =>
-  {
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () =>
-  {
-    setIsModalOpen(false);
-  };
-  const handleLinkClick = (e) =>
-  {
-    if (hasChanged)
-    {
-      e.preventDefault();
-      handleOpenModal();
-    } else
-    {
-      onClick && onClick(e);
-    }
-  };
-  return (
-    <>
-      {!hasChanged ? (
-        <NavLink to={to} className={`mx-4 btn-link ${linkStyle}`} onClick={handleLinkClick}>
-          <i className="material-symbols-outlined mx-3">{icon}</i>
-          {badgeCount && <i className="badge badge-notification mx-3">{badgeCount}</i>}
-          <u>{text}</u>
-        </NavLink>
-      ) : (
-        <>
-          <NavLink className={`mx-4 btn-link ${linkStyle}`} onClick={handleOpenModal}>
-            <i className="material-symbols-outlined mx-3">{icon}</i>
-            {badgeCount && <i className="badge badge-notification mx-3">{badgeCount}</i>}
-            <u>{text}</u>
-          </NavLink>
-          {isModalOpen && <ModalAbandonoFormulario onClose={handleCloseModal} isOpen={isModalOpen} direction={to} />}
-        </>
-      )}
-    </>
-  );
-};
+import { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+import useApiAdminNotificacions from '../../hooks/useApiAdminNotificacions';
+import NotificationModal from '../Modals/ModalNotificacion';
 
 export const Sidebar = () =>
 {
-  const { userData } = useAuth();
+
   const [ openDropdownSidebar, setOpenDropdownSidebar ] = useState(false);
-  const userEditor = userData?.perfil?.includes("Editor");
+  // const state = useApiAdminNotificacions();
+
+  // // const { data: dataInnovativeProjectNotificacions, 
+  // //         loading: loadingInnovativeProjectNotificacions, 
+  // //         error: errorInnovativeProjectNotificacions } = state.innovative_projects_notifications;
+    
+  // // const { data: dataUnreadCount,
+  // //         loading: loadingUnreadCount,
+  // //         error: errorUnreadCount } = state.unread_count;
+
+  // // const { data: dataNotifications,
+  // //         loading: loadingNotifications,
+  // //         error: errorNotifications } = state.notifications;
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleNotificationsClick = () => {
+    // // Llamar a markAsRead para marcar las notificaciones como leídas
+    // state.markAsRead();
+    // // Abrir el modal de notificaciones
+    setShowModal(true); 
+  };
+
+  
+  // const [count, setCount] = useState(0); // Solo para pruebas
 
   const handleDropdownClick = () =>
   {
-    setOpenDropdownSidebar(prevState => !prevState);
+    setOpenDropdownSidebar(prevState => !prevState); // Toggle el estado actual
   };
 
   return (
@@ -78,62 +53,119 @@ export const Sidebar = () =>
       </div>
       <ul className="nav nav-pills flex-column mb-auto mt-0">
         <li className="my-1">
-          <SidebarLink to="/dashboard" icon="home" text="Inicio" hasBorder={false} />
+          <NavLink to="/dashboard" className="mx-4 btn-link"  aria-current="page" type="button" >
+            <i className="material-symbols-outlined mx-3 ">
+              home
+            </i> <span className="text-link">Inicio</span>
+          </NavLink>
+        </li>
+        <li className="my-1">
+          <NavLink to="#" className="mx-4 btn-link"
+          // onClick={handleNotificationsClick}
+          >
+            <i className="material-symbols-outlined mx-3">
+              mail
+            </i><u>Notificaciones</u>
+            {/* { 
+              dataUnreadCount && dataUnreadCount.unread_count === 0 ?
+              <i className="material-symbols-outlined mx-3"></i> :
+              loadingUnreadCount ? <span>Cargando...</span> : 
+              errorUnreadCount ? <span>Error</span> :
+              <i className="badge badge-notification mx-3"> {dataUnreadCount && dataUnreadCount.unread_count} </i> 
+            } */}
+          </NavLink>
         </li>
         <hr className="w-85 mx-4" />
         <span className="title-section ms-4 my-2">Gestión de Proyectos</span>
         <li>
-          <SidebarLink to="crear_proyectos" icon="post_add" text="Subir Proyectos" hasBorder={true} />
-
+          <NavLink to="crearproyectos" className="btn-sidebar my-1 mx-4" >
+            <u>Subir Proyectos</u><i className="material-symbols-outlined">
+              post_add
+            </i>
+          </NavLink>
         </li>
         <li className="my-1">
-          <SidebarLink to="administrar_proyectos" text="Banco de Proyectos" hasBorder={false} />
-
+          <NavLink to="#" className="mx-4 btn-link"  type="button">
+            {/* { 
+              count === 0 ?
+              <i className="material-symbols-outlined mx-3">library_books</i> :
+              <i className="badge badge-notification mx-3"> {count} </i> 
+            } */}
+            <u>Banco de Proyectos</u>
+          </NavLink>
         </li>
         <li className="my-1">
-          <SidebarLink to="administrar_proyectos_innovadores" text="Proyectos Innovadores" hasBorder={false} />
+          <NavLink to="administrarproyectosinnovadores" className="mx-4 btn-link" type="button">
+            {/* { 
+              dataInnovativeProjectNotificacions && dataInnovativeProjectNotificacions.total_count === 0 ?
+              <i className="material-symbols-outlined mx-3">filter_none</i> :
+              loadingInnovativeProjectNotificacions ? <span>Cargando...</span> : 
+              errorInnovativeProjectNotificacions ? <span>Error</span> :
+              <i className="badge badge-notification mx-3"> {dataInnovativeProjectNotificacions && dataInnovativeProjectNotificacions.total_count} </i> 
+            } */}
+            <u>Proyectos Innovadores</u>
+          </NavLink>
         </li>
-
         <hr className="w-85 mx-4" />
-        {userEditor && (
-          <>
-            <span className="title-section  ms-4 my-1">Gestión de Usuarios</span>
+        <span className="title-section  ms-4 my-1">Gestión de Usuarios</span>
+        <li className="my-1">
+          <NavLink to="#" className="btn-sidebar my-1 mx-4" type="button">
+            <u>Crear Usuarios </u> <i className="material-symbols-outlined">
+              person_add
+            </i>
+          </NavLink>
+        </li>
 
+        <li className="my-1">
+          <NavLink to="#" className="mx-4 btn-link" type="button">
+            {/* { 
+              count === 0 ?
+              <i className="material-symbols-outlined mx-3">supervised_user_circle</i> :
+              <i className="badge badge-notification mx-3"> {count} </i> 
+            } */}
+            <u>Administrar Usuarios</u>
+          </NavLink>
+        </li>
+        <hr className="w-85 mx-4" />
+        <li className="nav-item dropdown">
+          <button
+            className=" dropdown-sidebar border-0 title-section ms-2"
+            data-bs-toggle="dropdown"
+            aria-expanded={openDropdownSidebar}
+            onClick={handleDropdownClick}>
+            Gestión de Plataforma <i className="material-symbols-outlined">
+            {openDropdownSidebar ? 'expand_less' : 'expand_more'}
+            </i>
+          </button>
+          <ul className={openDropdownSidebar ? "dropdown-menu show bg-white border-0 ms-3" : "dropdown-menu bg-white border-0 ms-4"}>
+            <li className="my-1"> <NavLink to="#" className="btn-link" type="button">
+              <i className="material-symbols-outlined mx-3">
+                local_parking
+              </i><u>Programas</u></NavLink></li>
             <li className="my-1">
-              <SidebarLink to="gestion_usuarios" text="Administrar Usuarios" hasBorder={false} />
+              <NavLink to="#" className="btn-link" type="button">
+                <i className="material-symbols-outlined mx-3">
+                  file_copy
+                </i><u>Documentos</u></NavLink>
             </li>
-            <hr className="w-85 mx-4" />
-            <li className="nav-item dropdown">
-              <button
-                className=" dropdown-sidebar border-0 title-section ms-2"
-                data-bs-toggle="dropdown"
-                aria-expanded={openDropdownSidebar}
-                onClick={handleDropdownClick}>
-                Gestión de Plataforma <i className="material-symbols-outlined">
-                  {openDropdownSidebar ? 'expand_less' : 'expand_more'}
-                </i>
-              </button>
-              <ul className={openDropdownSidebar ? "dropdown-menu show bg-white border-0 ms-3" : "dropdown-menu bg-white border-0 ms-4"}>
-                <li className="my-1">
-                  <SidebarLink to="/dashboard/documentos" icon="file_copy" text="Documentos" hasBorder={false} />
+            <li className="my-1" >
+              <NavLink to="#" className="btn-link" type="button">
+                <i className="material-symbols-outlined mx-3">
+                  admin_panel_settings
 
-                </li>
-                <li className="my-1">
-                  <SidebarLink to="/dashboard/tag_priorizados" icon="local_parking" text="Tag Priorización" hasBorder={false} />
-                </li>
-
-              </ul>
+                </i><u>Tipos de Usuarios</u>
+              </NavLink>
             </li>
-          </>
-        )}
-      </ul>
+          </ul>
+        </li>
+      </ul >
       <div className="d-flex justify-content-between  border-top w-100 " >
         <div className="circle-user" id="icon-user">
           <span className="material-symbols-outlined my-auto">
             person
           </span>
         </div>
-        <span className="my-auto me-auto">{userData?.perfil}</span>
+        <span className="my-auto me-auto">Mi Perfil</span>
         <div className="dropdown">
           <a className="" data-bs-toggle="dropdown" aria-expanded="false" id="icon-setting">
             <span className="material-symbols-outlined">
@@ -141,15 +173,14 @@ export const Sidebar = () =>
             </span>
           </a>
           <ul className="dropdown-menu text-small shadow">
-            <li>
-              <Link className="dropdown-item" to={`editar_perfil/${userData?.id}`} >
-                Editar Perfil
-              </Link>
-            </li>
+            <li><a className="dropdown-item" href="/">New project...</a></li>
+            <li><a className="dropdown-item" href="#">Settings</a></li>
+            <li><a className="dropdown-item" href="#">Profile</a></li>
+            <li><a className="dropdown-item" href="#">Sign out</a></li>
           </ul>
         </div>
       </div>
-      {/* 
+{/* 
     <NotificationModal 
       show={showModal} 
       dataNotifications={dataNotifications} 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const ImageModal = ({ img, selectedImageIndex, setSelectedImageIndex, context }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(selectedImageIndex);
+  const baseApiUrl = import.meta.env.VITE_REACT_APP_API_URL;
 
   const handleCarouselSlide = newIndex => {
     setCurrentImageIndex(newIndex);
@@ -24,8 +26,8 @@ const ImageModal = ({ img, selectedImageIndex, setSelectedImageIndex, context })
         <div className="modal-content border border-secondary">
           <div className="d-flex justify-content-between p-2">
           <div className="image-indicator">{imageIndicator}</div>
-            <button type="button" className="custom-close-button d-flex align-self-center" data-bs-dismiss="modal" aria-label="Close" onClick={handleClose}>
-              Cerrar  <i className="material-symbols-outlined mx-1">close</i>
+            <button type="button" className="custom-close-button" data-bs-dismiss="modal" aria-label="Close" onClick={handleClose}>
+              Cerrar <FontAwesomeIcon icon={faTimes} className="fa-xl"/>
             </button>
           </div>
           

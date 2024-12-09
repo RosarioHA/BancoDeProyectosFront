@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { apiBancoProyecto } from '../../services/bancoproyecto.api'
+import { apiBancoProyecto } from '../services/bancoproyecto.api.js';
 
 
 export const useProjectList = () => {
@@ -61,7 +61,6 @@ export const useProjectList = () => {
       listProjects(...args);
     }, 500); 
   }, [listProjects]);
-
 
   return { projects,  metadata, loading, error, listProjects: debouncedListProjects }; 
 };

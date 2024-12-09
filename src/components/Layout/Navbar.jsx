@@ -9,21 +9,20 @@ import { useLogin } from '../../hooks/useLogin';
 const BtnInicioSesion = ({ btnPrincipalSize, btnSecundarioSize }) => {
   const { isLoggedIn, userData, logout } = useAuth();
   const { loginWithKeycloak } = useLogin(); // Asegúrate de que este método esté definido en tu hook.
-  const userRegistrado = userData?.perfil?.includes("Registrado");
+  const userAdmin = userData?.tipo_de_usuario?.includes("Editor");
 
   console.log(userData)
 
   return (
     <div className="lg-col d-flex justify-content-lg-end align-items-center">
       {isLoggedIn ? (
-        <>
         <div className="container d-flex flex-column flex-lg-row justify-content-center">
           <span className="d-none d-lg-block text-sans-p align-self-center mt-lg-3 me-3">
             Hola, {userData.full_name || userData.rut}</span>
-          {!userRegistrado && (
-          <Link className={`mx-lg-3 mt-lg-4 me-md-4 ${btnSecundarioSize}`} to="/dashboard"> 
-            ir a Admin
-          </Link>
+          {userAdmin && (
+          <button className={`mx-lg-3 mt-lg-4 me-md-4 ${btnSecundarioSize}`}> 
+            <Link to="/dashboard">ir a Admin</Link>
+          </button>
                   )}
 
           <button
@@ -34,7 +33,6 @@ const BtnInicioSesion = ({ btnPrincipalSize, btnSecundarioSize }) => {
             Cerrar sesión
           </button>
         </div>
-        </>
       ) : (
         <div className="mt-4 me-lg-5 border-clave-unica">
           <button
