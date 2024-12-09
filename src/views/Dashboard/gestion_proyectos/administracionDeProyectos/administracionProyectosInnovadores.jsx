@@ -8,6 +8,7 @@ const AdministrarProyectosInnovadores = () =>
 {
   const { innovativeProjectsAdmin, metadata, pagination, setPagination, setSearchTerm, searchTerm } = useInnovativeProjectsListAdmin();
   const [ setSearching ] = useState(false);
+  const [ isPublicSorted, setIsPublicSorted ] = useState(false);
   const navigate = useNavigate();
 
   const projectsPerPage = 10;
@@ -20,7 +21,8 @@ const AdministrarProyectosInnovadores = () =>
 
 
   // Funcion para manejar la busqueda
-  const handleSearch = (term) => {
+  const handleSearch = (term) =>
+  {
     const normalizedTerm = term.trim().toLowerCase();
     setSearchTerm(normalizedTerm);
     setSearching(!!normalizedTerm);
@@ -29,9 +31,23 @@ const AdministrarProyectosInnovadores = () =>
 
   const handleDetailsProject = (project) =>
   {
-    navigate(`/dashboard/edicion_innovadores/${project.id}`, { state: { project } });
+    navigate(`/dashboard/edicion_innovador/${project.id}`, { state: { project } });
   };
-
+  // Función para manejar el ordenamiento
+  const handleSortByPublic = () => {
+    setIsPublicSorted(!isPublicSorted);
+  };
+  // Ordenar proyectos según 'public'
+  const sortedProjectsAdmin = [ ...innovativeProjectsAdmin ].sort((a, b) =>
+  {
+    if (isPublicSorted)
+    {
+      return (a.public === b.public) ? 0 : a.public ? -1 : 1; // Ascendente
+    } else
+    {
+      return (a.public === b.public) ? 0 : a.public ? 1 : -1; // Descendente
+    }
+  });
 
   const renderPaginationButtons = () =>
   {
@@ -78,7 +94,7 @@ const AdministrarProyectosInnovadores = () =>
         <div className="my-5 d-flex justify-content-between">
           <h3 className="text-sans-h3">Proyectos Innovadores</h3>
           <div>
-          <InputSearch
+            <InputSearch
               value={searchTerm}
               onSearch={handleSearch}
               setHasSearched={setSearching}
@@ -94,7 +110,7 @@ const AdministrarProyectosInnovadores = () =>
           <p className="text-sans-b-gray ms-3">Proyecto</p>
         </div>
         <div className="col-2 mt-2 ">
-          <button className="sort-estado-btn d-flex align-items-top">
+          <button className="sort-estado-btn d-flex align-items-top"  onClick={handleSortByPublic}>
             <p className="text-sans-b-gray mt-1 ms-2">Estado</p>
             <i className="material-symbols-rounded ms-2 pt-1">filter_alt</i>
           </button>
@@ -110,16 +126,21 @@ const AdministrarProyectosInnovadores = () =>
         </div>
 
         {/* Mostrar proyectos segun si se aplico una busqueda o no */}
-        {innovativeProjectsAdmin?.length > 0 ? (
+        {sortedProjectsAdmin.length > 0 ? (
           // Si no se aplico ninguna, muestra dataInnovativeProjects completa
-          innovativeProjectsAdmin?.map((project, index) => (
+          sortedProjectsAdmin?.map((project, index) => (
             <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
               <div className="col-1 p-3">{(pagination - 1) * projectsPerPage + index + 1}</div>
               <div className="col-2 p-3">{project.title}</div>
               <div className="col-1 p-3">
-                <p className={`mx-auto px-2 py-1 ${project.public ? "publicado" : "privado"}`}>
-                  {project.public ? "Publicado" : "Privado"}
-                </p>
+                {/* Badge adicional para el estado 'is_complete' */}
+                {project.is_complete === false ? (
+                  <span className="mx-auto px-1 py-1 incompleto ">Incompleto</span>
+                ) : project.public === false ? (
+                  <span className="mx-auto px-1 py-1 privado">Privado</span>
+                ) : (
+                  <span className="mx-auto px-1 py-1 publicado">Publicado</span>
+                )}
               </div>
               <div className="col-3 p-3">
                 <p className="program mx-auto px-2 py-1">{project.program?.sigla || "No seleccionado"}</p>

@@ -22,6 +22,21 @@
     border-radius: 4px;
 }
 
+.incompleto {
+    @include status-font($alert-danger);
+    background-color:$alert-border;
+    height: fit-content;
+    width: fit-content;
+    border-radius: 4px;
+}
+.incompleto-xl {
+    @include status-font($alert-danger);
+    background-color:$alert-border;
+    height: fit-content;
+    width: fit-content;
+    border-radius: 4px;
+    font-size: 18px;
+}
 .program {
     @include status-font($blue-color);
     background-color: $blue-sky;

@@ -4,8 +4,7 @@ import ModalBase from './ModalBase'; // Asumiendo que tienes ModalBase en la mis
 import { useDeleteProject } from '../../hooks/proyectos/useDeleteProject';
 import { useDeleteInnovative } from '../../hooks/innovativeProject/useDeleteInnovative'
 
-export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
-{
+export const Desechar = ({ slug,  text, type }) => {
   const {
     deleteProject,
     error: errorStandard,
@@ -22,22 +21,17 @@ export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
     success: successInnovative,
   } = useDeleteInnovative();
 
-  const [ isDeleted, setIsDeleted ] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const navigate = useNavigate();
 
-  const handleDelete = async () =>
-  {
-    try
-    {
-      if (type === 'standard')
-      {
+  const handleDelete = async () => {
+    try {
+      if (type === 'standard') {
         await deleteProject(slug);
-      } else if (type === 'innovative')
-      {
+      } else if (type === 'innovative') {
         await deleteInnovative(slug);
       }
-    } catch (err)
-    {
+    } catch (err) {
       console.error("Error al eliminar el proyecto", err);
     }
   };
@@ -46,21 +40,19 @@ export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
   const error = type === 'standard' ? errorStandard : errorInnovative;
   const loading = type === 'standard' ? loadingStandard : loadingInnovative;
 
-  useEffect(() =>
-  {
-    if (success)
-    {
+  useEffect(() => {
+    if (success) {
       setIsDeleted(true);
     }
-  }, [ success ]);
+  }, [success]);
 
   return (
     <ModalBase
-      btnName="Eliminar Proyecto"
+      btnName="Desechar solicitud"
       btnIcon="delete"
-      title={`El proyecto ${text || ""} ${name} será eliminado permanentemente`}
+      title='¿Estás seguro de que quieres eliminar este proyecto?'
       modalID="deleteProjectModal"
-      classStyle="btn-logout d-flex mx-4"
+      classStyle="red-btn text-sans-h4 d-flex "
       titleStyle="ms-5 ps-5 text-sans-h3"
     >
       {!isDeleted ? (
@@ -69,31 +61,23 @@ export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
             <div className="col-2 align-content-center px-5 my-5 text-sans-xl-danger">
               <i className="material-symbols-rounded ms-2 fs-1 fw-bolder">warning</i>
             </div>
-            <div className='col-9 my-4 my-5 ms-5'>
-              <span className="text-sans-h4">
-                Una vez que aceptes eliminar el proyecto {text || ""},
-                no podrá ser recuperado<br />
-                y para volver a publicarlo
-                en el sitio web, deberás crear el proyecto nuevamente.
-              </span>
-            </div>
             {error && <div style={{ color: 'red' }} className="d-flex justify-content-center">{error}</div>}
             <div className="col mx-5 mt-4 d-flex justify-content-end">
               <div className="d-flex align-content-end">
                 <button
-                  className="btn-secundario-s ms-2"
+                  className="btn-secundario-s ms-2 my-5"
                   onClick={() => navigate(-1)}
                   data-bs-dismiss="modal"
                 >
                   <u>Volver atrás</u>
                 </button>
                 <button
-                  className="btn-logout d-flex mx-4 text-sans-p-bold-darkred"
+                  className="btn-logout d-flex mx-4 text-sans-p-bold-darkred my-5 me-5"
                   onClick={handleDelete}
                   disabled={loading}
                   type="button"
                 >
-                  <u>Eliminar permanentemente</u>
+                  <u>Eliminar solicitud</u>
                   <i className="material-symbols-rounded ms-2">delete</i>
                 </button>
               </div>
@@ -102,9 +86,9 @@ export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
         </div>
       ) : (
         <div className="container text-center">
-          <span className="text-sans-h4">El proyecto {text || ""} ha sido eliminado exitosamente.</span>
+          <span className="text-sans-h4">La solicitud ha sido eliminada exitosamente.</span>
           <div className="d-flex justify-content-center">
-            <button
+          <button
               className="btn-secundario-s"
               data-bs-dismiss="modal"
               onClick={() => navigate(
@@ -113,7 +97,7 @@ export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
                   : '/dashboard/administrar_proyectos_innovadores'
               )}
             >
-              Volver a administrar proyectos  {buttonText}
+              Volver a administrar proyectos {text}
             </button>
           </div>
         </div>

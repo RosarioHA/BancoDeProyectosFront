@@ -117,6 +117,13 @@
   font-weight: 400;
 }
 
+.text-sans-h5-error {
+  font-family: "Roboto";
+  color: #E22C2C;
+  font-size: 14px;
+  font-weight: 400;
+}
+
 .text-sans-h5-red {
   font-family: "Roboto";
   color: #871a1a;
@@ -2417,6 +2424,33 @@ input.ghost-input-edit, h3.text-sans-h1 {
   width: -moz-fit-content;
   width: fit-content;
   border-radius: 4px;
+}
+
+.incompleto {
+  font-family: "Roboto";
+  color: #F56B0F;
+  font-size: 14px;
+  font-weight: 700;
+  background-color: #FFD4B7;
+  height: -moz-fit-content;
+  height: fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  border-radius: 4px;
+}
+
+.incompleto-xl {
+  font-family: "Roboto";
+  color: #F56B0F;
+  font-size: 14px;
+  font-weight: 700;
+  background-color: #FFD4B7;
+  height: -moz-fit-content;
+  height: fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  border-radius: 4px;
+  font-size: 18px;
 }
 
 .program {

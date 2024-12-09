@@ -33,7 +33,7 @@ export const YearPicker = ({ onYearChange, selectedYear }) => {
 
   return (
     <>
-      <label className="text-sans-p px-3">Elige el año de construcción del proyecto </label>
+      <label className="text-sans-p px-3">Elige el año de construcción del proyecto (Obligatorio)</label>
       <DatePicker
         selected={startDate}
         onChange={handleDateChange}

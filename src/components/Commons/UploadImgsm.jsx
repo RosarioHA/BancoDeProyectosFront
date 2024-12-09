@@ -4,8 +4,10 @@ function UploadImgsm({ imgs = [], add, delete: deleteImage }) {
   const [showModal, setShowModal] = useState(false);
   const [currentImg, setCurrentImg] = useState('');
   const [loading, setLoading] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(''); // Estado para el mensaje de alerta
+  const [alertMessage, setAlertMessage] = useState('');
   const modalRef = useRef(null);
+
+  console.log(imgs)
 
   const openModal = (imageUrl) => {
     setCurrentImg(imageUrl);
@@ -129,7 +131,7 @@ function UploadImgsm({ imgs = [], add, delete: deleteImage }) {
 
       {/* Aquí mostramos el mensaje de alerta si existe */}
       {alertMessage && (
-        <div className="text-sans-lg-danger">
+        <div className="text-sans-h5-error">
           {alertMessage}
         </div>
       )}

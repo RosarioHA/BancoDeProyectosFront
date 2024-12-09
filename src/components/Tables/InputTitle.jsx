@@ -52,7 +52,7 @@ export const EditableTitle = ({ initialTitle, onSave, maxChars, minChars = 5 }) 
         <div className="my-4">
           {isEditing ? (
             <div className="d-flex flex-column">
-              <label>Título del proyecto</label>
+              <label>Título del proyecto (Obligatorio)</label>
               <textarea
                 type="text"
                 value={inputValue}
@@ -74,6 +74,7 @@ export const EditableTitle = ({ initialTitle, onSave, maxChars, minChars = 5 }) 
         <div className="align-items-end my-4">
           <button
             className="btn-secundario-s text-sans-p-blue d-flex pb-0 me-5 mt-4"
+            type="button" 
             onClick={isEditing ? handleSaveClick : handleEditClick}
           >
             <p className="text-decoration-underline">{isEditing ? 'Guardar' : 'Editar'}</p>

@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { apiBancoProyecto } from '../../services/bancoproyecto.api.js';
 
-export const useApiUpdateProject = () => {
+export const useUpdateInnovative = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const updateProject = async (slug, updatedData) => {
+  const updateInnovative = async (id, updatedData) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const response = await apiBancoProyecto.patch(`projects/v1/${slug}/`, updatedData);
+      const response = await apiBancoProyecto.patch(`innovative_projects/v1/${id}/`, updatedData);
       setSuccess(true);
       return response.data; // Devuelve los datos actualizados para actualizar el estado local
     } catch (err) {
@@ -25,5 +25,5 @@ export const useApiUpdateProject = () => {
     }
   };
 
-  return { updateProject, loading, error, success };
-};
+  return { updateInnovative, loading, error, success };
+}

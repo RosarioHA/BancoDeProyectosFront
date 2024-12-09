@@ -30,6 +30,11 @@ const EdicionProfile = React.lazy(() => import('./views/Dashboard/admin/EdicionP
 const SuccessEdicion = React.lazy(() => import('./views/Dashboard/success/Edicion'));
 const EditarProyecto = React.lazy(() => import('./views/Dashboard/gestion_proyectos/edicionProjects/editarProyecto'));
 const EditarInnovadores = React.lazy(()=> import('./views/Dashboard/gestion_proyectos/edicionProjects/editarInnovadores'))
+const TagPriorizados  = React.lazy(() => import('./views/Dashboard/admin/TagPriorizados'));
+const Documents = React.lazy(()=>import('./views/Dashboard/admin/Documents')); 
+const AddDocuments = React.lazy(()=>import('./views/Dashboard/admin/AddDocuments'));
+const EditDocuments = React.lazy(()=>import('./views/Dashboard/admin/EditDocuments'));
+
 const createProtectedRoute = (path, Component, allowedProfiles) => (
   <Route
     path={path}
@@ -79,18 +84,22 @@ function App()
           >
             <Route index element={<HomeDashboard />} />
             <Route path="crear_proyectos" element={<CrearProyectos />} />
-            <Route path="crear_proyecto_paso1" element={<CrearProyecto_paso1 />} />
-            <Route path="crear_innovador_paso1" element={<CrearInnovador_paso1 />} />
+            <Route path="crear_proyecto/:slug" element={<CrearProyecto_paso1 />} />
+            <Route path="crear_innovador/:id" element={<CrearInnovador_paso1 />} />
             {createProtectedRoute("administrar_proyectos", AdministrarProyectos, [ 'Editor' ])}
             {createProtectedRoute("administrar_proyectos_innovadores", AdministrarProyectosInnovadores, [ 'Editor' ])}
-            <Route path="success" element={<Success />} />
+            <Route path="creacion_exitosa" element={<Success />} />
             {createProtectedRoute("editar_usuario/:id", EdicionUsuario, [ 'Editor' ])}
             <Route path="editar_perfil/:id" element={<EdicionProfile />} />
             <Route path="envio_exitoso" element={<SuccessViews />} />
             {createProtectedRoute("gestion_usuarios", GestionUsuarios, [ 'Editor' ])}
             <Route path="edicion_exitosa" element={<SuccessEdicion />} />
             <Route path="editar_proyecto/:slug" element={<EditarProyecto />} />
-            <Route path="edicion_innovadores/:id" element={<EditarInnovadores />} />
+            <Route path="edicion_innovador/:id" element={<EditarInnovadores />} />
+            <Route path="documentos" element={<Documents />} />
+            <Route path="agregar_documento" element={<AddDocuments />} />
+            <Route path="editar_documento/:id" element={<EditDocuments />} />
+            <Route path="tag_priorizados" element={<TagPriorizados />} />
           </Route>
         </Routes>
       </Suspense>

@@ -15,10 +15,11 @@ import { DeleteProjectModal } from "../../../../components/Modals/EliminarProyec
 const EditarProyecto = () =>
 {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { dataProjectAdmin, loadingProject, errorProject, fetchProjectAdminData } = useApiProjectsDetailAdmin(slug);
   const { updateProject } = useApiUpdateProject();
   const { deleteImage, addImage } = useGalleryProject(slug);
-  const { addDocument, deleteDocument } = useDocumentsAdicional(slug)
+  const { addDocument, deleteDocument } = useDocumentsAdicional(slug) || [];
 
   const [ dataProject, setDataProject ] = useState(null);
   const [ isPublished, setIsPublished ] = useState(null);
@@ -28,13 +29,18 @@ const EditarProyecto = () =>
   const [ text, setText ] = useState('');
   const [ count, setCount ] = useState(0);
   const [ errorMessage, setErrorMessage ] = useState(null);
-  const [ detalles, setDetalles ] = useState({});
+  const [ errorComplete, setErrorComplete ] = useState(null);
+  const [ successComplete, setSuccessComplete ] = useState('');
+  const [ detallesEdit, setDetallesEdit ] = useState({});
   const [ videoLink, setVideoLink ] = useState('');
   const [ successMessage, setSuccessMessage ] = useState('');
   const [ beforeimage, setBeforeimage ] = useState('');
   const [ afterimage, setAfterImage ] = useState('');
   const [ previousLink, setPreviousLink ] = useState('');
   const [ files, setFiles ] = useState([]);
+  const [ completingProject, setCompletingProject ] = useState(false);
+
+  const isCompleted = dataProject?.is_complete;
 
 
   useEffect(() =>
@@ -45,11 +51,11 @@ const EditarProyecto = () =>
       setText(dataProjectAdmin?.description || '');
       setCount(dataProjectAdmin?.description?.length || 0);
       setVideoLink(dataProjectAdmin?.video || '');
-      setBeforeimage(dataProjectAdmin?.beforeimage),
-        setAfterImage(dataProjectAdmin?.afterimage)
+      setBeforeimage(dataProjectAdmin?.beforeimage || ''),
+        setAfterImage(dataProjectAdmin?.afterimage || '')
       setFiles(dataProjectAdmin?.files || []);
       // Cargar detalles iniciales
-      setDetalles({
+      setDetallesEdit({
         programa: dataProjectAdmin?.program?.name,
         region: dataProjectAdmin?.comuna?.region,
         comuna: dataProjectAdmin?.comuna?.comuna,
@@ -97,7 +103,7 @@ const EditarProyecto = () =>
     try
     {
       const updatedData = await updateProject(slug, newDetails);
-      setDetalles((prev) => ({ ...prev, ...newDetails }));
+      setDetallesEdit((prev) => ({ ...prev, ...newDetails }));
       setDataProject((prev) => ({ ...prev, ...updatedData }));
       fetchProjectAdminData()
     } catch (error)
@@ -207,11 +213,7 @@ const EditarProyecto = () =>
   {
     return <div>Error: {errorProject}</div>;
   }
-  //array con documentos de tipo y programa 
-  const combinedDocuments = [
-    ...dataProjectAdmin.program.documents,
-    ...dataProjectAdmin.type.documents,
-  ];
+
 
   const handleSaveImage = async (formData) =>
   {
@@ -272,14 +274,12 @@ const EditarProyecto = () =>
     try
     {
       const videoData = { video: videoLink };
-      const updatedData = await updateProject(slug, videoData); // Llamada a la API para actualizar el proyecto
+      const updatedData = await updateProject(slug, videoData);
       setDataProject((prev) => ({ ...prev, video: updatedData.video }));
-
-      // Solo mostrar el mensaje si hubo cambios en el enlace
       if (videoLink !== previousLink)
       {
         setSuccessMessage('Link guardado exitosamente');
-        setPreviousLink(videoLink); // Actualizar el enlace anterior
+        setPreviousLink(videoLink);
       }
     } catch (error)
     {
@@ -332,7 +332,37 @@ const EditarProyecto = () =>
     }
   };
 
+  const documentosType = dataProjectAdmin?.type?.documents || []
 
+  const handleCompleteProject = async () =>
+  {
+    if (completingProject)
+    {  // Solo ejecuta si completingProject es verdadero
+      try
+      {
+        await updateProject(slug, { is_complete: true });
+        setDataProject((prev) => ({
+          ...prev,
+          is_complete: true,
+        }));
+        setSuccessComplete("El proyecto se ha marcado como completo.");
+        navigate('/dashboard/creacion_exitosa', { state: { origen: 'bancoProyecto', name: dataProject?.name } });
+        setErrorComplete("");
+      } catch (err)
+      {
+        console.error("Error al marcar el proyecto como completo:", err.message);
+        setErrorComplete(err.message);
+        setSuccessComplete("");
+      }
+    }
+  };
+
+  // Llamado cuando el botón de completar es clickeado
+  const handleCompleteButtonClick = () =>
+  {
+    setCompletingProject(true);  // Establece el estado para permitir la ejecución
+    handleCompleteProject();     // Ejecuta la función
+  };
 
   return (
     <div className="container col-11 ms-5 my-5">
@@ -348,33 +378,43 @@ const EditarProyecto = () =>
           <div className="row">
             <h2 className="text-sans-h2 m-3">Información de publicación</h2>
           </div>
+
           <div className="container mx-2 my-2">
             <div className="row row-cols-2">
               <div className="col ">Creado por: {dataProjectAdmin?.author_name}</div>
-              <div className="col ">Publicado por:  </div>
+              <div className="col ">Publicado por: {dataProjectAdmin?.published_name} </div>
               <div className="col ">Fecha de creación: {dataProjectAdmin?.created}</div>
-              <div className="col ">Fecha de publicación: </div>
+              <div className="col ">Fecha de publicación: {dataProjectAdmin?.published_date} </div>
               <div className="col ">Última modificación: {dataProjectAdmin?.modified}</div>
             </div>
             <div className="row my-3">
               <div className="col-4">
-                <div className="">Cambiar estado de publicación</div>
-                <div className="d-flex my-2">
-                  <button
-                    className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
-                    onClick={() => handleStatusChange(true)}
-                  >
-                    <u>Publicado</u>
-                    {isPublished === true && <i className="material-symbols-rounded mx-2">check</i>}
-                  </button>
-                  <button
-                    className={`btn-secundario-s d-flex ms-2 px-4 ${isPublished === false ? 'btn-principal-s active' : ''}`}
-                    onClick={() => handleStatusChange(false)}
-                  >
-                    <u>Privado</u>
-                    {isPublished === false && <i className="material-symbols-rounded mx-2">check</i>}
-                  </button>
-                </div>
+                {isCompleted ? (
+                  <>
+                    <div className="">Cambiar estado de publicación</div>
+                    <div className="d-flex my-2">
+                      <button
+                        className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
+                        onClick={() => handleStatusChange(true)}
+                      >
+                        <u>Publicado</u>
+                        {isPublished === true && <i className="material-symbols-rounded mx-2">check</i>}
+                      </button>
+                      <button
+                        className={`btn-secundario-s d-flex ms-2 px-4 ${isPublished === false ? 'btn-principal-s active' : ''}`}
+                        onClick={() => handleStatusChange(false)}
+                      >
+                        <u>Privado</u>
+                        {isPublished === false && <i className="material-symbols-rounded mx-2">check</i>}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="my-1">Estado de publicación</div>
+                    <div className="incompleto-xl px-2 py-1">Proyecto Incompleto</div>
+                  </>
+                )}
               </div>
             </div>
             <div className="row my-3">
@@ -386,9 +426,10 @@ const EditarProyecto = () =>
                     <i className="material-symbols-rounded ms-2">edit</i>
                   </button>
                   {/* Modal de confirmación */}
-                  <DeleteProjectModal 
-                  slug={dataProjectAdmin?.slug} 
-                  name={dataProjectAdmin?.name}
+                  <DeleteProjectModal
+                    slug={dataProjectAdmin?.slug}
+                    name={dataProjectAdmin?.name}
+                    type="standard"
                   />
                 </div>
               </div>
@@ -415,10 +456,11 @@ const EditarProyecto = () =>
         <>
           <div className="neutral-container py-3 px-3">
             <div className="d-flex justify-content-between">
-              <label htmlFor="FormControlTextarea" className="form-label text-sans-h3 ms-1">Descripción del Proyecto</label>
+              <label htmlFor="FormControlTextarea" className="form-label text-sans-h3 ms-1">Descripción del Proyecto (Obligatorio)</label>
               <button
                 className="btn-principal-s d-flex text-sans-h4 pb-0 me-1"
                 onClick={handleButtonClick}
+                type="button"
               >
                 <p className={editando ? "text-decoration-underline" : "text-decoration-underline"}>
                   {editando ? 'Guardar' : 'Editar'}
@@ -457,12 +499,13 @@ const EditarProyecto = () =>
       {isEditing ? (
         <>
           <div className="mx-5">
-            <div>Imagen Portada</div>
+            <div>Imagen Portada (Obligatorio)</div>
             <div className="img-xl-container">
               <UploadImg
                 img={dataProject?.portada}
                 onSave={handleSaveImage}
                 tag='portada'
+                title="Imagen Portada"
               />
 
             </div>
@@ -542,8 +585,8 @@ const EditarProyecto = () =>
 
       {isEditing && (
         <ModalDetalles
-          initialDetails={detalles}
-          setDetalles={setDetalles}
+          initialDetails={detallesEdit}
+          setDetalles={setDetallesEdit}
           onGuardar={handleGuardarDetalles}
         />
       )}
@@ -551,13 +594,14 @@ const EditarProyecto = () =>
       {/* Imágenes antes y después */}
       {isEditing ? (
         <>
-          <div className="p-0 d-md-flex justify-content-between my-4 gap-1">
+          <div className="p-0 d-md-flex justify-content-between my-5 gap-1">
             <div className="col-md-6 img-l-container">
               <h3 className="text-sans-h3">Antes del proyecto</h3>
               <UploadImg
                 img={dataProject?.beforeimage}
                 onSave={handleSaveImage}
                 tag='beforeimage'
+                title='Imagen Antes'
               />
             </div>
             <div className="col-md-6 img-l-container">
@@ -566,64 +610,88 @@ const EditarProyecto = () =>
                 img={dataProject?.afterimage}
                 onSave={handleSaveImage}
                 tag='afterimage'
+                title='Imagen Después'
               />
             </div>
           </div>
+          <div className="text-sans-h5-blue info d-flex  align-content-center col-9 mt-5">
+            <i className="material-symbols-outlined mt-5">
+              info
+            </i>
+            <span className="ms-2 align-self-center me-5 mt-5">Si subes una foto de como se veia
+              antes de la realización del proyecto, debes obligatoriamente subir
+              una foto de como se ve después de su realización.</span>
+          </div>
         </>) : (
         <>
-          <div className=" p-0 d-md-flex justify-content-between my-4">
+          <div className="p-0 d-md-flex justify-content-between my-4">
             <div className="col-md-6">
               <h3 className="text-sans-h3">Antes del proyecto</h3>
-              <img src={beforeimage} className="img-proyecto" />
+              {beforeimage ? (
+                <img src={beforeimage} className="img-proyecto" />
+              ) : (
+                <div className="img-section py-5">
+                  <p>No hay imagen disponible</p>
+                </div>
+              )}
             </div>
-            <div className="col-md-6">
-              <h3 className="text-sans-h3">Antes del proyecto</h3>
-              <img src={afterimage} className="img-proyecto" />
+            <div className="col-md-6 ">
+              <h3 className="text-sans-h3">Después del proyecto</h3>
+              {afterimage ? (
+                <img src={afterimage} className="img-proyecto" />
+              ) : (
+                <div className="img-section py-5">
+                  <p>No hay imagen disponible</p>
+                </div>
+              )}
             </div>
           </div>
         </>
-      )}
-      {isEditing ? (
-        <>
-          <div className="my-5 me-4 pe-4 py-3">
-            <span className='text-sans-h2'>Video del proyecto</span>
-            <p>(Máximo 1 enlace)</p>
-            <div className="input-group ">
-              <span className="input-group-text" id="basic-addon3">https://</span>
-              <input
-                type="text"
-                className="form-control"
-                id="basic-url"
-                aria-describedby="basic-addon3 basic-addon4"
-                value={videoLink}
-                onChange={(e) => setVideoLink(e.target.value)}
-              />
-              <button
-                className="btn-principal-s d-flex mx-1"
-                type="button"
-                id="button-addon2"
-                onClick={handleVideoChange}
-              >
-                <i className="material-symbols-outlined">upgrade</i>
-                <u className="align-self-center">Subir Link</u>
-              </button>
+      )
+      }
+      {
+        isEditing ? (
+          <>
+            <div className="my-5 me-4 pe-4 py-3">
+              <span className='text-sans-h2'>Video del proyecto</span>
+              <p>(Máximo 1 enlace)</p>
+              <div className="input-group ">
+                <span className="input-group-text" id="basic-addon3">https://</span>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="basic-url"
+                  aria-describedby="basic-addon3 basic-addon4"
+                  value={videoLink}
+                  onChange={(e) => setVideoLink(e.target.value)}
+                />
+                <button
+                  className="btn-principal-s d-flex mx-1"
+                  type="button"
+                  id="button-addon2"
+                  onClick={handleVideoChange}
+                >
+                  <i className="material-symbols-outlined">upgrade</i>
+                  <u className="align-self-center">Subir Link</u>
+                </button>
+              </div>
+              {successMessage && (
+                <div className=" d-flex flex-column text-sans-h5-blue ">
+                  {successMessage}
+                </div>
+              )}
             </div>
-            {successMessage && (
-              <div className=" d-flex flex-column text-sans-h5-blue ">
-                {successMessage}
-              </div>
-            )}
-          </div>
-        </>) : (
-        <>
-          {dataProjectAdmin?.video &&
-            <>
-              <h3 className="text-sans-h3">Video del proyecto</h3>
-              <div className="d-flex justify-content-center mb-md-5">
-                <div className="col-md-7 img-proyecto" src={dataProject?.video} />
-              </div>
-            </>
-          }</>)}
+          </>) : (
+          <>
+            {dataProjectAdmin?.video &&
+              <>
+                <h3 className="text-sans-h3">Video del proyecto</h3>
+                <div className="d-flex justify-content-center mb-md-5">
+                  <div className="col-md-7 img-proyecto" src={dataProject?.video} />
+                </div>
+              </>
+            }</>)
+      }
       <div className="my-5">
         <h2 className="text-sans-h2 my-4 mt-5">Documentos del proyecto</h2>
         {/* Tabla documentos del proyecto */}
@@ -632,7 +700,7 @@ const EditarProyecto = () =>
         <div className="row my-4 fw-bold border-top">
           <div className="col-1 mt-3">#</div>
           <div className="col mt-3">Documento</div>
-          <div className="col mt-3">Formato</div>
+          <div className="col mt-3">Archivo</div>
           <div className="col mt-3">Acción</div>
         </div>
         {isEditing ? (
@@ -725,17 +793,16 @@ const EditarProyecto = () =>
 
 
       </div>
-      {isEditing ? (
-        <>
-          <DocumentsAditionals
-            documents={files}
-            addDocument={handleAddDocument}
-            deleteDocument={handleDeleteDocument}
-          />
-        </>
-      ) : (
-        <>
-
+      {
+        isEditing ? (
+          <>
+            <DocumentsAditionals
+              documents={files}
+              addDocument={handleAddDocument}
+              deleteDocument={handleDeleteDocument}
+            />
+          </>
+        ) : (
           <>
             <div>
               <div className="my-5">
@@ -758,8 +825,7 @@ const EditarProyecto = () =>
               </div>
             </div>
           </>
-        </>
-      )
+        )
       }
       <h2 className="text-sans-h2 my-4 mt-5">Documentos con normativa de uso general</h2>
       <div className="d-flex text-sans-h5-blue align-items-center">
@@ -769,7 +835,7 @@ const EditarProyecto = () =>
         Estos documentos están asociados al programa y tipo de proyecto que elegiste anteriormente y se suben automáticamente.</div>
       {/* Normativa por programa y tipo de proyecto */}
       {
-        combinedDocuments.length > 0 && (
+        documentosType ? (
           <>
             <div className="row my-4 fw-bold border-top">
               <div className="col-1 mt-3">#</div>
@@ -777,7 +843,7 @@ const EditarProyecto = () =>
               <div className="col mt-3">Formato</div>
               <div className="col mt-3">Acción</div>
             </div>
-            {combinedDocuments.map((document, index) => (
+            {documentosType?.map((document, index) => (
               <div key={document.id} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
                 <div className="col-1 p-3">{index + 1}</div>
                 <div className="col p-3">{document.title}</div>
@@ -786,8 +852,27 @@ const EditarProyecto = () =>
               </div>
             ))}
           </>
-        )
+        ) : ("sin documentos diponibles")
       }
+
+      {isEditing && (<>
+        {!isCompleted ? (
+          <div className="d-flex justify-content-end my-5 ">
+            {successComplete && (
+              <div className="alert-success mt-3">{successComplete}</div>
+            )}
+            {errorComplete && (
+              <div className="text-sans-h5-red mt-3 mx-5">{errorComplete}</div>
+            )}
+            <button className="btn-principal-s d-flex text-sans-h4 pb-0 me-4"
+              type="submit"
+              onClick={handleCompleteButtonClick}>
+              <p className="text-decoration-underline">Completar Proyecto </p>
+              <i className="material-symbols-rounded ms-2">arrow_forward_ios</i>
+            </button>
+          </div>) : ("")
+        }
+      </>)}
     </div >
   )
 }

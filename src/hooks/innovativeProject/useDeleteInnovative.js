@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { apiBancoProyecto } from '../../services/bancoproyecto.api';
 
-export const useDeleteProject = () =>
+export const useDeleteInnovative = () =>
 {
     const [ loading, setLoading ] = useState(false);
     const [ error, setError ] = useState(null);
     const [ success, setSuccess ] = useState(false);
 
     // Función para eliminar el proyecto
-    const deleteProject = async (slug) =>
+    const  deleteInnovative = async (id) =>
     {
         setLoading(true);
         setError(null);
@@ -16,7 +16,7 @@ export const useDeleteProject = () =>
 
         try
         {
-            const response = await apiBancoProyecto.delete(`/api/projects/v1/${slug}/`);
+            const response = await apiBancoProyecto.delete(`/innovative_projects/v1/${id}/`);
 
             // Validar que la respuesta sea un código 204 (sin contenido, eliminación exitosa)
             if (response.status === 204)
@@ -44,7 +44,7 @@ export const useDeleteProject = () =>
     };
 
     return {
-        deleteProject,
+        deleteInnovative,
         loading,
         error,
         success,
