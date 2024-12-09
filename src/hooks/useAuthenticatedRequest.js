@@ -8,13 +8,13 @@ export const useAuthenticatedRequest = () => {
   const makeAuthenticatedRequest = async (url, config = {}) => {
     try {
         const token = await refreshAccessToken();  // Verifica y refresca el token si es necesario
-        console.log("¿access token devuelto?");
+        //console.log("¿access token devuelto?");
 
         if (!token) {
             console.error("No hay token disponible. El usuario no está autenticado.");
             throw new Error("Usuario no autenticado");
         }
-        console.log("access token devuelto: ", token);
+        //console.log("access token devuelto: ", token);
 
 
         // Preparar configuración con encabezados
@@ -26,11 +26,11 @@ export const useAuthenticatedRequest = () => {
             },
         };
 
-        console.log("Configuración de la solicitud:", requestConfig);
+        //console.log("Configuración de la solicitud:", requestConfig);
 
         // Realiza la solicitud con Axios
         const response = await apiBancoProyecto.get(url, requestConfig);
-        console.log("Respuesta recibida:", response);
+        //console.log("Respuesta recibida:", response);
 
         return response;
         } catch (error) {

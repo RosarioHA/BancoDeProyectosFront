@@ -25,14 +25,14 @@ export const AuthProvider = ({ children }) => {
       const refreshToken = localStorage.getItem('refreshToken');
 
       if (!tokenExpiry || !refreshToken) {
-        console.log("No hay tokenExpiry o refreshToken. No se puede renovar el token.");
+        //console.log("No hay tokenExpiry o refreshToken. No se puede renovar el token.");
         return;
       }
 
       // Verificar si el token está a punto de expirar (5 minutos de margen)
       const timeRemaining = parseInt(tokenExpiry) - Date.now();
       if (timeRemaining < 5 * 60 * 1000) { // 5 minutos
-        console.log("El token está a punto de expirar. Intentando renovarlo...");
+        //console.log("El token está a punto de expirar. Intentando renovarlo...");
         try {
           await refreshAccessToken();
         } catch (error) {
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   const refreshAccessToken = async () => {
-    console.log("refreshAccessToken llamado");
+    //console.log("refreshAccessToken llamado");
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
       console.log("No hay refresh token disponible. Usuario no autenticado.");
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }) => {
       const response = await apiBancoProyecto.post('/refresh_token/', { refresh_token: refreshToken });
       if (response.data.access_token) {
         localStorage.setItem('userToken', response.data.access_token);
-        console.log("user token retornado al front en authcontext: ", localStorage.getItem('userToken'));
+        //console.log("user token retornado al front en authcontext: ", localStorage.getItem('userToken'));
         if (response.data.refresh_token) {
           localStorage.setItem('refreshToken', response.data.refresh_token);
         }
@@ -106,16 +106,18 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error refrescando el token:", error);
   
-      // Verificar si el error es "invalid_grant"
-      if (error.response && error.response.data && error.response.data.error === "invalid_grant") {
-        console.log("El refresh token no es válido. Cerrando sesión automáticamente...");
-        await logout(); // Llamar al logout automáticamente
+      // Si el error es 400 (Bad Request), gatilla el logout
+      if (error.response && error.response.status === 400) {
+        console.log("Token no válido o expirado. Cerrando sesión automáticamente...");
+        await logout();
+      } else {
+        console.log("Error desconocido al refrescar el token. Cerrando sesión...");
+        await logout();
       }
   
       throw new Error("Failed to refresh token");
     }
   };
-
  
     return (
       <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, refreshAccessToken, isTokenExpired }}>
