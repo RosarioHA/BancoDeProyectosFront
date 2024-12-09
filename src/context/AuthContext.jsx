@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react'; 
 import axios from 'axios';
 import { apiBancoProyecto } from '../services/bancoproyecto.api';
 
@@ -17,19 +17,46 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+
+  // Renovar el token automáticamente
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const tokenExpiry = localStorage.getItem('tokenExpiry');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (!tokenExpiry || !refreshToken) {
+        console.log("No hay tokenExpiry o refreshToken. No se puede renovar el token.");
+        return;
+      }
+
+      // Verificar si el token está a punto de expirar (5 minutos de margen)
+      const timeRemaining = parseInt(tokenExpiry) - Date.now();
+      if (timeRemaining < 5 * 60 * 1000) { // 5 minutos
+        console.log("El token está a punto de expirar. Intentando renovarlo...");
+        try {
+          await refreshAccessToken();
+        } catch (error) {
+          console.error("Error al renovar el token automáticamente:", error);
+        }
+      }
+    }, 60 * 1000); // Comprobar cada minuto
+
+    return () => clearInterval(interval); // Limpiar intervalo al desmontar
+  }, []);
+
+
   const login = (token, refreshToken, userData) => {
     localStorage.setItem('userToken', token);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('userData', JSON.stringify(userData));
+    const tokenExpiry = Date.now() + 3600 * 1000; // Estimación de 1 hora de validez
+    localStorage.setItem('tokenExpiry', tokenExpiry);
     setIsLoggedIn(true);
     setUserData(userData);
-    // console.log("User data: ", userData);
   };
 
   const logout = async () => {
-    const token = localStorage.getItem('userToken');
-    const refreshToken = localStorage.getItem('refreshToken'); 
-    console.log(token)// Asegúrate de obtener el refreshToken
+    const refreshToken = localStorage.getItem('refreshToken');
 
     try {
       const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
@@ -40,40 +67,64 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Error en el cierre de sesión:', error);
     }
+
     localStorage.removeItem('userToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userData');
+    localStorage.removeItem('tokenExpiry');
     setIsLoggedIn(false);
     setUserData(null);
   };
 
+  const isTokenExpired = () => {
+    const expiry = localStorage.getItem('tokenExpiry');
+    return !expiry || Date.now() > parseInt(expiry);
+  };
+  
   const refreshAccessToken = async () => {
+    console.log("refreshAccessToken llamado");
     const refreshToken = localStorage.getItem('refreshToken');
-    console.log("comienza el refresh")
+    if (!refreshToken) {
+      console.log("No hay refresh token disponible. Usuario no autenticado.");
+      return null;
+    }
+
     try {
       const response = await apiBancoProyecto.post('/refresh_token/', { refresh_token: refreshToken });
       if (response.data.access_token) {
         localStorage.setItem('userToken', response.data.access_token);
+        console.log("user token retornado al front en authcontext: ", localStorage.getItem('userToken'));
         if (response.data.refresh_token) {
           localStorage.setItem('refreshToken', response.data.refresh_token);
         }
-        // No eliminar los datos del usuario; actualizar solo los tokens
+        const tokenExpiry = Date.now() + response.data.expires_in * 1000; // Actualizar el tiempo de expiración
+        localStorage.setItem('tokenExpiry', tokenExpiry);
         return response.data.access_token;
+      } else {
+        throw new Error("No se recibió un nuevo access token.");
       }
     } catch (error) {
-      console.error('Failed to refresh access token:', error);
-      // Considera manejar un logout o redirección aquí, dependiendo del error
+      console.error("Error refrescando el token:", error);
+  
+      // Verificar si el error es "invalid_grant"
+      if (error.response && error.response.data && error.response.data.error === "invalid_grant") {
+        console.log("El refresh token no es válido. Cerrando sesión automáticamente...");
+        await logout(); // Llamar al logout automáticamente
+      }
+  
+      throw new Error("Failed to refresh token");
     }
   };
 
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, refreshAccessToken }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+ 
+    return (
+      <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, refreshAccessToken, isTokenExpired }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+  // eslint-disable-next-line react-refresh/only-export-components
+  export const useAuth = () => {
+    return useContext(AuthContext);
+  };
