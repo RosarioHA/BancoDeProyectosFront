@@ -25,14 +25,14 @@ export const AuthProvider = ({ children }) => {
       const refreshToken = localStorage.getItem('refreshToken');
 
       if (!tokenExpiry || !refreshToken) {
-        console.log("No hay tokenExpiry o refreshToken. No se puede renovar el token.");
+        //console.log("No hay tokenExpiry o refreshToken. No se puede renovar el token.");
         return;
       }
 
       // Verificar si el token está a punto de expirar (5 minutos de margen)
       const timeRemaining = parseInt(tokenExpiry) - Date.now();
       if (timeRemaining < 5 * 60 * 1000) { // 5 minutos
-        console.log("El token está a punto de expirar. Intentando renovarlo...");
+        //console.log("El token está a punto de expirar. Intentando renovarlo...");
         try {
           await refreshAccessToken();
         } catch (error) {
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   const refreshAccessToken = async () => {
-    console.log("refreshAccessToken llamado hola");
+    //console.log("refreshAccessToken llamado");
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
       console.log("No hay refresh token disponible. Usuario no autenticado.");
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }) => {
       const response = await apiBancoProyecto.post('/refresh_token/', { refresh_token: refreshToken });
       if (response.data.access_token) {
         localStorage.setItem('userToken', response.data.access_token);
-        console.log("user token retornado al front en authcontext: ", localStorage.getItem('userToken'));
+        //console.log("user token retornado al front en authcontext: ", localStorage.getItem('userToken'));
         if (response.data.refresh_token) {
           localStorage.setItem('refreshToken', response.data.refresh_token);
         }

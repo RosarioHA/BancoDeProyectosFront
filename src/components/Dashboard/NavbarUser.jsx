@@ -10,7 +10,7 @@ export const NavbarUser = () =>
     await logout(); // Asegurarse de que el logout se ejecute
     navigate('/');  // Redirigir a la vista principal después de cerrar sesión
   };
-  console.log(userData)
+  //console.log(userData)
 
   return (
     <nav className="d-flex  bg-white border-bottom justify-content-end me-5 w-100 sticky-top mt-1">

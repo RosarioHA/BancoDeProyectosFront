@@ -9,7 +9,7 @@ export const apiBancoProyecto = axios.create({
 apiBancoProyecto.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem('userToken');
-    console.log("Token enviado en el encabezado:", token); // Log para verificar el token
+    //console.log("Token enviado en el encabezado:", token); // Log para verificar el token
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
