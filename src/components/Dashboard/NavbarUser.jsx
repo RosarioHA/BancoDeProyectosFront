@@ -1,8 +1,15 @@
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const NavbarUser = () =>
 {
   const { isLoggedIn, userData, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout(); // Asegurarse de que el logout se ejecute
+    navigate('/');  // Redirigir a la vista principal después de cerrar sesión
+  };
   console.log(userData)
 
   return (
@@ -16,10 +23,12 @@ export const NavbarUser = () =>
         <u>Volver a Banco de Proyectos</u><i className="material-symbols-outlined mx-2" id="">
           open_in_new
         </i></a>
-      <button className="btn-logout mx-2 my-2" type="button" onClick={logout}>
-        <u>Cerrar Sesión</u><i className="material-symbols-outlined">
+        <button className="btn-logout mx-2 my-2" type="button" onClick={handleLogout}>
+        <u>Cerrar Sesión</u>
+        <i className="material-symbols-outlined">
           logout
-        </i></button>
+        </i>
+      </button>
     </nav>
   )
 }
