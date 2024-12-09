@@ -1,5 +1,5 @@
 import { useState, createContext, useEffect, useCallback, useMemo } from 'react';
-import { useProjectList } from '../hooks/proyectos/useProjectList';
+import { useProjectList } from '../hooks/useProjectList';
 import isEqual from 'lodash/isEqual';
 
 

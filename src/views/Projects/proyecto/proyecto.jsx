@@ -1,13 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import useApiProjectsDetail from "../../../hooks/proyectos/useApiProjectsDetail";
+import useApiProjectsDetail from "../../../hooks/useApiProjectsDetail";
 import Carrusel from "../../../components/Commons/carrusel";
-import { ProyectosRelacionados } from "../../../components/Proyecto/proyectosRelacionados";
+import ProyectosRelacionados from "../../../components/Proyecto/proyectosRelacionados";
 import { useAuth } from "../../../context/AuthContext";
 import { Link } from 'react-router-dom';
 import { useLogin } from '../../../hooks/useLogin';
 
-const Proyecto = () =>
-{
+const Proyecto = () => {
   const { slug } = useParams();
   const { dataProject, loadingProject, errorProject } = useApiProjectsDetail(slug);
   const navigate = useNavigate();
@@ -21,32 +20,27 @@ const Proyecto = () =>
   let filteredDocuments = [];
   let titlesMap = new Map();
 
-  combinedDocuments.forEach(document =>
-  {
-    if (!titlesMap.has(document.title))
-    {
+  combinedDocuments.forEach(document => {
+    if (!titlesMap.has(document.title)) {
       filteredDocuments.push(document);
       titlesMap.set(document.title, true);
     }
   });
 
-  if (loadingProject)
-  {
-    return <>
-      <div className="d-flex align-items-center flex-column my-5 ">
-        <div className="text-center text-sans-p-blue">Cargando Proyecto</div>
-        <span className="placeholder col-4 bg-primary"></span>
-      </div>
-    </>
+  if (loadingProject) {
+    return  <>
+    <div className="d-flex align-items-center flex-column my-5 ">
+      <div className="text-center text-sans-p-blue">Cargando Proyecto</div>
+      <span className="placeholder col-4 bg-primary"></span>
+    </div>
+  </>
   }
-  if (errorProject)
-  {
+  if (errorProject) {
     return <div>Error de conexión: {errorProject}</div>
   }
 
   let mensajeDisclaimer;
-  if (dataProject.program.id === 1)
-  {
+  if (dataProject.program.id === 1) {
     mensajeDisclaimer = (
       <div className="">
         <h3 className="text-sans-p-danger-bold">Condiciones de uso de la información</h3>
@@ -56,8 +50,7 @@ const Proyecto = () =>
         <p className="text-sans-p-danger">Si necesitas detalles adicionales sobre algún proyecto, contáctanos.</p>
       </div>
     );
-  } else
-  {
+  } else {
     mensajeDisclaimer = (
       <div className="">
         <h3 className="text-sans-p-danger-bold">Condiciones de uso de la información</h3>
@@ -189,8 +182,7 @@ const Proyecto = () =>
         {isLoggedIn ? (
           <a className="col p-3 text-sans-p-tertiary" href={dataProject.eett} target="_blank" rel="noopener noreferrer">Descargar</a>
         ) : (
-          <Link className="col p-3 text-sans-p-tertiary" onClick={() =>
-          {
+          <Link className="col p-3 text-sans-p-tertiary" onClick={() => {
             loginWithKeycloak(); // Llama a la función después de registrar el mensaje en la consola.
           }}>Iniciar sesión para descargar</Link>
         )}
@@ -204,8 +196,7 @@ const Proyecto = () =>
         {isLoggedIn ? (
           <a className="col p-3 text-sans-p-tertiary" href={dataProject.presupuesto} target="_blank" rel="noopener noreferrer">Descargar</a>
         ) : (
-          <Link className="col p-3 text-sans-p-tertiary" onClick={() =>
-          {
+          <Link className="col p-3 text-sans-p-tertiary" onClick={() => {
             loginWithKeycloak(); // Llama a la función después de registrar el mensaje en la consola.
           }}>Iniciar sesión para descargar</Link>
         )}
@@ -220,8 +211,7 @@ const Proyecto = () =>
             {isLoggedIn ? (
               <a className="col p-3 text-sans-p-tertiary" href={file.file} target="_blank" rel="noopener noreferrer">Descargar</a>
             ) : (
-              <Link className="col p-3 text-sans-p-tertiary" onClick={() =>
-              {
+              <Link className="col p-3 text-sans-p-tertiary" onClick={() => {
                 loginWithKeycloak(); // Llama a la función después de registrar el mensaje en la consola.
               }}>Iniciar sesión para descargar</Link>
             )}

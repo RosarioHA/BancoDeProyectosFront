@@ -25,7 +25,7 @@ const UploadBtn = ({ onFileChange, fileUploaded }) =>
         <button className="btn-principal-s d-flex" type="button" onClick={handleButtonClick}>
           <i className="material-symbols-outlined ">
             upgrade
-          </i><u className="align-self-center ">Subir Archivo</u>
+          </i><u className="align-self-center text-sans-b-white ">Subir Archivo</u>
         </button>
       )}
 

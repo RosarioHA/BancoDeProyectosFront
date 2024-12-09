@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import App from './App.jsx';
@@ -9,22 +9,19 @@ import ReactGA from "react-ga4";
 
 //============================================ INIT KEYCLOAK CONFIGURATION ============================================
 
-const Main = () =>
-{
+const Main = () => {
   const { handleAuthentication } = useLogin();
   const location = useLocation();
-  const [ codeProcessed, setCodeProcessed ] = useState(false);
+  const [codeProcessed, setCodeProcessed] = useState(false);
 
-  useEffect(() =>
-  {
+  useEffect(() => {
     ReactGA.initialize('G-45DT9TXBFN');
 
     const queryParams = new URLSearchParams(location.search);
     const code = queryParams.get('code');
     const state = queryParams.get('state');
 
-    if (code && state && !codeProcessed)
-    {
+    if (code && state && !codeProcessed) {
       // Set codeProcessed immediately to prevent re-entry
       setCodeProcessed(true);
 
@@ -41,16 +38,13 @@ const Main = () =>
       // console.log("Code y State guardados en localStorage y URL limpiada.");
       // console.log("Hay code y state y se inicia handleAuthentication");
 
-      handleAuthentication(code, state).then(() =>
-      {
-        //  console.log("Autenticación exitosa");
-      }).catch(error =>
-      {
-        //  console.log("Falló handleAuthentication");
+      handleAuthentication(code, state).then(() => {
+      //  console.log("Autenticación exitosa");
+      }).catch(error => {
+      //  console.log("Falló handleAuthentication");
         console.error('Error during handleAuthentication:', error);
-      }).finally(() =>
-      {
-        //  console.log("Se completa el proceso de handleAuthentication");
+      }).finally(() => {
+      //  console.log("Se completa el proceso de handleAuthentication");
         localStorage.removeItem('code'); // Clear localStorage after handling
         localStorage.removeItem('state');
       });
@@ -58,7 +52,7 @@ const Main = () =>
 
     const currentPage = location.pathname + location.search;
     ReactGA.send({ hitType: 'pageview', page: currentPage });
-  }, [ location.search, handleAuthentication, codeProcessed ]);  // Use location.search to trigger effect only when URL changes
+  }, [location.search, handleAuthentication, codeProcessed]);  // Use location.search to trigger effect only when URL changes
 
   return null; // No rendering needed here
 };
@@ -69,12 +63,12 @@ export default Main;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   //<React.StrictMode>
-  <BrowserRouter>
-    <AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
         <Main />
         <App />
-    </AuthProvider>
-  </BrowserRouter>
+      </AuthProvider>
+    </BrowserRouter>
   //</React.StrictMode>,
 );
 

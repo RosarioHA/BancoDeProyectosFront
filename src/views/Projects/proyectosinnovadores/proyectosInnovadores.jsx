@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import useApiInnovativeProjects from '../../../hooks/innovativeProject/useInnovativeAdminDetail';
+import useApiInnovativeProjects from '../../../hooks/useApiInnovativeProjects';
 import useFilterOptions from '../../../hooks/useFilterProjects';
 import useApiGoodPractices from '../../../hooks/useApiGoodPractices';
 import Carrusel from '../../../components/Commons/carrusel';
@@ -86,10 +86,7 @@ const ProyectosInnovadores = () =>
 
   if (loadingInnovativeProjects)
   {
-    return   <div className="d-flex align-items-center flex-column my-5">
-    <div className="text-center text-sans-p-blue">Cargando Datos</div>
-    <span className="placeholder col-4 bg-primary"></span>
-  </div>;
+    return <div>Cargando Datos</div>;
   }
 
   if (errorInnovativeProjects)
@@ -99,7 +96,7 @@ const ProyectosInnovadores = () =>
 
   if (loadingGoodPractices)
   {
-    return <div className="text-center text-sans-p-blue">Cargando datos de buenas prácticas</div>;
+    return <div>Cargando datos de buenas prácticas</div>;
   }
 
   if (errorGoodPractices)

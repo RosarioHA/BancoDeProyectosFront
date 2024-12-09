@@ -1,15 +1,14 @@
-export const ModalBase = ({ btnName, btnIcon, title, children, modalID , classStyle, titleStyle}) =>
+export const ModalBase = ({ btnName, btnIcon, title, children, modalID }) =>
 {
-  // btn-secundario-s text-sans-p-blue ---text-sans-h4
   return (
     <>
       <button 
       type="button" 
-      className={`${classStyle} d-flex align-items-center`}
+      className="btn-secundario-s text-sans-p-blue d-flex pb-0 me-4 " 
       data-bs-toggle="modal"
       data-bs-target={`#${modalID}`}
       >
-        <u>{btnName}</u>
+        <p className="text-decoration-underline">{btnName}</p>
         <i className="material-symbols-rounded ms-2">{btnIcon}</i> 
       </button>
 
@@ -17,8 +16,8 @@ export const ModalBase = ({ btnName, btnIcon, title, children, modalID , classSt
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className={`modal-title ${titleStyle}`} id="ModalLabel">{title}</h1>
-              <button type="button" className="btn-close mx-1" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h1 className="modal-title text-sans-h4" id="ModalLabel">{title}</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
               {children}
