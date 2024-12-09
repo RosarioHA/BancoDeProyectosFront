@@ -49,6 +49,7 @@ export const useLogin = () => {
                 const { access_token, refresh_token, expires_in } = response.data;
 
                 console.log("Refresh Token recibido en handleauthentication:", refresh_token);
+                console.log("User Token recibido en handleauthentication:", access_token);
 
                 localStorage.setItem('userToken', access_token);
                 localStorage.setItem('userData', JSON.stringify(response.data.user));
@@ -57,6 +58,7 @@ export const useLogin = () => {
                 localStorage.setItem('authMethod', 'keycloak');
 
                 console.log("Refresh Token almacenado en handleauthentication:", localStorage.getItem('refreshToken'));
+                console.log("User Token almacenado en handleauthentication:", localStorage.getItem('userToken'));
 
                 setData(response.data);
                 globalLogin(access_token, refresh_token, response.data.user);
