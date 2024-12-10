@@ -56,7 +56,7 @@ export const DeleteProjectModal = ({ slug, name, text, type, buttonText}) =>
 
   return (
     <ModalBase
-      btnName="Eliminar Proyecto"
+      btnName="Eliminar"
       btnIcon="delete"
       title={`El proyecto ${text || ""} ${name} será eliminado permanentemente`}
       modalID="deleteProjectModal"

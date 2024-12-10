@@ -586,6 +586,15 @@
   padding: 13px;
 }
 
+.blue-ghost-btn {
+  width: -moz-fit-content;
+  width: fit-content;
+  background-color: transparent;
+  border: none;
+  color: #0F69C4;
+  padding: 13px;
+}
+
 .burger-btn {
   width: -moz-fit-content;
   width: fit-content;

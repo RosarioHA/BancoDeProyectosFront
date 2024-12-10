@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-export default function UploadImg({ img, onSave, tag, title })
+export default function UploadImg({ img='', onSave, tag, title })
 {
   const [ showModal, setShowModal ] = useState(false);
   const [ isEditMode, setIsEditMode ] = useState(false);

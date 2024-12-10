@@ -429,6 +429,13 @@ $border-claveunica-color: #000000;
     color: $dark-red;
     padding: 13px;
 }
+.blue-ghost-btn{
+    width: fit-content;
+    background-color: transparent;
+    border: none;
+    color: $blue-color;
+    padding: 13px;
+}
 .burger-btn{
     width: fit-content;
     height: fit-content;

@@ -29,11 +29,16 @@ const EdicionUsuario = React.lazy(() => import('./views/Dashboard/admin/EdicionU
 const EdicionProfile = React.lazy(() => import('./views/Dashboard/admin/EdicionProfile'));
 const SuccessEdicion = React.lazy(() => import('./views/Dashboard/success/Edicion'));
 const EditarProyecto = React.lazy(() => import('./views/Dashboard/gestion_proyectos/edicionProjects/editarProyecto'));
-const EditarInnovadores = React.lazy(()=> import('./views/Dashboard/gestion_proyectos/edicionProjects/editarInnovadores'))
-const TagPriorizados  = React.lazy(() => import('./views/Dashboard/admin/TagPriorizados'));
-const Documents = React.lazy(()=>import('./views/Dashboard/admin/Documents')); 
-const AddDocuments = React.lazy(()=>import('./views/Dashboard/admin/AddDocuments'));
-const EditDocuments = React.lazy(()=>import('./views/Dashboard/admin/EditDocuments'));
+const EditarInnovadores = React.lazy(() => import('./views/Dashboard/gestion_proyectos/edicionProjects/editarInnovadores'))
+const TagPriorizados = React.lazy(() => import('./views/Dashboard/admin/TagPriorizados'));
+const Documents = React.lazy(() => import('./views/Dashboard/admin/Documents'));
+const AddDocuments = React.lazy(() => import('./views/Dashboard/admin/AddDocuments'));
+const EditDocuments = React.lazy(() => import('./views/Dashboard/admin/EditDocuments'));
+const SuccessDocumentos = React.lazy(() => import('./views/Dashboard/success/Document'));
+const BuenasPracticas = React.lazy(() => import('./views/Dashboard/admin/BuenasPracticas'));
+const EditarBuenasPracticas = React.lazy(() => import('./views/Dashboard/admin/EditarBuenaPractica'));
+const CrearBuenaPractica = React.lazy(()=> import('./views/Dashboard/admin/CrearBuenaPractica'))
+const SuccessBuenasPracticas = React.lazy(() => import('./views/Dashboard/success/Buenapractica'));
 
 const createProtectedRoute = (path, Component, allowedProfiles) => (
   <Route
@@ -100,6 +105,11 @@ function App()
             <Route path="agregar_documento" element={<AddDocuments />} />
             <Route path="editar_documento/:id" element={<EditDocuments />} />
             <Route path="tag_priorizados" element={<TagPriorizados />} />
+            <Route path="documento_exitoso" element={<SuccessDocumentos />} />
+            <Route path='buenas_practicas' element={<BuenasPracticas />} />
+            <Route path='editar_buenas_practicas/:id' element={<EditarBuenasPracticas />} />
+            <Route path='crear_buena_practica' element={<CrearBuenaPractica />} />
+            <Route path="buenas_practicas_exitosas" element={<SuccessBuenasPracticas />} />
           </Route>
         </Routes>
       </Suspense>
