@@ -16,7 +16,7 @@ export const useUsers = () =>
     setError(null); // Reseteamos el error al intentar una nueva carga
     try
     {
-      const response = await apiBancoProyecto.get(`/users/list_admin/?page=${pagination}&search=${searchTerm}`);
+      const response = await apiBancoProyecto.get(`users/list_admin/?page=${pagination}&search=${searchTerm}`);
       const { data } = response;
 
       // Actualizamos los usuarios y la metadata solo si hay resultados

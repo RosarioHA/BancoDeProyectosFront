@@ -260,6 +260,23 @@ const ProyectosInnovadores = () =>
           </div>
         </div>
 
+                <>
+                  <h2 className="text-sans-h3">{selectedPractice.title}</h2>
+                  <p className="text-sans-p" >{selectedPractice.description}</p>
+                  <div className="my-4">
+                    <Carrusel
+                      imgPortada={selectedPractice.portada}
+                      imgGeneral={selectedPractice.good_practices_gallery_images}
+                      context="buenasPracticas"
+                    />
+                  </div>
+                </>
+              </div>
+            </div>
+          </>
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );

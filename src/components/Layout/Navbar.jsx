@@ -11,7 +11,7 @@ const BtnInicioSesion = ({ btnPrincipalSize, btnSecundarioSize }) => {
   const { loginWithKeycloak } = useLogin(); // Asegúrate de que este método esté definido en tu hook.
   const userRegistrado = userData?.perfil?.includes("Registrado");
 
-  console.log(userData)
+  //console.log(userData)
 
   return (
     <div className="lg-col d-flex justify-content-lg-end align-items-center">
