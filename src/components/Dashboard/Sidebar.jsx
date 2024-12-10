@@ -55,13 +55,9 @@ const SidebarLink = ({ to, icon, text, badgeCount, onClick, hasBorder }) =>
 export const Sidebar = () =>
 {
   const { userData } = useAuth();
-  const [ openDropdownSidebar, setOpenDropdownSidebar ] = useState(false);
   const userEditor = userData?.perfil?.includes("Editor");
 
-  const handleDropdownClick = () =>
-  {
-    setOpenDropdownSidebar(prevState => !prevState);
-  };
+
 
   return (
     <div className="sidebar  fixed-top  d-flex flex-column flex-shrink-0  border-end">
@@ -103,27 +99,20 @@ export const Sidebar = () =>
               <SidebarLink to="gestion_usuarios" text="Administrar Usuarios" hasBorder={false} />
             </li>
             <hr className="w-85 mx-4" />
-            <li className="nav-item dropdown">
-              <button
-                className=" dropdown-sidebar border-0 title-section ms-2"
-                data-bs-toggle="dropdown"
-                aria-expanded={openDropdownSidebar}
-                onClick={handleDropdownClick}>
-                Gestión de Plataforma <i className="material-symbols-outlined">
-                  {openDropdownSidebar ? 'expand_less' : 'expand_more'}
-                </i>
-              </button>
-              <ul className={openDropdownSidebar ? "dropdown-menu show bg-white border-0 ms-3" : "dropdown-menu bg-white border-0 ms-4"}>
-                <li className="my-1">
-                  <SidebarLink to="/dashboard/documentos" icon="file_copy" text="Documentos" hasBorder={false} />
 
-                </li>
-                <li className="my-1">
-                  <SidebarLink to="/dashboard/tag_priorizados" icon="local_parking" text="Tag Priorización" hasBorder={false} />
-                </li>
+            <span className="title-section  ms-4 my-1">Gestión de Plataforma</span>
+            <li className="my-1">
+              <SidebarLink to="/dashboard/documentos" icon="file_copy" text="Documentos" hasBorder={false} />
 
-              </ul>
             </li>
+            <li className="my-1">
+              <SidebarLink to="/dashboard/tag_priorizados" icon="local_parking" text="Tag Priorización" hasBorder={false} />
+            </li>
+            <li className="my-1">
+              <SidebarLink to="/dashboard/buenas_practicas" icon="task_alt" text="Buenas prácticas" hasBorder={false} />
+            </li>
+
+
           </>
         )}
       </ul>

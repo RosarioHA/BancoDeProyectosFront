@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import useApiInnovativeProjects from '../../../hooks/innovativeProject/useInnovativeAdminDetail';
 import useFilterOptions from '../../../hooks/useFilterProjects';
-import useApiGoodPractices from '../../../hooks/useApiGoodPractices';
+import useApiGoodPractices from '../../../hooks/goodPractices/useApiGoodPractices';
 import Carrusel from '../../../components/Commons/carrusel';
 import DropdownComponent from '../../../components/Commons/Dropdown';
 import SelectorLateral from '../../../components/Commons/selectorLateral';
@@ -35,8 +35,8 @@ const ProyectosInnovadores = () =>
 
   const filterPracticesByPrograms = (data, selectedProgramSiglas) =>
   {
-    return data.filter((practice) =>
-      practice.program.some(program => selectedProgramSiglas.includes(program.sigla))
+    return data.filter(practice =>
+      practice.program && selectedProgramSiglas.includes(practice.program.sigla)
     );
   };
 
@@ -86,10 +86,10 @@ const ProyectosInnovadores = () =>
 
   if (loadingInnovativeProjects)
   {
-    return   <div className="d-flex align-items-center flex-column my-5">
-    <div className="text-center text-sans-p-blue">Cargando Datos</div>
-    <span className="placeholder col-4 bg-primary"></span>
-  </div>;
+    return <div className="d-flex align-items-center flex-column my-5">
+      <div className="text-center text-sans-p-blue">Cargando Datos</div>
+      <span className="placeholder col-4 bg-primary"></span>
+    </div>;
   }
 
   if (errorInnovativeProjects)
@@ -223,23 +223,42 @@ const ProyectosInnovadores = () =>
         )}
       </div>
 
-      <div className="container mt-5 pt-5">
+      <div className="container my-5 pt-5 ">
+        <hr className="my-5" />
         {/* BUENAS PRACTICAS */}
-        {selectedPractice ? (
-          <>
-          <hr className="my-5" />
-            <h2 className="text-sans-h2">Buenas prácticas para el diseño</h2>
-            <p className="text-sans-p mt-3">Con estas prácticas buscamos promover criterios sustentables a considerar en el diseño actual de los proyectos.</p>
-            <div className="row">
-              <div className="col-lg-4">
-                {selectedPractice ? (
-                  <SelectorLateral
-                    data={filteredPractices}
-                    onSelect={onSelect}
-                    titlePropertyName="title"
-                  />) : ("")}
-              </div>
-              <div className="col-lg-8">
+        <h2 className="text-sans-h2">Buenas prácticas para el diseño</h2>
+        <p className="text-sans-p mt-3">Con estas prácticas buscamos promover criterios sustentables a considerar en el diseño actual de los proyectos.</p>
+        <div className="row">
+          <div className="col-lg-4">
+            {selectedPractice ? (
+              <SelectorLateral
+                data={filteredPractices}
+                onSelect={onSelect}
+                titlePropertyName="title"
+              />) : ("")}
+          </div>
+          <div className="col-lg-8 my-5">
+            {selectedPractice ? (
+              <>
+                <h2 className="text-sans-h3">{selectedPractice.title}</h2>
+                <p className="text-sans-p" >{selectedPractice.description}</p>
+                <div className="my-4">
+                  <Carrusel
+                    imgPortada={selectedPractice.portada}
+                    context="buenasPracticas"
+                  />
+                  <div className="message-info d-flex flex-column align-items-center  mx-auto">
+                    <span className="text-sans-p-danger mx-4 my-3">
+                      Éstas imágenes son de carácter referencial y no corresponden necesariamente a proyectos que se hayan realizado.
+                    </span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-sans-h4 mt-3">Aún no hay buenas prácticas disponibles</p>
+            )}
+          </div>
+        </div>
 
                 <>
                   <h2 className="text-sans-h3">{selectedPractice.title}</h2>

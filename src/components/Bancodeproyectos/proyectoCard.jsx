@@ -10,12 +10,11 @@ const ProyectoCard = ({ project = {} }) =>
     program = {},
     type = {},
     year = {},
-    slug = "",
-    prioritized_tag: prioritizedTag
+    slug ="",
+    prioritized_tag ={}
   } = project;
 
   const { comuna: comunaName, region } = comuna;
-  const isPrioritizedTagPresent = prioritizedTag && prioritizedTag.length > 0;
 
   const truncateText = (text, maxWords) =>
   {
@@ -38,16 +37,14 @@ const ProyectoCard = ({ project = {} }) =>
         <div className="img-container d-flex justify-content-center">
           <img src={portada} className="image" alt={name} />
 
-          {/* ESTE TAG APARECE DE MANERA DINAMICA, CON EL CONTENIDO TAMBIEN DINAMICO */}
-          {isPrioritizedTagPresent && (
+
             <div className="tag-container">
-              {prioritizedTag.map((tag, index) => (
-                <div key={index} className="proyect-tag py-1 me-1">
-                  <p className="text-tag mx-2">{tag.prioritized_tag}</p>
+              {prioritized_tag && (
+                <div  className="proyect-tag py-1 me-1">
+                  <p className="text-tag mx-2">{prioritized_tag.prioritized_tag}</p>
                 </div>
-              ))}
+              )}
             </div>
-          )}
 
         </div>
         <div className="d-flex flex-row justify-content-between ms-3 my-2">

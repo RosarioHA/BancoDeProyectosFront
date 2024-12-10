@@ -317,7 +317,7 @@ const EditarInnovador = () =>
 
   return (
     <div className="container view-container ms-5">
-      <h1 className="text-sans-h2 mb-3 mt-2">Proyectos Innovadores: Ver solicitud</h1>
+      <h1 className="text-sans-h2 mb-3 mt-2">Proyectos Innovadores: Ver detalles</h1>
       <button className="btn-secundario-s d-flex mb-4" onClick={handleBackButtonClick}>
         <i className="material-symbols-rounded me-2">arrow_back_ios</i>
         <p className="mb-0 text-decoration-underline">Volver atrás</p>
@@ -395,7 +395,7 @@ const EditarInnovador = () =>
 
       {/* Descripcion del proyecto */}
       <div className="container col-10 view-container">
-        <h2 className="text-sans-h2 mt-4 mb-4">Subir Proyecto: Proyectos Innovadores</h2>
+        <h2 className="text-sans-h2 mt-4 mb-4">Editar Proyecto: Proyectos Innovadores</h2>
 
         <div className="container mb-4">
 

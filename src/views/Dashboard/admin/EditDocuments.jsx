@@ -1,15 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomInput from "../../../components/Form/custom_input";
 import { useDocumentTypes } from "../../../hooks/useTypeDocuemnts";
 import { useApiDocuments } from "../../../hooks/useApiDocuments";
+import { ListDocument } from "../../../components/Commons/ListDocument";
 
 const EditDocuments = () =>
 {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { document, fetchDocumentById } = useApiDocuments();
+  const { document, fetchDocumentById, updateDocument, deleteDocument } = useApiDocuments();
   const { documentTypes } = useDocumentTypes();
+
+  const fileInputRef = useRef(null); // Ref para el input de archivo
+
+  const [ title, setTitle ] = useState("");
+  const [ titleError, setTitleError ] = useState("");
+  const [ documentTypeId, setDocumentTypeId ] = useState("");
+  const [ file, setFile ] = useState(null);
+  const [ fileError, setFileError ] = useState("");
 
   useEffect(() =>
   {
@@ -19,8 +28,108 @@ const EditDocuments = () =>
     }
   }, [ id, fetchDocumentById ]);
 
+  useEffect(() =>
+  {
+    if (document)
+    {
+      setTitle(document.title || "");
+      setDocumentTypeId(document.document_type?.id || "");
+    }
+  }, [ document ]);
 
+  const handleTitleChange = (e) =>
+  {
+    const value = e.target.value;
+    setTitle(value);
 
+    if (!value)
+    {
+      setTitleError("El nombre del documento no puede estar vacío.");
+    } else if (value.length < 5)
+    {
+      setTitleError("El nombre del documento debe tener al menos 5 caracteres.");
+    } else
+    {
+      setTitleError("");
+    }
+  };
+
+  const handleDocumentTypeChange = (e) =>
+  {
+    setDocumentTypeId(e.target.value);
+  };
+
+  const handleFileChange = (e) =>
+  {
+    const selectedFile = e.target.files[ 0 ];
+    if (selectedFile && selectedFile.size <= 20 * 1024 * 1024 && selectedFile.type === "application/pdf")
+    {
+      setFile(selectedFile);
+      setFileError("");
+    } else
+    {
+      setFile(null);
+      setFileError("El archivo debe ser un PDF y no superar los 20 MB.");
+    }
+  };
+
+  const handleSaveChanges = async () =>
+  {
+    if (!title)
+    {
+      setTitleError("El nombre del documento no puede estar vacío.");
+      return;
+    }
+    if (!documentTypeId)
+    {
+      alert("Por favor selecciona un tipo de documento.");
+      return;
+    }
+    if (!file && !document?.document)
+    {
+      setFileError("Por favor sube un archivo.");
+      return;
+    }
+
+    const payload = new FormData();
+    payload.append("title", title);
+    payload.append("document_type", documentTypeId);
+    if (file)
+    {
+      payload.append("document", file);
+    }
+
+    try
+    {
+      await updateDocument(id, payload);
+      navigate("/dashboard/documento_exitoso", {
+        state: {
+          origen: "editar_documento",
+          id: id
+        }
+      });
+    } catch (error)
+    {
+      alert("Error al guardar los cambios. Por favor, inténtalo nuevamente.");
+    }
+  };
+
+  const handleDelete = async (id) =>
+  {
+    try
+    {
+      await deleteDocument(id);
+      navigate("/dashboard/documento_exitoso", {
+        state: {
+          origen: "eliminar_documento",
+          id: id
+        }
+      });
+    } catch (error)
+    {
+      console.error("Failed to delete document:", error);
+    }
+  };
   const handleBackButtonClick = () =>
   {
     navigate("/dashboard/documentos");
@@ -36,7 +145,7 @@ const EditDocuments = () =>
           onClick={handleBackButtonClick}
         >
           <i className="material-symbols-rounded me-2">arrow_back_ios</i>
-          <p className="mb-0">Volver</p>
+          <span className="mb-0"><u>Volver</u></span>
         </button>
       </div>
 
@@ -50,13 +159,19 @@ const EditDocuments = () =>
             placeholder="Nombre del documento"
             label="Nombre del documento"
             maxLength="50"
-            value={document?.title || ""}
-            error=""
+            value={title}
+            onChange={handleTitleChange}
+            error={titleError}
           />
+          <ListDocument />
 
           <div className="my-5">
             <p className="text-sans-p">Elige tipo de documento (Obligatorio)</p>
-            <select className="custom-selector p-3" id="program-select" value="">
+            <select
+              className="custom-selector p-3"
+              value={documentTypeId}
+              onChange={handleDocumentTypeChange}
+            >
               <option value="">Seleccionar tipo de documento</option>
               {documentTypes &&
                 documentTypes.map((type) => (
@@ -71,37 +186,68 @@ const EditDocuments = () =>
             <span>Archivo para descarga (Obligatorio)</span>
             <p>(peso máximo 20 MB, PDF )</p>
             <div>
-              {/* Botón personalizado para cargar el archivo */}
-              <button
-                type="button"
-                className="btn-principal-s d-flex justify-content-between my-3"
-                onClick={() => document.getElementById("fileInput").click()}
-              >
-                <i className="material-symbols-rounded me-2">upload_2</i>
-                Subir Archivo
-              </button>
-
-              {/* Input de tipo file oculto */}
               <input
                 type="file"
-                id="fileInput"
+                ref={fileInputRef} // Asignar ref al input
                 accept=".pdf"
+                onChange={handleFileChange}
                 style={{ display: "none" }}
-                onChange=""
               />
-              <div className="my-5 d-flex justify-content-between neutral-container p-4">
-                <div className="me-3">{document?.document ? document.document.split('/').pop() : ''}</div>
-                <div>
-                  <button className="red-ghost-btn px-3 py-1 d-flex justify-content-between"><u>Borrar</u>
-                  <i className="material-symbols-rounded me-2">delete</i>
+              {file ? (
+                <div className="my-5 d-flex justify-content-between neutral-container p-4">
+                  <div className="me-3 my-auto">{file.name}</div>
+                  <button
+                    type="button"
+                    className="btn-principal-s d-flex justify-content-between"
+                    onClick={() => fileInputRef.current.click()} // Usar ref para activar el input
+                  >
+                    <i className="material-symbols-rounded me-2">upload_2</i>
+                    <u>Modificar Archivo</u>
                   </button>
+                </div>
+              ) : document?.document ? (
+                <div className="container d-flex flex-row neutral-container p-4">
+                  <div className="col text-break"> {document.document.split('/').pop()}
                   </div>
-              </div>
+                  <div className="col d-flex mx-2">
+                    <a className="blue-ghost-btn mx-2" href={document.document} target="_blank" rel="noopener noreferrer">Ver Archivo</a>
+                    <button
+                      type="button"
+                      className="btn-principal-s d-flex justify-content-between"
+                      onClick={() => fileInputRef.current.click()} // Usar ref para activar el input
+                    >
+                      <i className="material-symbols-rounded me-2">upload_2</i>
+                      <u>Modificar Archivo</u>
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+              {fileError && <p className="text-danger">{fileError}</p>}
             </div>
+          </div>
+
+
+          <div className="d-flex justify-content-between">
+            <button
+              type="button"
+              className="red-btn d-flex justify-content-between"
+              onClick={() => handleDelete(document.id)}
+            >
+              <i className="material-symbols-rounded me-2">delete</i>
+              <u>Eliminar Documento</u>
+            </button>
+            <button
+              type="button"
+              className="btn-principal-s d-flex justify-content-between"
+              onClick={handleSaveChanges}
+            >
+              <i className="material-symbols-rounded me-2">save</i>
+              <u> Guardar cambios</u>
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
