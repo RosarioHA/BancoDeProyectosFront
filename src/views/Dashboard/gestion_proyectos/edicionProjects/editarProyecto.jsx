@@ -12,6 +12,7 @@ import UploadImgsm from "../../../../components/Commons/UploadImgsm";
 import { DocumentsProjects } from "../../../../components/Tables/DocumentsProjects";
 import DocumentsAditionals from "../../../../components/Commons/DocumentsAditionals";
 import { DeleteProjectModal } from "../../../../components/Modals/EliminarProyecto";
+import { useAuth } from '../../../../context/AuthContext';
 const EditarProyecto = () =>
 {
   const { slug } = useParams();
@@ -20,7 +21,7 @@ const EditarProyecto = () =>
   const { updateProject } = useApiUpdateProject();
   const { deleteImage, addImage } = useGalleryProject(slug);
   const { addDocument, deleteDocument } = useDocumentsAdicional(slug) || [];
-
+  const { userData } = useAuth();
   const [ dataProject, setDataProject ] = useState(null);
   const [ isPublished, setIsPublished ] = useState(null);
   const [ isEditing, setIsEditing ] = useState(false);
@@ -39,6 +40,7 @@ const EditarProyecto = () =>
   const [ previousLink, setPreviousLink ] = useState('');
   const [ files, setFiles ] = useState([]);
   const [ completingProject, setCompletingProject ] = useState(false);
+  const userEditor = userData?.perfil?.includes("Editor");
 
   const isCompleted = dataProject?.is_complete;
 
@@ -389,30 +391,60 @@ const EditarProyecto = () =>
             </div>
             <div className="row my-3">
               <div className="col-4">
-                {isCompleted ? (
-                  <>
-                    <div className="">Cambiar estado de publicación</div>
-                    <div className="d-flex my-2">
-                      <button
-                        className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
-                        onClick={() => handleStatusChange(true)}
-                      >
-                        <u>Publicado</u>
-                        {isPublished === true && <i className="material-symbols-rounded mx-2">check</i>}
-                      </button>
-                      <button
-                        className={`btn-secundario-s d-flex ms-2 px-4 ${isPublished === false ? 'btn-principal-s active' : ''}`}
-                        onClick={() => handleStatusChange(false)}
-                      >
-                        <u>Privado</u>
-                        {isPublished === false && <i className="material-symbols-rounded mx-2">check</i>}
-                      </button>
-                    </div>
-                  </>
+                {userEditor ? (
+                  <div className="col-4">
+                    {isCompleted ? (
+                      <>
+                        <div>Cambiar estado de publicación</div>
+                        <div className="d-flex my-2">
+                          <button
+                            className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
+                            onClick={() => handleStatusChange(true)}
+                          >
+                            <u>Publicado</u>
+                            {isPublished === true && <i className="material-symbols-rounded mx-2">check</i>}
+                          </button>
+                          <button
+                            className={`btn-secundario-s d-flex ms-2 px-4 ${isPublished === false ? 'btn-principal-s active' : ''}`}
+                            onClick={() => handleStatusChange(false)}
+                          >
+                            <u>Privado</u>
+                            {isPublished === false && <i className="material-symbols-rounded mx-2">check</i>}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="my-1">Estado de publicación</div>
+                        <div className="incompleto-xl px-2 py-1">Proyecto Incompleto</div>
+                      </>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <div className="my-1">Estado de publicación</div>
-                    <div className="incompleto-xl px-2 py-1">Proyecto Incompleto</div>
+                    {isCompleted ? (
+                      <>
+                        <div className="d-flex my-2">
+                          {isPublished === true ? (
+                            <span
+                              className="publicado px-3 py-2 mx-2 my-2">
+                              Publicado
+                            </span>
+                          ) : (
+                            <span
+                              className="privado px-3 py-2 mx-2 my-2"
+                            >
+                              Privado
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="incompleto px-2 py-1">Proyecto Incompleto</div>
+                      </>
+                    )}
                   </>
                 )}
               </div>
