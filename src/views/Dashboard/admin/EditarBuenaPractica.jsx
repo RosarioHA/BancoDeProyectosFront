@@ -281,9 +281,8 @@ const EditarBuenaPractica = () =>
                   <DeleteProjectModal
                     slug={goodPractices?.id}
                     name={goodPractices?.title}
-                    text='innovador'
-                    buttonText="innovadores"
-                    type="innovative"
+                    buttonText="Buenas prácticas"
+                    type="goodPractice"
                   />
                 </div>
               </div>

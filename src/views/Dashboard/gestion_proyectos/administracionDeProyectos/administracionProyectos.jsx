@@ -25,7 +25,6 @@ const AdministrarProyectos = () => {
   };
 
   const handleDetailsProject = (project) => {
-    console.log(project.slug)
     navigate(`/dashboard/editar_proyecto/${project.slug}/`, { state: { project } });
   };
 

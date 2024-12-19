@@ -3,130 +3,114 @@ import { useNavigate } from "react-router-dom";
 import CustomInput from "../../../components/Form/custom_input";
 import { useDocumentTypes } from "../../../hooks/useTypeDocuemnts";
 import { useApiDocuments } from "../../../hooks/useApiDocuments";
-import { useApiTypeProject } from "../../../hooks/useTypeProject";
 import { ListDocument } from "../../../components/Commons/ListDocument";
 
-const AddDocuments = () => {
+const AddDocuments = () =>
+{
   const navigate = useNavigate();
   const { createDocument } = useApiDocuments();
   const { documentTypes } = useDocumentTypes();
-  const { addDocument } = useApiTypeProject();
 
   const fileInputRef = useRef(null);
 
-  const [title, setTitle] = useState("");
-  const [titleError, setTitleError] = useState("");
-  const [documentTypeId, setDocumentTypeId] = useState("");
-  const [documentTypeError, setDocumentTypeError] = useState("");
-  const [file, setFile] = useState(null);
-  const [fileError, setFileError] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState({}); // Para gestionar tipos seleccionados
+  const [ title, setTitle ] = useState("");
+  const [ titleError, setTitleError ] = useState("");
+  const [ documentTypeId, setDocumentTypeId ] = useState("");
+  const [ documentTypeError, setDocumentTypeError ] = useState("");
+  const [ file, setFile ] = useState(null);
+  const [ fileError, setFileError ] = useState("");
+  const [ selectedTypes, setSelectedTypes ] = useState({});
 
-  const handleTitleChange = (e) => {
+
+  const handleTitleChange = (e) =>
+  {
     const value = e.target.value;
     setTitle(value);
 
-    if (!value) {
+    if (!value)
+    {
       setTitleError("El nombre del documento no puede estar vacío.");
-    } else if (value.length < 5) {
+    } else if (value.length < 5)
+    {
       setTitleError("El nombre del documento debe tener al menos 5 caracteres.");
-    } else {
+    } else
+    {
       setTitleError("");
     }
   };
 
-  const handleDocumentTypeChange = (e) => {
+  const handleDocumentTypeChange = (e) =>
+  {
     const value = e.target.value;
     setDocumentTypeId(value);
 
-    if (!value) {
+    if (!value)
+    {
       setDocumentTypeError("El tipo de documento es obligatorio.");
-    } else {
+    } else
+    {
       setDocumentTypeError("");
     }
   };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.size <= 20 * 1024 * 1024 && selectedFile.type === "application/pdf") {
+  const handleFileChange = (e) =>
+  {
+    const selectedFile = e.target.files[ 0 ];
+    if (selectedFile && selectedFile.size <= 20 * 1024 * 1024 && selectedFile.type === "application/pdf")
+    {
       setFile(selectedFile);
       setFileError("");
-    } else {
+    } else
+    {
       setFile(null);
       setFileError("El archivo debe ser un PDF y no superar los 20 MB.");
     }
   };
 
   const handleSaveChanges = async () => {
-    let hasErrors = false;
-  
-    // Validación de campos
+    // Validar los campos
     if (!title) {
       setTitleError("El nombre del documento no puede estar vacío.");
-      hasErrors = true;
+      return;
     }
-  
     if (!documentTypeId) {
       setDocumentTypeError("El tipo de documento es obligatorio.");
-      hasErrors = true;
+      return;
     }
-  
     if (!file) {
-      setFileError("Por favor sube un archivo.");
-      hasErrors = true;
-    }
-  
-    if (hasErrors) return;
-  
-    // Preparamos el payload para la creación del documento
-    const payload = new FormData();
-    payload.append("title", title);
-    payload.append("document_type", documentTypeId);
-    if (file) {
-      payload.append("document", file);
+      setFileError("El archivo es obligatorio.");
+      return;
     }
   
     try {
-      // Crear el documento
-      const documentResponse = await createDocument(payload);
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("document_type", documentTypeId);
+      formData.append("document", file);
   
-      // Crear la estructura de documentos para cada tipo seleccionado
-      const documentsToSend = Object.keys(selectedTypes).map((typeId) => {
-        if (selectedTypes[typeId]) {
-          return {
-            id: documentResponse.id, // ID del documento creado
-            title: title,
-            document: documentResponse.document_url, // URL del documento desde la respuesta del backend
-            document_format: "PDF", // Suponiendo que el formato es PDF
-            document_type: {
-              id: typeId,
-              type: documentTypes.find((type) => type.id === parseInt(typeId)).type, // Obtener el tipo de documento
-            },
-            modified: new Date().toISOString(), // Fecha de modificación actual
-          };
-        }
-        return null;
-      }).filter(Boolean); // Filtramos los elementos nulos (si no está seleccionado)
-  
-      // Enviar los documentos al backend
-      if (documentsToSend.length > 0) {
-        await addDocument(documentsToSend); // Enviar los documentos a la API
+
+      if (Array.isArray(selectedTypes) && selectedTypes.length > 0) {
+        selectedTypes.forEach(typeId => {
+          formData.append("type_ids", typeId);  
+        });
       }
   
-      // Navegar a la página de éxito
+
+      await createDocument(formData);
+  
+
       navigate("/dashboard/documento_exitoso", {
         state: {
           origen: "crear_documento",
-        }
+        },
       });
-  
     } catch (error) {
-      alert("Error al guardar los cambios. Por favor, inténtalo nuevamente.");
-      console.error(error); // Puedes agregar más detalles del error si es necesario
+      console.error("Error al guardar el documento:", error);
+      alert("Hubo un error al intentar guardar el documento. Por favor, inténtalo nuevamente.");
     }
   };
-  
-  const handleBackButtonClick = () => {
+  const handleBackButtonClick = () =>
+  {
     navigate("/dashboard/documentos");
   };
 
@@ -160,7 +144,7 @@ const AddDocuments = () => {
             onChange={handleTitleChange}
             error={titleError}
           />
-          <ListDocument setSelectedTypes={setSelectedTypes} />
+          <ListDocument setSelectedTypes={setSelectedTypes} selectedTypes={selectedTypes} />
 
           <div className="my-5">
             <p className="text-sans-p">Elige tipo de documento (Obligatorio)</p>
