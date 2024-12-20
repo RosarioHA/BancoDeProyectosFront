@@ -11,10 +11,12 @@ import ModalAgregarFuente from "../../../../components/Modals/ModalAgregarFuente
 import ModalEditarFuente from "../../../../components/Modals/ModalEditarFuente";
 import { useGalleryInnovative } from "../../../../hooks/innovativeProject/useGalleryInnovative";
 import { DeleteProjectModal } from "../../../../components/Modals/EliminarProyecto";
+import { useAuth } from '../../../../context/AuthContext';
 
 const EditarInnovador = () =>
 {
   const { id } = useParams();
+  const { userData } = useAuth();
   const history = useNavigate();
   const { updateInnovative } = useUpdateInnovative()
   const { dataInnovativeAdmin, fetchInnovativeAdminData } = useInnovativeDetailAdmin(id);
@@ -38,8 +40,10 @@ const EditarInnovador = () =>
   const [ selectedProgram, setSelectedProgram ] = useState();
   const [ message, setMessage ] = useState({ type: "", text: "" });
   const isCompleted = dataInnovativeAdmin?.is_complete;
+  const userEditor = userData?.perfil?.includes("Editor");
 
   console.log(successMessage)
+  console.log(userData)
   useEffect(() =>
   {
     if (dataInnovativeAdmin)
@@ -122,7 +126,7 @@ const EditarInnovador = () =>
   {
     try
     {
-      const updatedData = await fetchInnovativeAdminData(id); 
+      const updatedData = await fetchInnovativeAdminData(id);
       setWebSource(updatedData?.web_sources || []);
       setInnovativeData((prev) => ({
         ...prev,
@@ -203,17 +207,17 @@ const EditarInnovador = () =>
   };
 
   const handleStatusChange = async (status) =>
+  {
+    setIsPublished(status);
+    try
     {
-      setIsPublished(status);
-      try
-      {
-        const updatedData = await updateInnovative(id, { public: status });
-        setInnovativeData((prev) => ({ ...prev, public: updatedData.public }));
-      } catch (error)
-      {
-        console.error("Error al actualizar el estado de publicación:", error);
-      }
-    };
+      const updatedData = await updateInnovative(id, { public: status });
+      setInnovativeData((prev) => ({ ...prev, public: updatedData.public }));
+    } catch (error)
+    {
+      console.error("Error al actualizar el estado de publicación:", error);
+    }
+  };
   // Maneja el botón de volver atrás
   const handleBackButtonClick = () =>
   {
@@ -334,39 +338,67 @@ const EditarInnovador = () =>
               <div className="col ">Creado por: {innovativeData?.author_name || ''}</div>
               <div className="col ">Publicado por: {innovativeData?.published_name || ''}  </div>
               <div className="col ">Fecha de creación: {innovativeData?.created || ''}</div>
-              <div className="col ">Fecha de publicación: {innovativeData?.published_date|| ''} </div>
+              <div className="col ">Fecha de publicación: {innovativeData?.published_date || ''} </div>
               <div className="col ">Última modificación: {innovativeData?.modified || ''}</div>
             </div>
             <div className="row my-3">
               <div className="col-4">
-                <div className="col-4">
-                  {isCompleted ? (
-                    <>
-                      <div>Cambiar estado de publicación</div>
-                      <div className="d-flex my-2">
-                        <button
-                          className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
-                          onClick={() => handleStatusChange(true)}
-                        >
-                          <u>Publicado</u>
-                          {isPublished === true && <i className="material-symbols-rounded mx-2">check</i>}
-                        </button>
-                        <button
-                          className={`btn-secundario-s d-flex ms-2 px-4 ${isPublished === false ? 'btn-principal-s active' : ''}`}
-                          onClick={() => handleStatusChange(false)}
-                        >
-                          <u>Privado</u>
-                          {isPublished === false && <i className="material-symbols-rounded mx-2">check</i>}
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="my-1">Estado de publicación</div>
-                      <div className="incompleto-xl px-2 py-1">Proyecto Incompleto</div>
-                    </>
-                  )}
-                </div>
+                {userEditor ? (
+                  <div className="col-4">
+                    {isCompleted ? (
+                      <>
+                        <div>Cambiar estado de publicación</div>
+                        <div className="d-flex my-2">
+                          <button
+                            className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
+                            onClick={() => handleStatusChange(true)}
+                          >
+                            <u>Publicado</u>
+                            {isPublished === true && <i className="material-symbols-rounded mx-2">check</i>}
+                          </button>
+                          <button
+                            className={`btn-secundario-s d-flex ms-2 px-4 ${isPublished === false ? 'btn-principal-s active' : ''}`}
+                            onClick={() => handleStatusChange(false)}
+                          >
+                            <u>Privado</u>
+                            {isPublished === false && <i className="material-symbols-rounded mx-2">check</i>}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="my-1">Estado de publicación</div>
+                        <div className="incompleto-xl px-2 py-1">Proyecto Incompleto</div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className="my-1">Estado de publicación</div>
+                    {isCompleted ? (
+                      <>
+                        <div className="d-flex my-2">
+                          {isPublished === true ? (
+                            <span
+                              className="publicado px-3 py-2 mx-2 my-2">
+                              Publicado
+                            </span>
+                            ) : (
+                            <span
+                              className="privado px-3 py-2 mx-2 my-2"
+                            >
+                              Privado
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="incompleto px-2 py-1">Proyecto Incompleto</div>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
             <div className="row my-3">
@@ -381,7 +413,6 @@ const EditarInnovador = () =>
                   <DeleteProjectModal
                     slug={dataInnovativeAdmin?.id}
                     name={dataInnovativeAdmin?.title}
-                    text='innovador'
                     buttonText="innovadores"
                     type="innovative"
                   />
@@ -391,10 +422,10 @@ const EditarInnovador = () =>
           </div>
 
         </div>
-      </div>
+      </div >
 
       {/* Descripcion del proyecto */}
-      <div className="container col-10 view-container">
+      <div className="container col-10 view-container" >
         <h2 className="text-sans-h2 mt-4 mb-4">Editar Proyecto: Proyectos Innovadores</h2>
 
         <div className="container mb-4">

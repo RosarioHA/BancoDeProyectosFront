@@ -37,7 +37,7 @@ const EditDocuments = React.lazy(() => import('./views/Dashboard/admin/EditDocum
 const SuccessDocumentos = React.lazy(() => import('./views/Dashboard/success/Document'));
 const BuenasPracticas = React.lazy(() => import('./views/Dashboard/admin/BuenasPracticas'));
 const EditarBuenasPracticas = React.lazy(() => import('./views/Dashboard/admin/EditarBuenaPractica'));
-const CrearBuenaPractica = React.lazy(()=> import('./views/Dashboard/admin/CrearBuenaPractica'))
+const CrearBuenaPractica = React.lazy(() => import('./views/Dashboard/admin/CrearBuenaPractica'))
 const SuccessBuenasPracticas = React.lazy(() => import('./views/Dashboard/success/Buenapractica'));
 
 const createProtectedRoute = (path, Component, allowedProfiles) => (
@@ -91,25 +91,26 @@ function App()
             <Route path="crear_proyectos" element={<CrearProyectos />} />
             <Route path="crear_proyecto/:slug" element={<CrearProyecto_paso1 />} />
             <Route path="crear_innovador/:id" element={<CrearInnovador_paso1 />} />
-            {createProtectedRoute("administrar_proyectos", AdministrarProyectos, [ 'Editor' ])}
-            {createProtectedRoute("administrar_proyectos_innovadores", AdministrarProyectosInnovadores, [ 'Editor' ])}
+            {createProtectedRoute("administrar_proyectos", AdministrarProyectos, [ 'Editor', 'Usuario Formulante' ])}
+            {createProtectedRoute("administrar_proyectos_innovadores", AdministrarProyectosInnovadores, [ 'Editor', 'Usuario Formulante' ])}
             <Route path="creacion_exitosa" element={<Success />} />
-            {createProtectedRoute("editar_usuario/:id", EdicionUsuario, [ 'Editor' ])}
+            {createProtectedRoute("editar_usuario/:id", EdicionUsuario, [ 'Editor', 'Usuario Formulante'  ])}
             <Route path="editar_perfil/:id" element={<EdicionProfile />} />
             <Route path="envio_exitoso" element={<SuccessViews />} />
-            {createProtectedRoute("gestion_usuarios", GestionUsuarios, [ 'Editor' ])}
+            {createProtectedRoute("gestion_usuarios", GestionUsuarios, [ 'Editor' , 'Usuario Formulante' ])}
             <Route path="edicion_exitosa" element={<SuccessEdicion />} />
             <Route path="editar_proyecto/:slug" element={<EditarProyecto />} />
             <Route path="edicion_innovador/:id" element={<EditarInnovadores />} />
-            <Route path="documentos" element={<Documents />} />
-            <Route path="agregar_documento" element={<AddDocuments />} />
-            <Route path="editar_documento/:id" element={<EditDocuments />} />
-            <Route path="tag_priorizados" element={<TagPriorizados />} />
-            <Route path="documento_exitoso" element={<SuccessDocumentos />} />
-            <Route path='buenas_practicas' element={<BuenasPracticas />} />
-            <Route path='editar_buenas_practicas/:id' element={<EditarBuenasPracticas />} />
-            <Route path='crear_buena_practica' element={<CrearBuenaPractica />} />
-            <Route path="buenas_practicas_exitosas" element={<SuccessBuenasPracticas />} />
+            {/* Rutas solo para  Editor */}
+            {createProtectedRoute("documentos", Documents, [ 'Editor' ])}
+            {createProtectedRoute("agregar_documento", AddDocuments, [ 'Editor' ])}
+            {createProtectedRoute("editar_documento/:id", EditDocuments, [ 'Editor' ])}
+            {createProtectedRoute("tag_priorizados", TagPriorizados, [ 'Editor' ])}
+            {createProtectedRoute("documento_exitoso", SuccessDocumentos, [ 'Editor' ])}
+            {createProtectedRoute("buenas_practicas", BuenasPracticas, [ 'Editor' ])}
+            {createProtectedRoute("editar_buenas_practicas/:id", EditarBuenasPracticas, [ 'Editor' ])}
+            {createProtectedRoute("crear_buena_practica", CrearBuenaPractica, [ 'Editor' ])}
+            {createProtectedRoute("buenas_practicas_exitosas", SuccessBuenasPracticas, [ 'Editor' ])}
           </Route>
         </Routes>
       </Suspense>

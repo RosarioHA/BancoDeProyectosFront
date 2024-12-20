@@ -31,7 +31,7 @@ export const useInnovativeProjectsListAdmin = () =>
     } catch (err)
     {
       console.error(err);
-      setError(err); // Guardamos el error para manejarlo más tarde
+      setError(err); 
     } finally
     {
       setLoading(false);

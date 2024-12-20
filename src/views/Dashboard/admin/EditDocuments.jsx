@@ -12,13 +12,14 @@ const EditDocuments = () =>
   const { document, fetchDocumentById, updateDocument, deleteDocument } = useApiDocuments();
   const { documentTypes } = useDocumentTypes();
 
-  const fileInputRef = useRef(null); // Ref para el input de archivo
+  const fileInputRef = useRef(null); 
 
   const [ title, setTitle ] = useState("");
   const [ titleError, setTitleError ] = useState("");
   const [ documentTypeId, setDocumentTypeId ] = useState("");
   const [ file, setFile ] = useState(null);
   const [ fileError, setFileError ] = useState("");
+  const [ selectedTypes, setSelectedTypes ] = useState([]);
 
   useEffect(() =>
   {
@@ -34,8 +35,13 @@ const EditDocuments = () =>
     {
       setTitle(document.title || "");
       setDocumentTypeId(document.document_type?.id || "");
+      if (document.document_types)
+      {
+        setSelectedTypes(document.document_types.map((type) => type.id));
+      }
     }
   }, [ document ]);
+  
 
   const handleTitleChange = (e) =>
   {
@@ -73,43 +79,44 @@ const EditDocuments = () =>
     }
   };
 
-  const handleSaveChanges = async () =>
-  {
-    if (!title)
-    {
+  const handleSaveChanges = async () => {
+    // Validar los campos
+    if (!title) {
       setTitleError("El nombre del documento no puede estar vacío.");
       return;
     }
-    if (!documentTypeId)
-    {
-      alert("Por favor selecciona un tipo de documento.");
+    if (!documentTypeId) {
+      setTitleError("El tipo de documento es obligatorio.");
       return;
     }
-    if (!file && !document?.document)
-    {
+    if (!file && !document?.document) {
       setFileError("Por favor sube un archivo.");
       return;
     }
 
+    // Crear el FormData con los valores del formulario
     const payload = new FormData();
     payload.append("title", title);
-    payload.append("document_type", documentTypeId);
-    if (file)
-    {
+    payload.append("document_type_id", documentTypeId);
+    payload.append("type_ids", selectedTypes);
+
+    // Solo agregar el archivo si fue modificado
+    if (file) {
       payload.append("document", file);
     }
 
-    try
-    {
+    try {
+      // Llamar la función de actualización de documento con el ID
       await updateDocument(id, payload);
+
+      // Redirigir a una página de éxito o a donde sea necesario
       navigate("/dashboard/documento_exitoso", {
         state: {
           origen: "editar_documento",
-          id: id
-        }
+          id: id,
+        },
       });
-    } catch (error)
-    {
+    } catch (error) {
       alert("Error al guardar los cambios. Por favor, inténtalo nuevamente.");
     }
   };
@@ -122,14 +129,15 @@ const EditDocuments = () =>
       navigate("/dashboard/documento_exitoso", {
         state: {
           origen: "eliminar_documento",
-          id: id
-        }
+          id: id,
+        },
       });
     } catch (error)
     {
       console.error("Failed to delete document:", error);
     }
   };
+
   const handleBackButtonClick = () =>
   {
     navigate("/dashboard/documentos");
@@ -163,7 +171,11 @@ const EditDocuments = () =>
             onChange={handleTitleChange}
             error={titleError}
           />
-          <ListDocument />
+          <ListDocument
+            setSelectedTypes={setSelectedTypes}
+            selectedTypes={selectedTypes}
+            documentId={document?.id}
+          />
 
           <div className="my-5">
             <p className="text-sans-p">Elige tipo de documento (Obligatorio)</p>
@@ -188,7 +200,7 @@ const EditDocuments = () =>
             <div>
               <input
                 type="file"
-                ref={fileInputRef} // Asignar ref al input
+                ref={fileInputRef}
                 accept=".pdf"
                 onChange={handleFileChange}
                 style={{ display: "none" }}
@@ -199,7 +211,7 @@ const EditDocuments = () =>
                   <button
                     type="button"
                     className="btn-principal-s d-flex justify-content-between"
-                    onClick={() => fileInputRef.current.click()} // Usar ref para activar el input
+                    onClick={() => fileInputRef.current.click()}
                   >
                     <i className="material-symbols-rounded me-2">upload_2</i>
                     <u>Modificar Archivo</u>
@@ -207,14 +219,13 @@ const EditDocuments = () =>
                 </div>
               ) : document?.document ? (
                 <div className="container d-flex flex-row neutral-container p-4">
-                  <div className="col text-break"> {document.document.split('/').pop()}
-                  </div>
+                  <div className="col text-break"> {document.document.split('/').pop()}</div>
                   <div className="col d-flex mx-2">
                     <a className="blue-ghost-btn mx-2" href={document.document} target="_blank" rel="noopener noreferrer">Ver Archivo</a>
                     <button
                       type="button"
                       className="btn-principal-s d-flex justify-content-between"
-                      onClick={() => fileInputRef.current.click()} // Usar ref para activar el input
+                      onClick={() => fileInputRef.current.click()}
                     >
                       <i className="material-symbols-rounded me-2">upload_2</i>
                       <u>Modificar Archivo</u>
@@ -225,7 +236,6 @@ const EditDocuments = () =>
               {fileError && <p className="text-danger">{fileError}</p>}
             </div>
           </div>
-
 
           <div className="d-flex justify-content-between">
             <button

@@ -1,11 +1,4 @@
 .container-home{
-display: flex;
-width: auto;
-height: auto;
-padding: 24px;
-align-items: flex-start;
-gap:16px;
-flex-shrink: 0;
 background: rgba(207, 225, 243, 0.35);
 }
 
@@ -58,7 +51,7 @@ background: $white-color;
 
 .container-history{
 display: flex;
-width: 400px;
+width: auto;
 flex-direction: column;
 align-items: flex-start;
 gap: 1px;
