@@ -123,7 +123,7 @@ export const useApiDocuments = () => {
   const deleteDocument = useCallback(async (id) => {
     setLoadingDocuments(true);
     try {
-      const response = await apiBancoProyecto.delete(`/documents/v1/${id}/delete-document/`);
+      const response = await apiBancoProyecto.delete(`/documents/v1/${id}/`);
       setDocumentsList(prevDocuments => prevDocuments.filter(doc => doc.id !== id)); // Update the list by removing the deleted document
       setErrorDocuments(null);
       return response.data;  // Returning the response data (optional, based on the response structure)

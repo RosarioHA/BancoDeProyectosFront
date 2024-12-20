@@ -10,7 +10,7 @@ import { EditableTitle } from "../../../../components/Tables/InputTitle";
 // import { useAuth } from '../../../../context/AuthContext';
 import { useGalleryInnovative } from "../../../../hooks/innovativeProject/useGalleryInnovative";
 import { useInnovativeDetailAdmin } from '../../../../hooks/innovativeProject/useInnovativeDetail';
-import { Desechar } from "../../../../components/Modals/desechar";
+import { Desechar } from "../../../../components/Modals/Desechar";
 
 const CrearProyectoInnovadorP1 = () =>
 {

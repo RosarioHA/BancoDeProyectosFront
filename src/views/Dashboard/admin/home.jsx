@@ -30,7 +30,7 @@ const HomeDashboard = () =>
   };
 
   return (
-    <div className="container-home">
+    <div className="container-home col">
       <div className="d-flex ">
         <div className="container col-6">
           <div className="row">
