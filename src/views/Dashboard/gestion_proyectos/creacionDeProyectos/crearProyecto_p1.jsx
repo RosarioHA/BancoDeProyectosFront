@@ -10,7 +10,7 @@ import UploadImg from "../../../../components/Commons/UploadImg";
 import UploadImgsm from "../../../../components/Commons/UploadImgsm";
 import { DocumentsProjects } from "../../../../components/Tables/DocumentsProjects";
 import DocumentsAditionals from "../../../../components/Commons/DocumentsAditionals";
-import { Desechar } from "../../../../components/Modals/desechar";
+import { Desechar } from "../../../../components/Modals/Desechar";
 const CrearProyectoP1 = () =>
 {
   const location = useLocation()

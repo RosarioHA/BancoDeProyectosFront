@@ -344,10 +344,10 @@ const EditarInnovador = () =>
             <div className="row my-3">
               <div className="col-4">
                 {userEditor ? (
-                  <div className="col-4">
+                  <div className="col-7">
                     {isCompleted ? (
                       <>
-                        <div>Cambiar estado de publicación</div>
+                        <div>Estado de publicación</div>
                         <div className="d-flex my-2">
                           <button
                             className={`btn-secundario-s d-flex me-3 px-2 ${isPublished === true ? 'btn-principal-s active' : ''}`}
