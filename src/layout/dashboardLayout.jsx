@@ -5,12 +5,12 @@ const DashboardLayout = () =>
 {
   return (
     <>
-      <div className="container-fluid">
+      <div className="container">
         <div className="row">
-          <div className="col-2">
+          <div>
             <Sidebar />
           </div>
-          <div className="col-10 px-0">
+          <div className="col-11 px-0">
             <NavbarUser />
             <Outlet />
           </div>

@@ -2,40 +2,37 @@ import { useState } from 'react';
 import UploadFile from "../Modals/UploadFile";
 import { AdditionalDocs } from "../Tables/AdditionalDocs";
 
-
-const DocumentsAditionals = () =>
+const DocumentsAditionals = ({ documents, addDocument, deleteDocument }) =>
 {
   const [ editingIndex, setEditingIndex ] = useState(null);
   const [ isEditMode, setIsEditMode ] = useState(false);
-  const [ files, setFiles ] = useState([]);
-
+  const [ files, setFiles ] = useState(documents || []);
 
   const addFile = (newFile, title) =>
   {
-    setFiles([ ...files, { file: newFile, title: title } ]);
+    addDocument(title, newFile); // Pasa title y newFile en el orden correcto
+    setFiles([ ...files, { file: newFile, name: title, file_format: newFile.type } ]);
   };
 
   const handleEdit = (index) =>
   {
     setEditingIndex(index);
     setIsEditMode(true);
-    // Aquí podrías abrir el modal usando React (por ejemplo, cambiando un state que controle si el modal está abierto o no).
-  }
+  };
 
   const handleUpdateFile = (index, updatedFile, updatedTitle) =>
   {
     const updatedFiles = [ ...files ];
-    updatedFiles[ index ] = { file: updatedFile, title: updatedTitle };
+    updatedFiles[ index ] = { file: updatedFile, name: updatedTitle, file_format: updatedFile.type };
     setFiles(updatedFiles);
-  }
+  };
 
   const handleDelete = (index) =>
   {
-    const newFiles = [ ...files ];
-    newFiles.splice(index, 1);
-    setFiles(newFiles);
-  }
-
+    const documentId = files[ index ].id;
+    deleteDocument(documentId);
+    setFiles(files.filter((file, i) => i !== index));
+  };
 
   return (
     <>
@@ -47,14 +44,15 @@ const DocumentsAditionals = () =>
         editingFile={editingIndex !== null ? files[ editingIndex ] : null}
         onFileUpdated={handleUpdateFile}
       />
-      {files.length > 0 && <AdditionalDocs
-        key={Date.now()} 
-        files={files}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onUpdateFile={handleUpdateFile} />}
+      {files.length >= 0 && (
+        <AdditionalDocs
+          files={files}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default DocumentsAditionals
+export default DocumentsAditionals;
