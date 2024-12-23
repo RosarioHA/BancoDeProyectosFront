@@ -133,7 +133,7 @@ const BuenasPracticas = () =>
           {goodPracticesAdmin?.length > 0 ? (
             goodPracticesAdmin?.map((practica, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-                <div className="col-1 p-3"> {(pagination - 1) * practicaPerPage + index + 1}</div>
+                <div className="col-1 p-3">{index + 1}</div>
                 <div className="col p-3">{practica.title}</div>
                 <div className="col p-3 text-center mx-auto"><span className="program mx-auto px-2 py-1">{practica.program?.sigla}</span></div>
                 <div className="col p-3 text-center">

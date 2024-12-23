@@ -3,47 +3,40 @@ import { useApiTagProject } from "../../../hooks/useTag";
 import { Tags } from "../../../components/Modals/Tags";
 import { InputSearch } from '../../../components/Commons/input_search';
 
-const TagPriorizados = () =>
-{
-  const [ setSearching ] = useState(); // Usado para indicar si se está realizando una búsqueda
-  const {
-    tagList,
+const TagPriorizados = () => {
+  const [setSearching] = useState(); // Usado para indicar si se está realizando una búsqueda
+  const { 
+    tagList, 
     setSearchTerm,
-    searchTerm,
-    metadata,
-    pagination,
-    setPagination,
-    tagLoading,
+    searchTerm, 
+    metadata, 
+    pagination, 
+    setPagination, 
+    tagLoading ,
     deleteTag
   } = useApiTagProject();
 
   const usersPerPage = 10; // Número de elementos por página
   const totalPages = Math.ceil(metadata.count / usersPerPage); // Total de páginas
 
-  const handleSearch = (term) =>
-  {
+  const handleSearch = (term) => {
     const normalizedTerm = term.trim().toLowerCase();
     setSearchTerm(normalizedTerm);
     setSearching(!!normalizedTerm);
   };
 
-  const handlePageChange = (pageNumber) =>
-  {
-    if (pageNumber >= 1 && pageNumber <= totalPages)
-    {
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
       setPagination(pageNumber);
     }
   };
 
-  const handleDelete = (tagId) =>
-  {
+  const handleDelete = (tagId) => {
     deleteTag(tagId);
   };
 
-  const renderPaginationButtons = () =>
-  {
-    if (totalPages <= 1)
-    {
+  const renderPaginationButtons = () => {
+    if (totalPages <= 1) {
       return null; // No mostrar paginación si hay una sola página
     }
 
@@ -55,9 +48,9 @@ const TagPriorizados = () =>
         <nav className="pagination-container">
           <ul className="pagination">
             <li className={`page-item ${pagination === 1 ? 'disabled' : ''}`}>
-              <button
-                className="custom-pagination-btn mx-2"
-                onClick={() => handlePageChange(pagination - 1)}
+              <button 
+                className="custom-pagination-btn mx-2" 
+                onClick={() => handlePageChange(pagination - 1)} 
                 disabled={pagination === 1}
               >
                 &lt;
@@ -65,8 +58,8 @@ const TagPriorizados = () =>
             </li>
             {Array.from({ length: totalPages }, (_, i) => (
               <li key={i} className="page-item">
-                <button
-                  className={`custom-pagination-btn mx-1 ${pagination === i + 1 ? 'active' : ''}`}
+                <button 
+                  className={`custom-pagination-btn mx-1 ${pagination === i + 1 ? 'active' : ''}`} 
                   onClick={() => handlePageChange(i + 1)}
                 >
                   {i + 1}
@@ -74,9 +67,9 @@ const TagPriorizados = () =>
               </li>
             ))}
             <li className={`page-item ${pagination === totalPages ? 'disabled' : ''}`}>
-              <button
-                className="custom-pagination-btn mx-2"
-                onClick={() => handlePageChange(pagination + 1)}
+              <button 
+                className="custom-pagination-btn mx-2" 
+                onClick={() => handlePageChange(pagination + 1)} 
                 disabled={pagination === totalPages}
               >
                 &gt;
@@ -122,12 +115,10 @@ const TagPriorizados = () =>
           ) : tagList?.length > 0 ? (
             tagList.map((tag, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-                <div className="col-1 p-3">
-                  {(pagination - 1) * usersPerPage + index + 1}
-                </div>
+                <div className="col-1 p-3">{index + 1}</div>
                 <div className="col p-3">{tag.prioritized_tag}</div>
                 <div className="col p-3">
-                  <button className="red-btn px-3 py-1" onClick={() => handleDelete(tag.id)}>
+                  <button className="red-btn px-3 py-1"  onClick={() => handleDelete(tag.id)}>
                     <u>Eliminar</u>
                   </button>
                 </div>

@@ -42,16 +42,13 @@ export const useLogin = () => {
             const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
             const response = await apiBancoProyecto.post(`${apiUrl}/callback/`, {
                 code,
-                codeVerifier
+                codeVerifier  // Enviar el codeVerifier recibido de Keycloak
             });
 
-            if (response.data && response.data.access_token) {
-                const { access_token, refresh_token, expires_in } = response.data;
-
-                //console.log("Refresh Token recibido en handleauthentication:", refresh_token);
-                //console.log("User Token recibido en handleauthentication:", access_token);
-
-                localStorage.setItem('userToken', access_token);
+            console.log("se envía el code :", code, " y el codeVerifier: ", codeVerifier)
+    
+            if (response.data && response.data.access_token && response.data.refresh_token) {
+                localStorage.setItem('userToken', response.data.access_token);
                 localStorage.setItem('userData', JSON.stringify(response.data.user));
                 localStorage.setItem('refreshToken', refresh_token);
                 localStorage.setItem('tokenExpiry', Date.now() + expires_in * 1000);

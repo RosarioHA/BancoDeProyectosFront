@@ -37,9 +37,9 @@ const Documents = () =>
   };
 
   const handleDetailsDocument = (documento) =>
-    {
-      navigate(`/dashboard/editar_documento/${documento.id}`, { state: { documento} });
-    };
+  {
+    navigate(`/dashboard/editar_documento/${documento.id}`, { state: { documento } });
+  };
 
   const handleAddDocument = () =>
   {
@@ -141,7 +141,7 @@ const Documents = () =>
           {documentsList?.length > 0 ? (
             documentsList.map((documento, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-                <div className="col-1 p-3">{index + 1}</div>
+                <div className="col-1 p-3">  {(pagination - 1) * usersPerPage + index + 1}</div>
                 <div className="col p-3">{documento.title}</div>
                 <div className="col p-3 text-center mx-auto">{documento.document_format}</div>
                 <div className="col p-3 text-center"><span className="program mx-auto px-2 py-1">{documento.document_type.type}</span></div>

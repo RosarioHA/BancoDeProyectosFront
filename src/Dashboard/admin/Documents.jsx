@@ -1,18 +1,25 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useListAdminGoodPractices } from "../../../hooks/goodPractices/useListAdminGoodPractices";
-import { InputSearch } from "../../../components/Commons/input_search";
+import { useNavigate } from "react-router-dom";
+import { InputSearch } from '../../../components/Commons/input_search';
+import { useApiDocuments } from '../../../hooks/useApiDocuments'
 
-const BuenasPracticas = () =>
+
+const Documents = () =>
 {
-  const { goodPracticesAdmin,
-    metadata, pagination,
-    setPagination, searchTerm,
-    setSearchTerm } = useListAdminGoodPractices();
-  const [ setSearching ] = useState(false);
+  const [ setSearching ] = useState(); // Usado para indicar si se está realizando una búsqueda
+  const {
+    documentsList,
+    metadata,
+    pagination,
+    setPagination,
+    setSearchTerm,
+    searchTerm
+  } = useApiDocuments();
   const navigate = useNavigate();
-  const practicaPerPage = 10;
-  const totalPages = Math.ceil(metadata.count / practicaPerPage);
+
+
+  const usersPerPage = 10; // Número de elementos por página
+  const totalPages = Math.ceil(metadata.count / usersPerPage); // Total de páginas
 
   const handleSearch = (term) =>
   {
@@ -20,6 +27,7 @@ const BuenasPracticas = () =>
     setSearchTerm(normalizedTerm);
     setSearching(!!normalizedTerm);
   };
+
   const handlePageChange = (pageNumber) =>
   {
     if (pageNumber >= 1 && pageNumber <= totalPages)
@@ -28,16 +36,15 @@ const BuenasPracticas = () =>
     }
   };
 
-  const handleDetailsPractica = (practica) =>
-  {
-    navigate(`/dashboard/editar_buenas_practicas/${practica.id}`, { state: { practica } });
-  };
+  const handleDetailsDocument = (documento) =>
+    {
+      navigate(`/dashboard/editar_documento/${documento.id}`, { state: { documento} });
+    };
 
-  const handleAddPractica = () =>
+  const handleAddDocument = () =>
   {
-    navigate('/dashboard/crear_buena_practica');
+    navigate('/dashboard/agregar_documento');
   };
-
 
   const renderPaginationButtons = () =>
   {
@@ -49,7 +56,7 @@ const BuenasPracticas = () =>
     return (
       <div className="d-flex flex-column flex-md-row my-5 justify-content-center">
         <p className="text-sans-h5 mx-3 text-center">
-          {`Mostrando ${(pagination - 1) * practicaPerPage + 1} - ${Math.min(pagination * practicaPerPage, metadata.count)} de ${metadata.count} documentos`}
+          {`Mostrando ${(pagination - 1) * usersPerPage + 1} - ${Math.min(pagination * usersPerPage, metadata.count)} de ${metadata.count} documentos`}
         </p>
         <nav className="pagination-container">
           <ul className="pagination">
@@ -86,11 +93,12 @@ const BuenasPracticas = () =>
       </div>
     );
   };
+
   return (
     <div className="container col-10 col-xxl-11 mt-2">
       <div className="text-sans-h2 mx-3">Gestión de Plataforma</div>
       <div className="d-flex flex-row px-4 mb-5 justify-content-between">
-        <div className="w-50 pl-2 text-sans-h3 align-self-center">Buenas Prácticas</div>
+        <div className="w-50 pl-2 text-sans-h3 align-self-center">Documentos</div>
         <div className="d-flex">
           <div className="mx-3 col-7">
             <InputSearch
@@ -98,15 +106,15 @@ const BuenasPracticas = () =>
               onSearch={handleSearch}
               setHasSearched={setSearching}
               onChange={setSearchTerm}
-              placeholder="Buscar"
+              placeholder="Buscar documento"
             />
           </div>
           <div className="mx-3 col-5">
             <button
               className="btn-principal-s d-flex py-3 me-3 align-self-center"
-              onClick={handleAddPractica}
+              onClick={handleAddDocument}
             >
-              <u>Crear Buenas Prácticas</u>
+              <u>Subir documento</u>
               <i className="material-symbols-rounded ms-2 ">add</i>
             </button>
           </div>
@@ -116,47 +124,42 @@ const BuenasPracticas = () =>
         <div className="row py-2 border-top">
           <div className="col-1 mt-3">#</div>
           <div className="col mt-3">
-            <p className="text-sans-b-gray">Nombre</p>
+            <p className="text-sans-b-gray">Nombre del documento</p>
           </div>
           <div className="col mt-3">
-            <p className="text-sans-b-gray text-center mx-auto">Programa</p>
+            <p className="text-sans-b-gray text-center mx-auto">Formato</p>
           </div>
           <div className="col mt-3">
-            <p className="text-sans-b-gray">Estado</p>
+            <p className="text-sans-b-gray">Tipo de documento</p>
           </div>
           <div className="col mt-3">
-            <p className="text-sans-b-gray">Fecha modificacion</p>
+            <p className="text-sans-b-gray">Última modificación</p>
           </div>
           <div className="col mt-3">
             <p className="text-sans-b-gray text-center me-5">Acción</p>
           </div>
-          {goodPracticesAdmin?.length > 0 ? (
-            goodPracticesAdmin?.map((practica, index) => (
+          {documentsList?.length > 0 ? (
+            documentsList.map((documento, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-                <div className="col-1 p-3"> {(pagination - 1) * practicaPerPage + index + 1}</div>
-                <div className="col p-3">{practica.title}</div>
-                <div className="col p-3 text-center mx-auto"><span className="program mx-auto px-2 py-1">{practica.program?.sigla}</span></div>
-                <div className="col p-3 text-center">
-                  <span className={`mx-auto px-2 py-1 ${practica.public ? 'publicado' : 'privado'}`}>
-                    {practica.public ? "Publicado" : "Privado"}
-                  </span>
-                </div>
-                <div className="col p-3 text-center mx-auto">{practica.modified}</div>
+                <div className="col-1 p-3">{index + 1}</div>
+                <div className="col p-3">{documento.title}</div>
+                <div className="col p-3 text-center mx-auto">{documento.document_format}</div>
+                <div className="col p-3 text-center"><span className="program mx-auto px-2 py-1">{documento.document_type.type}</span></div>
+                <div className="col p-3 text-center mx-auto">{documento.modified}</div>
                 <div className="col p-3 text-center ">
-                  <button className="btn-secundario-s px-3 py-1 " onClick={() => handleDetailsPractica(practica)}>
+                  <button className="btn-secundario-s px-3 py-1 " onClick={() => handleDetailsDocument(documento)}>
                     <u>Editar</u>
                   </button>
                 </div>
               </div>
             ))
           ) : (
-            <div>No se encontraron Buenas Practicas.</div>
+            <div>No se encontraron documentos.</div>
           )}
         </div>
-        {metadata.count > practicaPerPage && renderPaginationButtons()}
+        {metadata.count > usersPerPage && renderPaginationButtons()}
       </div>
     </div>
-  )
-}
-
-export default BuenasPracticas
+  );
+};
+export default Documents; 

@@ -12,8 +12,6 @@ export const Desechar = ({ slug,  text, type }) => {
     success: successStandard,
   } = useDeleteProject();
 
-  console.log(slug)
-
   const {
     deleteInnovative,
     error: errorInnovative,
