@@ -84,7 +84,7 @@ $border-claveunica-color: #000000;
 .text-sans-h4-white{
     @include font-sans(20px, 600, $white-color);
 }
-.text-sans-h5{
+.text-sans-h5-red{
     @include font-sans(14px, 400, $grey-a-color);
 }
 .text-sans-h5-bold{
@@ -93,6 +93,9 @@ $border-claveunica-color: #000000;
 
 .text-sans-h5-blue{
     @include font-sans(14px, 400, $primary-color);
+}
+.text-sans-h5-error{
+    @include font-sans(14px, 400, $secondary-color);
 }
 .text-sans-h5-red{
     @include font-sans(14px, 400, $dark-red);
@@ -117,6 +120,12 @@ $border-claveunica-color: #000000;
 }
 .text-sans-p-lightgrey{
     @include font-sans(16px, 400, $grey-light-color); 
+}
+.text-sans-xl-danger{
+    @include font-sans(50px, 700, $dark-red); 
+}
+.text-sans-lg-danger{
+    @include font-sans(24px, 700, $alert-danger); 
 }
 .text-sans-p-danger{
     @include font-sans(16px, 400, $alert-danger); 
@@ -192,7 +201,7 @@ $border-claveunica-color: #000000;
 .btn-principal-s{
    @include btn-principal(fit-content, $blue-color);
    height: fit-content;
-   color: white;
+   color: $white-color;
    border:  2px solid $blue-color ;
 
    &:hover {
@@ -294,6 +303,10 @@ $border-claveunica-color: #000000;
 
 .btn-secundario-s-active{
     background-color: $blue-color;
+    color: $white-color;
+}
+.btn-secundario-s.active {
+    background-color: $blue-color; // o cualquier otro color que desees
     color: $white-color;
 }
 .btn-secundario-s:focus{
@@ -414,6 +427,13 @@ $border-claveunica-color: #000000;
     background-color: transparent;
     border: none;
     color: $dark-red;
+    padding: 13px;
+}
+.blue-ghost-btn{
+    width: fit-content;
+    background-color: transparent;
+    border: none;
+    color: $blue-color;
     padding: 13px;
 }
 .burger-btn{
