@@ -48,17 +48,24 @@ export const useLogin = () => {
             console.log("se envía el code :", code, " y el codeVerifier: ", codeVerifier)
     
             if (response.data && response.data.access_token && response.data.refresh_token) {
-                localStorage.setItem('userToken', response.data.access_token);
-                localStorage.setItem('userData', JSON.stringify(response.data.user));
+                const { access_token, refresh_token, expires_in, user } = response.data;
+    
+                // Calcula el tiempo de expiración exacto
+                const tokenExpiry = Date.now() + expires_in * 1000;
+    
+                // Almacena los valores en localStorage
+                localStorage.setItem('userToken', access_token);
+                localStorage.setItem('userData', JSON.stringify(user));
                 localStorage.setItem('refreshToken', refresh_token);
-                localStorage.setItem('tokenExpiry', Date.now() + expires_in * 1000);
+                localStorage.setItem('tokenExpiry', tokenExpiry);
                 localStorage.setItem('authMethod', 'keycloak');
-
-                //console.log("Refresh Token almacenado en handleauthentication:", localStorage.getItem('refreshToken'));
-                //console.log("User Token almacenado en handleauthentication:", localStorage.getItem('userToken'));
-
+    
+                console.log("Refresh Token almacenado:", refresh_token);
+                console.log("User Token almacenado:", access_token);
+    
+                // Llama al método global de login
+                globalLogin(access_token, refresh_token, user);
                 setData(response.data);
-                globalLogin(access_token, refresh_token, response.data.user);
             } else {
                 throw new Error("The server response does not include the necessary tokens.");
             }
