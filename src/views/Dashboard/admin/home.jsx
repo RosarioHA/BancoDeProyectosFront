@@ -31,7 +31,7 @@ const HomeDashboard = () =>
 
   return (
     <div className="container-home col">
-      <div className="d-flex ">
+      <div className="d-flex justify-content-between">
         <div className="container col-6">
           <div className="row">
             <div className="container-history my-4">
@@ -133,7 +133,7 @@ const HomeDashboard = () =>
             )}
           </div>
         </div>
-        <div className="col-4">
+        <div className="col-3">
           <div className="container-history me-3 my-4">
             <div className="title-history text-sans-h4">
               <i className="material-symbols-outlined">history</i>

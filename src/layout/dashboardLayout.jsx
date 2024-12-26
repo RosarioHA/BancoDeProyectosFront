@@ -5,16 +5,16 @@ const DashboardLayout = () =>
 {
   return (
     <>
-      <div className="container">
-        <div className="row">
-          <div>
-            <Sidebar />
-          </div>
-          <div className="col-11 px-0">
-            <NavbarUser />
-            <Outlet />
-          </div>
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-2">
+          <Sidebar />
         </div>
+        <div className="col-10">
+          <NavbarUser />
+          <Outlet />
+        </div>
+      </div>
       </div>
     </>
 

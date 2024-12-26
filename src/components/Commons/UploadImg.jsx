@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-export default function UploadImg({ img='', onSave, tag, title })
+export default function UploadImg({ img = '', onSave, tag, title })
 {
   const [ showModal, setShowModal ] = useState(false);
   const [ isEditMode, setIsEditMode ] = useState(false);
@@ -111,10 +111,11 @@ export default function UploadImg({ img='', onSave, tag, title })
         <div>
 
           <button
-            className="btn-borderless-white d-flex  align-content-center mx-3 px-3"
+            className="btn-borderless d-flex  align-content-center mx-3 px-3 text-sans-h4"
             onClick={() => openModal(true)}
           >
-            <i className="material-symbols-outlined mx-1 text-sans-h4">add</i><span className="text-sans-h4">Agregar Imagen</span>
+            <i className="material-symbols-rounded ms-2">add</i> 
+            Agregar Imagen
           </button>
         </div>
       )}

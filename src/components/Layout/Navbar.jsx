@@ -22,7 +22,7 @@ const BtnInicioSesion = ({ btnPrincipalSize, btnSecundarioSize }) => {
             Hola, {userData.full_name || userData.rut}</span>
           {!userRegistrado && (
           <Link className={`mx-lg-3 mt-lg-4 me-md-4 ${btnSecundarioSize}`} to="/dashboard"> 
-            ir a Admin
+          Ir a Admin
           </Link>
                   )}
 

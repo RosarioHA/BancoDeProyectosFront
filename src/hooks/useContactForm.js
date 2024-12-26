@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import {apiBancoProyecto} from '../services/bancoproyecto.api'; 
+import apiBancoProyecto from '../services/bancoproyecto.api'; 
 import { yupResolver } from '@hookform/resolvers/yup';
 
 

@@ -1,6 +1,5 @@
 import { useAuth } from "../context/AuthContext"; 
-import { apiBancoProyecto } from "../services/bancoproyecto.api";
-import axios from "axios";
+import  apiBancoProyecto  from "../services/bancoproyecto.api";
 
 export const useAuthenticatedRequest = () => {
   const { refreshAccessToken } = useAuth();  // Accede al método de refrescar el token desde AuthContext

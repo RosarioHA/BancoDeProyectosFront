@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { apiBancoProyecto } from '../../services/bancoproyecto.api.js';
+import  apiBancoProyecto  from '../../services/bancoproyecto.api.js';
 
 export const useApiUpdateProject = () => {
   const [loading, setLoading] = useState(false);

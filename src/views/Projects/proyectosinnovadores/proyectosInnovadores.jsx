@@ -124,11 +124,11 @@ const ProyectosInnovadores = () =>
       <h3 className="text-sans-h3 mt-3">Primero, elige un programa:</h3>
 
       {/* Tipo de programa */}
-      <div className="container d-flex flex-row justify-content-center ">
-        {programs.map(program => (
+      <div className="container d-flex flex-row-reverse justify-content-center ">
+        {programs.map((program) => (
           <div
             key={program.sigla}
-            tabIndex="0"
+            tabIndex={program.id}
             className="container-btnCircle px-4 col-5 d-flex flex-column mx-2 align-items-center"
           >
             <button

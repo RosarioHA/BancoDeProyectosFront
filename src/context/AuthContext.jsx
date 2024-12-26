@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react'; 
 import axios from 'axios';
-import { apiBancoProyecto } from '../services/bancoproyecto.api';
+import  apiBancoProyecto from '../services/bancoproyecto.api';
 
 export const AuthContext = createContext();
 

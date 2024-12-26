@@ -73,7 +73,7 @@ const Proyecto = () =>
     <div className="container col-11 col-md-10 mb-5 pb-5" >
       {/* Boton volver y breadcrumbs */}
       <div className="d-flex align-items-center">
-        <button className="volver-btn d-none d-lg-block" onClick={() => navigate(-1)}> &lt; volver</button>
+        <button className="volver-btn d-none d-lg-block" onClick={() => navigate(-1)}> &lt; Volver</button>
         <p className="m-0 d-none d-lg-block me-3 opacity-50">|</p>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb m-0">
