@@ -61,7 +61,7 @@ const SuccessBuenasPracticas = () => {
           onClick={handleButtonClick}
         >
           <i className="material-symbols-rounded me-2">arrow_back_ios</i>
-          <p className="mb-0 text-decoration-underline">volver</p>
+          <p className="mb-0 text-decoration-underline">Volver</p>
         </button>
       </div>
     </div>

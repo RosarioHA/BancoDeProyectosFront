@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiBancoProyecto } from '../../services/bancoproyecto.api.js';
+import  apiBancoProyecto  from '../../services/bancoproyecto.api.js';
 
 export const useApiProjectsDetailAdmin = (slug) => {
   const [dataProjectAdmin, setDataProjectAdmin] = useState([]);

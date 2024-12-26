@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios'; 
-import { apiBancoProyecto } from '../services/bancoproyecto.api.js'; 
+import apiBancoProyecto  from '../services/bancoproyecto.api.js'; 
 
 const useFilterOptions = () => {
   const [filterOptions, setFilterOptions] = useState(null);

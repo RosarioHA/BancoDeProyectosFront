@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiBancoProyecto } from '../../services/bancoproyecto.api.js';
+import  apiBancoProyecto  from '../../services/bancoproyecto.api.js';
 
 export const ProyectosRelacionados = ({ currentSlug }) =>
 {

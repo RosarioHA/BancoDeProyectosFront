@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {apiBancoProyecto} from '../../services/bancoproyecto.api';
+import apiBancoProyecto from '../../services/bancoproyecto.api';
 
 export const useFetchProjectHistory = () => {
   const [loading, setLoading] = useState(true); // Para controlar el estado de carga

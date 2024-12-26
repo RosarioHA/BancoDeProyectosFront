@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { apiBancoProyecto } from "../../services/bancoproyecto.api";
+import apiBancoProyecto  from "../../services/bancoproyecto.api";
 
 export const useUserProfileUpdate = () => {
     const [loading, setLoading] = useState(false);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiBancoProyecto } from '../../services/bancoproyecto.api.js'; 
+import  apiBancoProyecto  from '../../services/bancoproyecto.api.js'; 
 
 const useApiGoodPractices = () => {
   const [dataGoodPractices, setDataGoodPractices] = useState([]);
