@@ -1,22 +1,9 @@
-import { useState } from 'react';
+
 import { ModalBase } from '../../components/Modals/ModalBase';
-import { useApiTagProject } from '../../hooks/useTag';
-export const Tags = () =>
+export const Tags = ({handleAddTag, error, tagName ,  setTagName}) =>
 {
-  const [ tagName, setTagName ] = useState('');
-  const [ error, setError ] = useState('');
 
-  const { addTag } = useApiTagProject();
-
-  const handleAddTag = async () => {
-    try {
-      const newTagName = tagName; 
-      await addTag(newTagName); 
-      setTagName(''); 
-    } catch (error) {
-      setError('Error al agregar el tag:', error);
-    }
-  };
+  
 
   return (
     <ModalBase
@@ -24,7 +11,7 @@ export const Tags = () =>
       btnIcon="add"
       title="Agregar Tag Priorización"
       modalID="tags"
-      classStyle="btn-secundario-s px-3 py-3"
+      classStyle="btn-principal-s px-3 py-3"
       titleStyle="text-sans-h3 ms-3"
     >
       <div className="mx-5">

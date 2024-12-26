@@ -5,7 +5,9 @@ import { InputSearch } from '../../../components/Commons/input_search';
 
 const TagPriorizados = () =>
 {
-  const [ setSearching ] = useState(); // Usado para indicar si se está realizando una búsqueda
+  const [ setSearching ] = useState();
+  const [ error, setError ] = useState('');
+  const [ tagName, setTagName ] = useState('');
   const {
     tagList,
     setSearchTerm,
@@ -13,12 +15,12 @@ const TagPriorizados = () =>
     metadata,
     pagination,
     setPagination,
-    tagLoading,
-    deleteTag
+    deleteTag,
+    addTag,
   } = useApiTagProject();
 
-  const usersPerPage = 10; // Número de elementos por página
-  const totalPages = Math.ceil(metadata.count / usersPerPage); // Total de páginas
+  const tagPerPage = 10;
+  const totalPages = Math.ceil(metadata.count / tagPerPage);
 
   const handleSearch = (term) =>
   {
@@ -35,22 +37,41 @@ const TagPriorizados = () =>
     }
   };
 
-  const handleDelete = (tagId) =>
+  const handleAddTag = async () =>
   {
-    deleteTag(tagId);
+    try
+    {
+      const newTagName = tagName;
+      await addTag(newTagName);
+      setTagName('');
+    } catch (error)
+    {
+      setError('Error al agregar el tag:', error);
+    }
   };
+
+  const handleDelete = async (tagId) =>
+  {
+    await deleteTag(tagId);
+
+    if (tagList.length === 1 && pagination > 1)
+    {
+      setPagination(pagination - 1);
+    }
+  };
+
 
   const renderPaginationButtons = () =>
   {
     if (totalPages <= 1)
     {
-      return null; // No mostrar paginación si hay una sola página
+      return null;
     }
 
     return (
       <div className="d-flex flex-column flex-md-row my-5 justify-content-center">
         <p className="text-sans-h5 mx-3 text-center">
-          {`Mostrando ${(pagination - 1) * usersPerPage + 1} - ${Math.min(pagination * usersPerPage, metadata.count)} de ${metadata.count} tags`}
+          {`Mostrando ${(pagination - 1) * tagPerPage + 1} - ${Math.min(pagination * tagPerPage, metadata.count)} de ${metadata.count} tags`}
         </p>
         <nav className="pagination-container">
           <ul className="pagination">
@@ -104,7 +125,11 @@ const TagPriorizados = () =>
             />
           </div>
           <div className="mx-3 col-5">
-            <Tags />
+            <Tags
+              handleAddTag={handleAddTag}
+              error={error}
+              tagName={tagName}
+              setTagName={setTagName} />
           </div>
         </div>
       </div>
@@ -117,17 +142,15 @@ const TagPriorizados = () =>
           <div className="col mt-3">
             <p className="text-sans-b-gray">Acción</p>
           </div>
-          {tagLoading ? (
-            <div>Cargando tags...</div>
-          ) : tagList?.length > 0 ? (
-            tagList.map((tag, index) => (
+          {tagList?.length > 0 ? (
+            tagList?.map((tag, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
                 <div className="col-1 p-3">
-                  {(pagination - 1) * usersPerPage + index + 1}
+                  {(pagination - 1) * tagPerPage + index + 1}
                 </div>
-                <div className="col p-3">{tag.prioritized_tag}</div>
+                <div className="col p-3">{tag?.prioritized_tag}</div>
                 <div className="col p-3">
-                  <button className="red-btn px-3 py-1" onClick={() => handleDelete(tag.id)}>
+                  <button className="red-btn px-3 py-1" onClick={() => handleDelete(tag?.id)}>
                     <u>Eliminar</u>
                   </button>
                 </div>
@@ -137,7 +160,7 @@ const TagPriorizados = () =>
             <div>No se encontraron tags priorizados.</div>
           )}
         </div>
-        {metadata.count > usersPerPage && renderPaginationButtons()}
+        {metadata?.count > tagPerPage && renderPaginationButtons()}
       </div>
     </div>
   );

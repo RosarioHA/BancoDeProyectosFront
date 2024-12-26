@@ -444,7 +444,7 @@ const EditarInnovador = () =>
                   {dataPrograms &&
                     dataPrograms.map((program) => (
                       <option key={program.id} value={program.id}>
-                        {program.name} {/* Mostrar el nombre del programa */}
+                        {program.name}
                       </option>
                     ))}
                 </select>
@@ -452,7 +452,7 @@ const EditarInnovador = () =>
                 {/* Mensaje de éxito o error */}
                 {message.text && (
                   <p
-                    className={`mt-2 ${message.type === "success" ? "text-green-500" : "text-red-500"
+                    className={`mt-2 ${message.type === "success" ? "text-sans-h5-blue" : "text-red-500"
                       }`}
                   >
                     {message.text}
