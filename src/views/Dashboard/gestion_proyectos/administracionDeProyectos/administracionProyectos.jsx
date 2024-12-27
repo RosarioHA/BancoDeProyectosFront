@@ -79,7 +79,7 @@ const AdministrarProyectos = () => {
 
   return (
     <>
-      <div className="container col-11">
+      <div className="container col-9">
         <h2 className="text-sans-h2 my-3">Administrar Proyectos</h2>
         <div className="my-5 d-flex justify-content-between">
           <h3 className="text-sans-h3">Proyectos </h3>
@@ -94,7 +94,7 @@ const AdministrarProyectos = () => {
           </div>
         </div>
       </div>
-      <div className="d-flex row col-12 ms-5 border-top justify-content-evenly">
+      <div className="d-flex row col-10 ms-5 border-top justify-content-evenly">
         <div className="col-1 mt-3 mx-auto">#
         </div>
         <div className="col-2 mt-3 ">
