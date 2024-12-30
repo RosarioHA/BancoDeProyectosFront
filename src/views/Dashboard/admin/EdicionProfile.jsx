@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useAuth } from "../../../context/AuthContext";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useApiRegionComuna } from "../../../hooks/useApiRegionComuna"
 import { useUserProfileUpdate } from "../../../hooks/usuarios/userProfile";
@@ -18,12 +19,14 @@ const EdicionProfile = () =>
   const { userDetails } = useUserDetails(id);
   const { updateProfile, success } = useUserProfileUpdate();
   const [ selectedPerfil, setSelectedPerfil ] = useState("");
+  const { userData } = useAuth();
   // Nuevo estado para manejar región y comuna
   const { data } = useApiRegionComuna();
   const [ selectedRegion, setSelectedRegion ] = useState("");
   const [ communes, setCommunes ] = useState([]);
   const [ selectedComuna, setSelectedComuna ] = useState("");
   const [ dataUser, setDataUser ] = useState({ email: '', institucion: '' });
+  const userFormulante = userData?.perfil?.includes("Formulante");
 
   //modal
   const { editMode, updateEditMode, hasChanged, updateHasChanged } = useFormContext();
@@ -150,14 +153,16 @@ const EdicionProfile = () =>
     updateHasChanged(false);
   };
 
-  // Redirigir automáticamente cuando 'success' sea true
-  useEffect(() =>
-  {
-    if (success)
-    {
+// Redirigir automáticamente cuando 'success' sea true
+useEffect(() => {
+  if (success) {
+    if (userFormulante) {
+      navigate('/dashboard', { state: { origen: "editar_usuario", id: userDetails.id } });
+    } else {
       navigate('/dashboard/edicion_exitosa', { state: { origen: "editar_usuario", id: userDetails.id } });
     }
-  }, [ success, navigate, userDetails ]);
+  }
+}, [success, navigate, userDetails, userFormulante]);
 
   return (
     <div className="container col-10 col-xxl-11 mt-2">
