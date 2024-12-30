@@ -413,7 +413,7 @@ const EditarInnovador = () =>
                   <DeleteProjectModal
                     slug={dataInnovativeAdmin?.id}
                     name={dataInnovativeAdmin?.title}
-                    buttonText="innovadores"
+                    buttonText="Innovadores"
                     type="innovative"
                   />
                 </div>

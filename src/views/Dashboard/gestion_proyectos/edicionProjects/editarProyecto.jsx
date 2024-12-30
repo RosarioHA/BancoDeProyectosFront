@@ -461,6 +461,7 @@ const EditarProyecto = () =>
                     slug={dataProjectAdmin?.slug}
                     name={dataProjectAdmin?.name}
                     type="standard"
+                    buttonText="Banco de Proyectos"
                   />
                 </div>
               </div>
