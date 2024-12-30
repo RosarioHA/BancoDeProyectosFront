@@ -310,7 +310,6 @@ const EditarProyecto = () =>
 
   const handleAddDocument = async (name, file) =>
   {
-    console.log(name);
     try
     {
       const response = await addDocument(name, file);
@@ -606,7 +605,7 @@ const EditarProyecto = () =>
         <div className="row">
           <div className="col">
             <p className="text-sans-p"><strong>Código de identificación SUBDERE</strong></p>
-            <p className="text-sans-p">{dataProjectAdmin?.idSubdere}</p>
+            <p className="text-sans-p">{dataProjectAdmin?.idSubdere|| dataProjectAdmin?.id_subdere}</p>
           </div>
           <div className="col">
             <p className="text-sans-p"><strong>Tag Priorización</strong></p>

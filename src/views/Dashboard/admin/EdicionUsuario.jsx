@@ -140,7 +140,7 @@ const EdicionUsuario = () =>
       comuna: selectedComuna,
     };
     console.log('Updated data:', updatedData); // Log data for debugging
-    await updateUser(updatedData);
+    await updateUser(userDetails.id, updatedData);
     updateHasChanged(false);
   };
 

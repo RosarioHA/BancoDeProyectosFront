@@ -142,7 +142,8 @@ const AdministrarProyectos = () => {
                 <p className="program mx-auto px-1 py-1">{project.program?.sigla || "No seleccionado"}</p>
               </div>
               <div className="col-2 me-5 py-3">
-                {project.author_email}
+                <span>{project.author_name}</span>
+                <p>{project.author_email}</p>
               </div>
               <div className="col-1 py-3">
                 <button className="btn-secundario-s px-2 py-1"

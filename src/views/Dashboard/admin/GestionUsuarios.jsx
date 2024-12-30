@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../../../hooks/usuarios/useUsers";
-import { useAuth } from '../../../context/AuthContext';
 import { InputSearch } from '../../../components/Commons/input_search';
 
 
 const GestionUsuarios = () =>
 {
   const { users, pagination, setPagination, fetchUsers, metadata, setSearchTerm, searchTerm } = useUsers();
-  const { userData } = useAuth();
   const [ setSearching ] = useState(false);
   const navigate = useNavigate();
   const usersPerPage = 10;
   const totalPages = Math.ceil(metadata.count / usersPerPage);
 
-  console.log(userData)
 
   useEffect(() =>
   {
