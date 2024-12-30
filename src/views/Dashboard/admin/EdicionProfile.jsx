@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useAuth } from "../../../context/AuthContext";
 import { useApiRegionComuna } from "../../../hooks/useApiRegionComuna"
 import { useUserProfileUpdate } from "../../../hooks/usuarios/userProfile";
 import { useUserDetails } from "../../../hooks/usuarios/userDetail";
@@ -15,12 +14,10 @@ import ModalAbandonoFormulario from '../../../components/Modals/ModalAbandono';
 const EdicionProfile = () =>
 {
   const { id } = useParams();
-  const { userData } = useAuth();
   const navigate = useNavigate();
   const { userDetails } = useUserDetails(id);
   const { updateProfile, success } = useUserProfileUpdate();
   const [ selectedPerfil, setSelectedPerfil ] = useState("");
-  const userEditor = userData?.perfil?.includes("Editor");
   // Nuevo estado para manejar región y comuna
   const { data } = useApiRegionComuna();
   const [ selectedRegion, setSelectedRegion ] = useState("");
@@ -112,13 +109,6 @@ const EdicionProfile = () =>
     }
   };
 
-
-  const perfiles = [
-    "Editor",
-    "Usuario Formulante",
-    "Usuario Registrado"
-  ];
-
   useEffect(() =>
   {
     if (userDetails)
@@ -129,10 +119,6 @@ const EdicionProfile = () =>
       setSelectedComuna(userDetails.comuna); // Establecer comuna por defecto si está disponible
     }
   }, [ userDetails ]);
-  const handleOptionSelect = (option) =>
-  {
-    setSelectedPerfil(option); // Actualizar el perfil seleccionado
-  };
 
   const handleRegionSelect = (option) =>
   {
@@ -160,7 +146,7 @@ const EdicionProfile = () =>
       comuna: selectedComuna,
     };
     console.log('Updated data:', updatedData); // Log data for debugging
-    await updateProfile(userDetails.id, updatedData);
+    await updateProfile(updatedData);
     updateHasChanged(false);
   };
 
@@ -263,14 +249,11 @@ const EdicionProfile = () =>
           />
         </div>
         <div className="d-flex flex-column input-container my-5">
-          <label className="text-sans-sub-grey input-label ms-3 ms-sm-0">Tipo de usuario </label>
-          <DropdownSimple
-            data={perfiles}
-            description="un perfil"
-            onOptionSelect={handleOptionSelect}
-            selectedOption={selectedPerfil}
-            readOnly={!editMode || !userEditor}
-          />
+          <label className="text-sans-h5 input-label ms-3 ms-sm-0">Tipo de usuario </label>
+          <div className={`textarea-text input-textarea p-3 d-flex justify-content-between`}>
+            <p className="text-sans-p-grey mb-0">{userDetails?.perfil}</p>
+            <span className="material-symbols-outlined">lock</span>
+          </div>
         </div>
         <div>
           <div className="d-flex flex-column input-container my-5">

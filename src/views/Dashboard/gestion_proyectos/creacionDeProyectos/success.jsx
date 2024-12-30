@@ -40,7 +40,7 @@ const SuccessViews = () => {
       </div>
         <div className="col-10 d-flex justify-content-center mt-5">
           <button className="btn-secundario-s d-flex justify-content-between " onClick={handleRedirect}>
-            <p className="mb-0 text-decoration-underline mx-3">ir a {tituloComplemento}</p>
+            <p className="mb-0 text-decoration-underline mx-3">Ir a {tituloComplemento}</p>
           </button>
         </div>
     </div>   

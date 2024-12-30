@@ -5,8 +5,9 @@ import { useDeleteProject } from '../../hooks/proyectos/useDeleteProject';
 import { useDeleteInnovative } from '../../hooks/innovativeProject/useDeleteInnovative';
 import { useDeleteGoodPractices } from '../../hooks/goodPractices/useDeleteGoodPractices';
 
-export const DeleteProjectModal = ({ slug, name,type, buttonText }) =>
+export const DeleteProjectModal = ({ slug, name, type, buttonText }) =>
 {
+  console.log(buttonText)
   const {
     deleteProject,
     error: errorStandard,
@@ -129,7 +130,7 @@ export const DeleteProjectModal = ({ slug, name,type, buttonText }) =>
       ) : (
         <div className="container text-center">
           <span className="text-sans-h4">{name || ""} ha sido eliminado exitosamente.</span>
-          <div className="d-flex justify-content-center">
+          <div className="d-flex justify-content-center my-5">
             <button
               className="btn-secundario-s"
               data-bs-dismiss="modal"
@@ -143,7 +144,7 @@ export const DeleteProjectModal = ({ slug, name,type, buttonText }) =>
                 )
               }
             >
-              Volver a administrar {buttonText}
+              Volver a Administrar {buttonText}
             </button>
           </div>
         </div>

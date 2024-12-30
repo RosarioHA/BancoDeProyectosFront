@@ -87,9 +87,9 @@ export const Desechar = ({ slug,  text, type }) => {
       ) : (
         <div className="container text-center">
           <span className="text-sans-h4">La solicitud ha sido eliminada exitosamente.</span>
-          <div className="d-flex justify-content-center">
+          <div className="d-flex justify-content-center my-5">
           <button
-              className="btn-secundario-s"
+              className="btn-secundario-s my-5"
               data-bs-dismiss="modal"
               onClick={() => navigate(
                 type === 'standard'

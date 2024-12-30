@@ -104,7 +104,7 @@ const AdministrarProyectosInnovadores = () =>
           </div>
         </div>
       </div>
-      <div className="d-flex row col-12 ms-5 border-top justify-content-evenly">
+      <div className="d-flex row col-10 ms-5 border-top justify-content-evenly">
         <div className="col-1 mt-3">#</div>
         <div className="col-2 mt-3">
           <p className="text-sans-b-gray ms-3">Proyecto</p>
@@ -145,7 +145,9 @@ const AdministrarProyectosInnovadores = () =>
               <div className="col-3 p-3">
                 <p className="program mx-auto px-2 py-1">{project.program?.sigla || "No seleccionado"}</p>
               </div>
-              <div className="col-3 p-3 ">{project.author_email}</div>
+              <div className="col-3 p-3 ">
+              <span>{project.author_name}</span>
+              <p>{project.author_email}</p></div>
               <div className="col-2 p-3">
                 <button className="btn-secundario-s px-3 py-1"
                   onClick={() => handleDetailsProject(project)}>
