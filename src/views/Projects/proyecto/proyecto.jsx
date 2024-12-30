@@ -14,7 +14,7 @@ const Proyecto = () =>
   const { isLoggedIn } = useAuth();
   const { loginWithKeycloak } = useLogin(); // Asegúrate de que este método esté definido en tu hook.
   const combinedDocuments = [
-    ...(dataProject.program && dataProject.program.documents ? dataProject.program.documents : []),
+    ...(dataProject.files && dataProject.files ? dataProject.files : []),
     ...(dataProject.type && dataProject.type.documents ? dataProject.type.documents : [])
   ];
 
@@ -210,11 +210,25 @@ const Proyecto = () =>
           }}>Iniciar sesión para descargar</Link>
         )}
       </div>
+      {/* Planimetria*/}
+      <div className="row border-top grey-table-line">
+        <div className="col-1 p-3">3</div>
+        <div className="col p-3">Planimetría</div>
+        <div className="col p-3">PDF</div>
+        {isLoggedIn ? (
+          <a className="col p-3 text-sans-p-tertiary" href={dataProject.planimetria} target="_blank" rel="noopener noreferrer">Descargar</a>
+        ) : (
+          <Link className="col p-3 text-sans-p-tertiary" onClick={() =>
+          {
+            loginWithKeycloak(); // Llama a la función después de registrar el mensaje en la consola.
+          }}>Iniciar sesión para descargar</Link>
+        )}
+      </div>
 
-      {
+      {/* {
         dataProject.files.map((file, index) => (
           <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
-            <div className="col-1 p-3">{index + 3}</div>  {/* Comenzamos desde el índice 3 porque ya mostramos 2 documentos anteriormente */}
+            <div className="col-1 p-3">{index + 3}</div>  
             <div className="col p-3">{file.name}</div>
             <div className="col p-3">{file.file_format}</div>
             {isLoggedIn ? (
@@ -222,12 +236,12 @@ const Proyecto = () =>
             ) : (
               <Link className="col p-3 text-sans-p-tertiary" onClick={() =>
               {
-                loginWithKeycloak(); // Llama a la función después de registrar el mensaje en la consola.
+                loginWithKeycloak(); 
               }}>Iniciar sesión para descargar</Link>
             )}
           </div>
         ))
-      }
+      } */}
 
       {/* Normativa por programa y tipo de proyecto */}
       {filteredDocuments.length > 0 &&
@@ -243,9 +257,9 @@ const Proyecto = () =>
             filteredDocuments.map((documents, index) => (
               <div key={index} className={`row border-top ${index % 2 === 0 ? 'grey-table-line' : 'white-table-line'}`}>
                 <div className="col-1 p-3">{index + 1}</div>
-                <div className="col p-3">{documents.title}</div>
-                <div className="col p-3">{documents.document_format}</div>
-                <a className="col p-3 text-sans-p-tertiary" href={documents.document} target="_blank" rel="noopener noreferrer">Descargar</a>
+                <div className="col p-3">{documents.title || documents.name}</div>
+                <div className="col p-3">{documents.document_format ||documents.file_format}</div>
+                <a className="col p-3 text-sans-p-tertiary" href={documents.document|| documents.file} target="_blank" rel="noopener noreferrer">Descargar</a>
               </div>
             ))
           }
