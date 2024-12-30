@@ -104,7 +104,7 @@ const AdministrarProyectosInnovadores = () =>
           </div>
         </div>
       </div>
-      <div className="d-flex row col-12 ms-5 border-top justify-content-evenly">
+      <div className="d-flex row col-10 ms-5 border-top justify-content-evenly">
         <div className="col-1 mt-3">#</div>
         <div className="col-2 mt-3">
           <p className="text-sans-b-gray ms-3">Proyecto</p>

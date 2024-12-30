@@ -134,7 +134,7 @@ const TagPriorizados = () =>
         </div>
       </div>
       <div>
-        <div className="row py-2 border-top">
+        <div className="d-flex row col-10 ms-5 border-top justify-content-evenly">
           <div className="col-1 mt-3">#</div>
           <div className="col mt-3">
             <p className="text-sans-b-gray">Tag</p>
